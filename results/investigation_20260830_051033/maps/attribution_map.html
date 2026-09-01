@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_7fdf02874cd703b4df7a228261e32dc6 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_7fdf02874cd703b4df7a228261e32dc6" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_7fdf02874cd703b4df7a228261e32dc6 = L.map(
+                "map_7fdf02874cd703b4df7a228261e32dc6",
+                {
+                    center: [28.7998, -88.3943],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 11,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_51a361092f00f0d91230cd24557c8b15 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_51a361092f00f0d91230cd24557c8b15.addTo(map_7fdf02874cd703b4df7a228261e32dc6);
+        
+    
+            var circle_85b357e954e185f3b17c8e6159731798 = L.circle(
+                [28.7998, -88.3943],
+                {"bubblingMouseEvents": true, "color": "crimson", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.15, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 12440.0, "stroke": true, "weight": 2}
+            ).addTo(map_7fdf02874cd703b4df7a228261e32dc6);
+        
+    
+            circle_85b357e954e185f3b17c8e6159731798.bindTooltip(
+                `<div>
+                     Observation Spread (~12.44 km uncertainty)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var marker_c277799d53f4bc002e0a756bfd56a7f3 = L.marker(
+                [28.7998, -88.3943],
+                {
+}
+            ).addTo(map_7fdf02874cd703b4df7a228261e32dc6);
+        
+    
+            var icon_146861aeec97919f434aeddfcb1467bc = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "tint",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_959b93241379c5267775107ddf93aea5 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_b2a45afbbd8e4f852c61a14abfdc54bb = $(`<div id="html_b2a45afbbd8e4f852c61a14abfdc54bb" style="width: 100.0%; height: 100.0%;">Observed Spill Location: (28.7998, -88.3943)</div>`)[0];
+                popup_959b93241379c5267775107ddf93aea5.setContent(html_b2a45afbbd8e4f852c61a14abfdc54bb);
+            
+        
+
+        marker_c277799d53f4bc002e0a756bfd56a7f3.bindPopup(popup_959b93241379c5267775107ddf93aea5)
+        ;
+
+        
+    
+    
+            marker_c277799d53f4bc002e0a756bfd56a7f3.bindTooltip(
+                `<div>
+                     Observed Spill Center
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_c277799d53f4bc002e0a756bfd56a7f3.setIcon(icon_146861aeec97919f434aeddfcb1467bc);
+            
+    
+            var poly_line_6683d4ef82b7e210f1c46d4a1d93c4e9 = L.polyline(
+                [[28.743763963963964, -88.45033603603603], [28.7998, -88.3943], [28.855836036036038, -88.33826396396397]],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": "5, 5", "dashOffset": null, "fill": false, "fillColor": "black", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.8, "smoothFactor": 1.0, "stroke": true, "weight": 4}
+            ).addTo(map_7fdf02874cd703b4df7a228261e32dc6);
+        
+    
+            poly_line_6683d4ef82b7e210f1c46d4a1d93c4e9.bindTooltip(
+                `<div>
+                     Slick Centerline
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+</script>
+</html>

@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_123e244c2a815424b91bdfe252ba092e {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+</head>
+<body>
+    
+    
+<div style="
+position: fixed;
+bottom: 30px;
+left: 30px;
+z-index: 9999;
+background-color: white;
+padding: 15px;
+border: 2px solid black;
+border-radius: 5px;
+font-size: 14px;
+">
+
+<b>JUNIPER — ATTRIBUTION EVIDENCE</b>
+
+<hr>
+
+MMSI: 368309480<br>
+Final evidence score:
+0.5260<br>
+Validated attribution score:
+0.4602<br>
+Closest AIS distance:
+7.90 km<br>
+AIS points within 10 km:
+5<br>
+Temporal validity:
+<b>PARTIALLY_VALID</b><br>
+
+<hr>
+
+Spill time:<br>
+2024-08-06 01:50:00
+
+</div>
+    
+<div style="
+position: fixed;
+top: 30px;
+right: 30px;
+z-index: 9999;
+background-color: white;
+padding: 12px;
+border: 2px solid black;
+font-size: 13px;
+">
+
+<b>TIME SEQUENCE</b><br><br>
+
+🔵 30 / 15 min before<br>
+🔴 Spill time<br>
+🟢 15 / 30 min after<br>
+⭕ Closest AIS point
+
+</div>
+    
+            <div class="folium-map" id="map_123e244c2a815424b91bdfe252ba092e" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_123e244c2a815424b91bdfe252ba092e = L.map(
+                "map_123e244c2a815424b91bdfe252ba092e",
+                {
+                    center: [34.016944, -118.663056],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 9,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_97e46ddcdd77df5d785cb960cbd3bf0e = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_97e46ddcdd77df5d785cb960cbd3bf0e.addTo(map_123e244c2a815424b91bdfe252ba092e);
+        
+    
+            var marker_574169f46945c3dbeaf67d8b534802a7 = L.marker(
+                [34.016944, -118.663056],
+                {
+}
+            ).addTo(map_123e244c2a815424b91bdfe252ba092e);
+        
+    
+            var icon_1e7976d66a75217d480c3053084201e6 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "tint",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_ae8ad660640023466f6809e2c92d9ed6 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_d82dc4884d3f23c71331e89d7edf4fa0 = $(`<div id="html_d82dc4884d3f23c71331e89d7edf4fa0" style="width: 100.0%; height: 100.0%;"><b>OIL SPILL OBSERVATION</b><br>Time: 2024-08-06 01:50:00</div>`)[0];
+                popup_ae8ad660640023466f6809e2c92d9ed6.setContent(html_d82dc4884d3f23c71331e89d7edf4fa0);
+            
+        
+
+        marker_574169f46945c3dbeaf67d8b534802a7.bindPopup(popup_ae8ad660640023466f6809e2c92d9ed6)
+        ;
+
+        
+    
+    
+            marker_574169f46945c3dbeaf67d8b534802a7.bindTooltip(
+                `<div>
+                     Oil spill observation
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_574169f46945c3dbeaf67d8b534802a7.setIcon(icon_1e7976d66a75217d480c3053084201e6);
+            
+    
+            var circle_d83153ce2051d5ecc60193f0a99b24dc = L.circle(
+                [34.016944, -118.663056],
+                {"bubblingMouseEvents": true, "color": "#3388ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#3388ff", "fillOpacity": 0.08, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10000, "stroke": true, "weight": 2}
+            ).addTo(map_123e244c2a815424b91bdfe252ba092e);
+        
+    
+        var popup_95cc029752af7bc9cd50fd5486cfbdf6 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_2f692f0bd7d30f9a0916ae67e8e24531 = $(`<div id="html_2f692f0bd7d30f9a0916ae67e8e24531" style="width: 100.0%; height: 100.0%;">10 km evidence zone</div>`)[0];
+                popup_95cc029752af7bc9cd50fd5486cfbdf6.setContent(html_2f692f0bd7d30f9a0916ae67e8e24531);
+            
+        
+
+        circle_d83153ce2051d5ecc60193f0a99b24dc.bindPopup(popup_95cc029752af7bc9cd50fd5486cfbdf6)
+        ;
+
+        
+    
+    
+            circle_d83153ce2051d5ecc60193f0a99b24dc.bindTooltip(
+                `<div>
+                     10 km evidence zone
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_49c35f0f10317fc809cee950059d3af6 = L.polyline(
+                [[3761169.2241986804, 365938.1343006893], [3759411.476928211, 365816.2651493871], [3758399.678061058, 364363.8835208929], [3758286.4097627415, 362206.7234238085], [3758208.0356828966, 360047.8338271335], [3758101.5463229525, 357890.1155736809], [3758009.0643761707, 355732.0821626837], [3757910.634565784, 353573.8572098493], [3757737.2958228863, 351421.0215605518], [3757547.706021314, 349268.8047414746], [3757414.8016374987, 347112.8963906516], [3757319.9762961096, 344954.41798458964], [3757198.043771733, 342798.26771883806], [3756891.348173002, 340661.8461263823], [3756786.613102849, 338504.3017921505], [3756704.008129957, 336345.449041764], [3756608.2076413785, 334186.99300561496], [3756500.857805537, 332029.1152318514], [3756390.593451032, 329871.4425844568], [3756284.838881761, 327713.5683537353], [3756208.886011094, 325554.3375521845], [3754840.4432877796, 324015.8500329322], [3753146.409452528, 322674.9098045077], [3751493.7998464843, 321283.182353811], [3750362.7664672816, 319627.33484134387], [3750392.514509429, 317467.02441896335], [3750392.140002952, 315306.49626438454], [3750385.1598367947, 313145.8693283103], [3750401.005733717, 310985.34735852183], [3750425.261097913, 308824.94984494895], [3750438.708154158, 306664.57752045535], [3750473.501655555, 304504.3503422026], [3750444.7624089387, 302344.80537644523], [3750312.6727693933, 300188.3961128825], [3750303.3223827174, 298027.8320946151], [3750296.7950616633, 295867.3332164744], [3750315.4334619087, 293706.94951269514], [3750329.3845005883, 291546.32885170786], [3750355.7859847946, 289386.03885871463], [3750431.1791401193, 287226.68322185765], [3750524.222238668, 285068.1294977256], [3750623.718393078, 282909.967822231], [3750760.991939754, 280753.67397158453], [3750914.789249024, 278598.48298596294], [3751126.413249403, 276448.3501679272], [3751400.707638801, 274305.2209917683], [3751712.602623472, 272167.34856879193], [3752085.28227035, 270039.1107852407], [3752471.6316187875, 267913.2805898129], [3752841.4622679166, 265784.88827000617], [3753181.595411253, 263651.283703912], [3753539.6759312083, 261520.6088966434], [3753845.4132220843, 259381.85648169852], [3754219.6578247794, 257254.1133176902], [3754612.534925935, 255129.56409818304], [3755044.1263779555, 253012.5865389292], [3755465.2361327754, 250893.48826400755], [3755814.1938120965, 248761.4611856175], [3756138.0565808094, 246625.26394744252], [3756455.493547411, 244488.17123258644], [3756824.6996506653, 242359.36598404945], [3757191.034542621, 240230.02369635296], [3757526.4288466903, 238095.8446419026], [3757849.9365794146, 235959.7218305086], [3758133.055458349, 233818.10639583945], [3758436.4147578166, 231679.33884727117], [3758798.644813127, 229550.02586644207], [3758696.499292111, 227439.21435955007], [3757918.4785078373, 225441.51998317998], [3756824.9430828374, 223786.86581019277], [3755716.796034057, 221932.22681607757], [3754913.504841175, 219947.63793522524], [3754508.601078064, 217825.3656265693], [3754075.2186540384, 215708.8198224794], [3753901.1022329093, 213570.72963192157], [3754074.8796518287, 211417.68797996573], [3754304.506086629, 209275.46827054737], [3754250.24805644, 207116.03066777802], [3754074.564850114, 204962.67526323828], [3754273.7676786217, 202824.06892380785], [3754656.38481857, 200698.10351760432], [3755062.0324840187, 198576.81802917604], [3755449.2541131796, 196451.76179624407], [3755803.7552876985, 194321.48127967713], [3756081.273230877, 192179.2118103104], [3756434.1550887553, 190870.88928294397], [3756346.6374411713, 189670.32348475003], [3758284.182723063, 190605.86292856812], [3760274.847459031, 191435.00447858902], [3762229.7283485015, 192343.9604060881], [3764125.950292147, 193376.81315852545], [3766069.8078406043, 194310.99884913478], [3768060.1292411983, 195138.5934034356], [3769680.208260303, 196499.3059484363], [3770277.473083335, 195689.75811356286], [3771890.372996897, 195439.40900509243], [3774005.376828133, 195679.60171251927], [3776139.455533558, 195349.38462267866], [3775738.18375015, 194252.90492590633], [3774354.2583755148, 192600.7955279702]],
+                {"bubblingMouseEvents": true, "color": "#3388ff", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#3388ff", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.9, "smoothFactor": 1.0, "stroke": true, "weight": 5}
+            ).addTo(map_123e244c2a815424b91bdfe252ba092e);
+        
+    
+        var popup_3c0ff23ee59d09324857bfbc38ed1c6b = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_92d640eb75e75b659cc9b34bed74850d = $(`<div id="html_92d640eb75e75b659cc9b34bed74850d" style="width: 100.0%; height: 100.0%;">JUNIPER AIS trajectory</div>`)[0];
+                popup_3c0ff23ee59d09324857bfbc38ed1c6b.setContent(html_92d640eb75e75b659cc9b34bed74850d);
+            
+        
+
+        poly_line_49c35f0f10317fc809cee950059d3af6.bindPopup(popup_3c0ff23ee59d09324857bfbc38ed1c6b)
+        ;
+
+        
+    
+    
+            poly_line_49c35f0f10317fc809cee950059d3af6.bindTooltip(
+                `<div>
+                     JUNIPER trajectory
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var marker_95fc54a2ddcd08d9d103f6ed39e8fc6a = L.marker(
+                [3761169.2241986804, 365938.1343006893],
+                {
+}
+            ).addTo(map_123e244c2a815424b91bdfe252ba092e);
+        
+    
+            var icon_b167012c36f47284d02eea784b53e25a = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "circle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_06aa9847571b19271118cf03cc525d48 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_9ca25e31b2054591d65effbc14e86b4d = $(`<div id="html_9ca25e31b2054591d65effbc14e86b4d" style="width: 100.0%; height: 100.0%;"><b>JUNIPER — 30 min before</b><br>Target time: 2024-08-06 01:20:00<br>AIS time: 2024-08-06 01:43:05<br>Time offset: 23.1 min<br>Distance to spill: 19.92 km</div>`)[0];
+                popup_06aa9847571b19271118cf03cc525d48.setContent(html_9ca25e31b2054591d65effbc14e86b4d);
+            
+        
+
+        marker_95fc54a2ddcd08d9d103f6ed39e8fc6a.bindPopup(popup_06aa9847571b19271118cf03cc525d48)
+        ;
+
+        
+    
+    
+            marker_95fc54a2ddcd08d9d103f6ed39e8fc6a.bindTooltip(
+                `<div>
+                     30 min before
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_95fc54a2ddcd08d9d103f6ed39e8fc6a.setIcon(icon_b167012c36f47284d02eea784b53e25a);
+            
+    
+            var marker_8e855be63a2163e32541e09fa66a7d04 = L.marker(
+                [3761169.2241986804, 365938.1343006893],
+                {
+}
+            ).addTo(map_123e244c2a815424b91bdfe252ba092e);
+        
+    
+            var icon_b2d8e68ee085652cd5e7eb2883eaace1 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "circle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_466f53cdfa04ef5a0d156f6938a8d8b9 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_9a191d504ffad9ab048b865b4c2a96ae = $(`<div id="html_9a191d504ffad9ab048b865b4c2a96ae" style="width: 100.0%; height: 100.0%;"><b>JUNIPER — 15 min before</b><br>Target time: 2024-08-06 01:35:00<br>AIS time: 2024-08-06 01:43:05<br>Time offset: 8.1 min<br>Distance to spill: 19.92 km</div>`)[0];
+                popup_466f53cdfa04ef5a0d156f6938a8d8b9.setContent(html_9a191d504ffad9ab048b865b4c2a96ae);
+            
+        
+
+        marker_8e855be63a2163e32541e09fa66a7d04.bindPopup(popup_466f53cdfa04ef5a0d156f6938a8d8b9)
+        ;
+
+        
+    
+    
+            marker_8e855be63a2163e32541e09fa66a7d04.bindTooltip(
+                `<div>
+                     15 min before
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_8e855be63a2163e32541e09fa66a7d04.setIcon(icon_b2d8e68ee085652cd5e7eb2883eaace1);
+            
+    
+            var marker_92b3372d4b5ac36482323d26a63131ea = L.marker(
+                [3757910.634565784, 353573.8572098493],
+                {
+}
+            ).addTo(map_123e244c2a815424b91bdfe252ba092e);
+        
+    
+            var icon_f935ed27f52da3995caa016058ccf15f = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "circle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_73a600f2f5617293b2698b001010702b = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_6f534b9b95ac6c5454d28f8b68165e4d = $(`<div id="html_6f534b9b95ac6c5454d28f8b68165e4d" style="width: 100.0%; height: 100.0%;"><b>JUNIPER — At spill</b><br>Target time: 2024-08-06 01:50:00<br>AIS time: 2024-08-06 01:49:56.161616162<br>Time offset: 0.1 min<br>Distance to spill: 10.26 km</div>`)[0];
+                popup_73a600f2f5617293b2698b001010702b.setContent(html_6f534b9b95ac6c5454d28f8b68165e4d);
+            
+        
+
+        marker_92b3372d4b5ac36482323d26a63131ea.bindPopup(popup_73a600f2f5617293b2698b001010702b)
+        ;
+
+        
+    
+    
+            marker_92b3372d4b5ac36482323d26a63131ea.bindTooltip(
+                `<div>
+                     At spill
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_92b3372d4b5ac36482323d26a63131ea.setIcon(icon_f935ed27f52da3995caa016058ccf15f);
+            
+    
+            var marker_ee8a6eae53286de0eeed643dbddf41ec = L.marker(
+                [3753146.409452528, 322674.9098045077],
+                {
+}
+            ).addTo(map_123e244c2a815424b91bdfe252ba092e);
+        
+    
+            var icon_d668e04e73db9a65ebcbf03dcd4124a5 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "circle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_fe6e71db352cb920a65ee4daa73242c3 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_57b8b7b492904486c398e1224ef3d38b = $(`<div id="html_57b8b7b492904486c398e1224ef3d38b" style="width: 100.0%; height: 100.0%;"><b>JUNIPER — 15 min after</b><br>Target time: 2024-08-06 02:05:00<br>AIS time: 2024-08-06 02:04:37.222222222<br>Time offset: 0.4 min<br>Distance to spill: 26.69 km</div>`)[0];
+                popup_fe6e71db352cb920a65ee4daa73242c3.setContent(html_57b8b7b492904486c398e1224ef3d38b);
+            
+        
+
+        marker_ee8a6eae53286de0eeed643dbddf41ec.bindPopup(popup_fe6e71db352cb920a65ee4daa73242c3)
+        ;
+
+        
+    
+    
+            marker_ee8a6eae53286de0eeed643dbddf41ec.bindTooltip(
+                `<div>
+                     15 min after
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_ee8a6eae53286de0eeed643dbddf41ec.setIcon(icon_d668e04e73db9a65ebcbf03dcd4124a5);
+            
+    
+            var marker_1dca50b5b61894250eea9e24e6c2bc53 = L.marker(
+                [3750355.7859847946, 289386.03885871463],
+                {
+}
+            ).addTo(map_123e244c2a815424b91bdfe252ba092e);
+        
+    
+            var icon_fc6f71f73898094d5a92a48d4222bdfb = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "circle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_206087999d11bfadb0af5d83f2b8826c = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_e1a6b5513f6a58da1fc80cd00c029eb6 = $(`<div id="html_e1a6b5513f6a58da1fc80cd00c029eb6" style="width: 100.0%; height: 100.0%;"><b>JUNIPER — 30 min after</b><br>Target time: 2024-08-06 02:20:00<br>AIS time: 2024-08-06 02:20:17.020202020<br>Time offset: 0.3 min<br>Distance to spill: 58.98 km</div>`)[0];
+                popup_206087999d11bfadb0af5d83f2b8826c.setContent(html_e1a6b5513f6a58da1fc80cd00c029eb6);
+            
+        
+
+        marker_1dca50b5b61894250eea9e24e6c2bc53.bindPopup(popup_206087999d11bfadb0af5d83f2b8826c)
+        ;
+
+        
+    
+    
+            marker_1dca50b5b61894250eea9e24e6c2bc53.bindTooltip(
+                `<div>
+                     30 min after
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_1dca50b5b61894250eea9e24e6c2bc53.setIcon(icon_fc6f71f73898094d5a92a48d4222bdfb);
+            
+    
+            var circle_marker_fceee6664816d3a2b0c24bfaf2458849 = L.circleMarker(
+                [3757414.8016374987, 347112.8963906516],
+                {"bubblingMouseEvents": true, "color": "#3388ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#3388ff", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 3}
+            ).addTo(map_123e244c2a815424b91bdfe252ba092e);
+        
+    
+        var popup_3f18c5b150599b4cdf4842c65806bcb5 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_292543e9d614c0f3ede7a1d6fdf4210b = $(`<div id="html_292543e9d614c0f3ede7a1d6fdf4210b" style="width: 100.0%; height: 100.0%;"><b>Closest JUNIPER AIS point</b><br>Time: 2024-08-06 01:52:52.373737374<br>Distance: 7.90 km</div>`)[0];
+                popup_3f18c5b150599b4cdf4842c65806bcb5.setContent(html_292543e9d614c0f3ede7a1d6fdf4210b);
+            
+        
+
+        circle_marker_fceee6664816d3a2b0c24bfaf2458849.bindPopup(popup_3f18c5b150599b4cdf4842c65806bcb5)
+        ;
+
+        
+    
+    
+            circle_marker_fceee6664816d3a2b0c24bfaf2458849.bindTooltip(
+                `<div>
+                     Closest AIS point
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+</script>
+</html>

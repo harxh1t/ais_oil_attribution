@@ -1,0 +1,6 @@
+{
+  "regime": "contemporaneous",
+  "rationale": "User explicitly specified 'contemporaneous' regime via CLI argument.",
+  "warning": null,
+  "is_platform_blowout_suspect": false
+}

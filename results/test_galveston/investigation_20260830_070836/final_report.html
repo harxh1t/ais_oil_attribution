@@ -1,0 +1,1556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIS Oil-Spill Attribution Report - investigation_20260830_070836</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --border: #334155;
+            --text: #f8fafc;
+            --muted: #94a3b8;
+            --accent: #38bdf8;
+            --gold: #f59e0b;
+            --green: #10b981;
+            --red: #ef4444;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1, h2, h3 {
+            color: var(--text);
+            margin-top: 0;
+        }
+        .header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .highlight-card {
+            border-left: 4px solid var(--accent);
+        }
+        .grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+        .grid-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+        .grid-4 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .stat-val {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-top: 0.25rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        th {
+            background-color: rgba(0, 0, 0, 0.2);
+            color: var(--muted);
+            font-weight: 600;
+        }
+        tr:hover {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.6rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .badge-high { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #059669; }
+        .badge-med { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid #d97706; }
+        .badge-low { background: rgba(148, 163, 184, 0.2); color: #cbd5e1; border: 1px solid #64748b; }
+        .alert {
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+        }
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid #d97706;
+            color: #fbbf24;
+        }
+        .evidence-box {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+        }
+        .map-frame {
+            width: 100%;
+            height: 520px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+        .footer {
+            font-size: 0.85rem;
+            color: var(--muted);
+            margin-top: 3rem;
+            border-top: 1px solid var(--border);
+            padding-top: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>AIS + Satellite Oil-Spill Vessel Attribution Report</h1>
+            <p style="color: var(--muted); margin-bottom: 0;">Investigation ID: <code>investigation_20260830_070836</code></p>
+        </div>
+
+        
+
+        <div class="card">
+            <h2>Incident Parameters & Regime Classification</h2>
+            <div class="grid grid-4">
+                <div>
+                    <div class="stat-label">Observation Location</div>
+                    <div class="stat-val">(29.3000, -94.7000)</div>
+                </div>
+                <div>
+                    <div class="stat-label">Observation Time (UTC)</div>
+                    <div class="stat-val">2024-08-06 12:00:00 UTC</div>
+                </div>
+                <div>
+                    <div class="stat-label">Tightest Spread Uncertainty</div>
+                    <div class="stat-val">~5.00 km</div>
+                </div>
+                <div>
+                    <div class="stat-label">Analysis Regime</div>
+                    <div class="stat-val"><code>CONTEMPORANEOUS</code></div>
+                </div>
+            </div>
+            <div class="evidence-box" style="margin-top: 1rem;">
+                <strong>Regime Rationale:</strong> User explicitly specified 'contemporaneous' regime via CLI argument.
+            </div>
+        </div>
+
+        
+        <div class="card highlight-card">
+            <h3>Primary Candidate: YELLOW ROSE (MMSI: 367442390)</h3>
+            <div class="grid grid-4">
+                <div>
+                    <div class="stat-label">Attribution Confidence</div>
+                    <div class="stat-val"><span class="badge badge-high">HIGH (0.910)</span></div>
+                </div>
+                <div>
+                    <div class="stat-label">Fréchet Parity Distance</div>
+                    <div class="stat-val">8.08 km</div>
+                </div>
+                <div>
+                    <div class="stat-label">Closest Approach (DCPA)</div>
+                    <div class="stat-val">3.60 km</div>
+                </div>
+                <div>
+                    <div class="stat-label">Time Offset (TCPA)</div>
+                    <div class="stat-val">+69.3 min</div>
+                </div>
+            </div>
+            <div class="evidence-box">
+                <strong>Evidence Summary:</strong>
+                <ul>
+                    <li>Track shape similarity: Fréchet distance of 8.08 km against slick centerline.</li>
+                    <li>Kinematic proximity: Closest approach of 3.60 km at 69.3 min after observation.</li>
+                    <li>AIS broadcast integrity: 93.3% real (un-interpolated) AIS signals in temporal window.</li>
+                </ul>
+            </div>
+        </div>
+        
+
+        <div class="card">
+            <h2>Candidate Vessels Attribution Table</h2>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Vessel Name</th>
+                            <th>MMSI</th>
+                            <th>Fréchet Parity</th>
+                            <th>DCPA</th>
+                            <th>TCPA</th>
+                            <th>AIS Coverage</th>
+                            <th>Borda Score</th>
+                            <th>Confidence</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+            <tr>
+                <td><strong>#1</strong></td>
+                <td><strong>YELLOW ROSE</strong></td>
+                <td>367442390</td>
+                <td>8.08 km</td>
+                <td>3.60 km</td>
+                <td>+69.3 min</td>
+                <td>93.3%</td>
+                <td>288</td>
+                <td><span class="badge badge-high">HIGH (0.910)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#2</strong></td>
+                <td><strong>SAMC SWAN</strong></td>
+                <td>477231800</td>
+                <td>8.33 km</td>
+                <td>4.40 km</td>
+                <td>+31.5 min</td>
+                <td>38.4%</td>
+                <td>282</td>
+                <td><span class="badge badge-med">MEDIUM (0.638)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#3</strong></td>
+                <td><strong>AET PARTNERSHIP</strong></td>
+                <td>369385000</td>
+                <td>10.58 km</td>
+                <td>5.10 km</td>
+                <td>+33.7 min</td>
+                <td>39.8%</td>
+                <td>256</td>
+                <td><span class="badge badge-med">MEDIUM (0.585)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#4</strong></td>
+                <td><strong>ROBERT C LANIER</strong></td>
+                <td>367119810</td>
+                <td>10.55 km</td>
+                <td>7.78 km</td>
+                <td>+14.2 min</td>
+                <td>65.4%</td>
+                <td>247</td>
+                <td><span class="badge badge-med">MEDIUM (0.668)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#5</strong></td>
+                <td><strong>CG HAWK</strong></td>
+                <td>366999613</td>
+                <td>8.98 km</td>
+                <td>3.73 km</td>
+                <td>+211.1 min</td>
+                <td>47.2%</td>
+                <td>241</td>
+                <td><span class="badge badge-med">MEDIUM (0.580)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#6</strong></td>
+                <td><strong>NO 1</strong></td>
+                <td>368926560</td>
+                <td>9.44 km</td>
+                <td>6.47 km</td>
+                <td>+173.3 min</td>
+                <td>66.0%</td>
+                <td>231</td>
+                <td><span class="badge badge-med">MEDIUM (0.626)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#7</strong></td>
+                <td><strong>CG26322</strong></td>
+                <td>338926922</td>
+                <td>8.98 km</td>
+                <td>7.98 km</td>
+                <td>-140.6 min</td>
+                <td>36.2%</td>
+                <td>230</td>
+                <td><span class="badge badge-med">MEDIUM (0.512)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#8</strong></td>
+                <td><strong>CG29116</strong></td>
+                <td>369990116</td>
+                <td>10.01 km</td>
+                <td>7.82 km</td>
+                <td>+142.1 min</td>
+                <td>92.2%</td>
+                <td>223</td>
+                <td><span class="badge badge-med">MEDIUM (0.700)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#9</strong></td>
+                <td><strong>BAYOU CITY</strong></td>
+                <td>368001440</td>
+                <td>11.51 km</td>
+                <td>6.26 km</td>
+                <td>-126.9 min</td>
+                <td>40.7%</td>
+                <td>223</td>
+                <td><span class="badge badge-med">MEDIUM (0.513)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#10</strong></td>
+                <td><strong>GALVESTON</strong></td>
+                <td>367457250</td>
+                <td>11.08 km</td>
+                <td>3.73 km</td>
+                <td>-192.2 min</td>
+                <td>93.2%</td>
+                <td>222</td>
+                <td><span class="badge badge-med">MEDIUM (0.701)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#11</strong></td>
+                <td><strong>ROBERT H DEDMAN</strong></td>
+                <td>367391260</td>
+                <td>10.33 km</td>
+                <td>7.78 km</td>
+                <td>-145.2 min</td>
+                <td>71.7%</td>
+                <td>221</td>
+                <td><span class="badge badge-med">MEDIUM (0.620)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#12</strong></td>
+                <td><strong>EXCALIBUR</strong></td>
+                <td>367107680</td>
+                <td>17.26 km</td>
+                <td>2.24 km</td>
+                <td>-98.7 min</td>
+                <td>49.0%</td>
+                <td>219</td>
+                <td><span class="badge badge-med">MEDIUM (0.533)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#13</strong></td>
+                <td><strong>NEW BUCCANEER</strong></td>
+                <td>367136040</td>
+                <td>10.02 km</td>
+                <td>3.64 km</td>
+                <td>-269.0 min</td>
+                <td>73.4%</td>
+                <td>218</td>
+                <td><span class="badge badge-med">MEDIUM (0.618)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#14</strong></td>
+                <td><strong>F.M. BROWN</strong></td>
+                <td>368014710</td>
+                <td>9.78 km</td>
+                <td>7.85 km</td>
+                <td>-170.9 min</td>
+                <td>30.5%</td>
+                <td>216</td>
+                <td><span class="badge badge-med">MEDIUM (0.460)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#15</strong></td>
+                <td><strong>CG EDGAR CULBERTSON</strong></td>
+                <td>338926437</td>
+                <td>9.36 km</td>
+                <td>7.93 km</td>
+                <td>+173.2 min</td>
+                <td>30.2%</td>
+                <td>216</td>
+                <td><span class="badge badge-med">MEDIUM (0.459)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#16</strong></td>
+                <td><strong>CG45630</strong></td>
+                <td>369493630</td>
+                <td>10.01 km</td>
+                <td>7.49 km</td>
+                <td>-206.8 min</td>
+                <td>91.9%</td>
+                <td>214</td>
+                <td><span class="badge badge-med">MEDIUM (0.671)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#17</strong></td>
+                <td><strong>DENIA</strong></td>
+                <td>367504910</td>
+                <td>10.10 km</td>
+                <td>8.20 km</td>
+                <td>-116.5 min</td>
+                <td>41.7%</td>
+                <td>214</td>
+                <td><span class="badge badge-med">MEDIUM (0.495)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#18</strong></td>
+                <td><strong>LONE STAR</strong></td>
+                <td>366973590</td>
+                <td>9.75 km</td>
+                <td>4.11 km</td>
+                <td>+295.5 min</td>
+                <td>92.8%</td>
+                <td>212</td>
+                <td><span class="badge badge-med">MEDIUM (0.668)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#19</strong></td>
+                <td><strong>CG JACOB POROO</strong></td>
+                <td>338926425</td>
+                <td>19.70 km</td>
+                <td>4.28 km</td>
+                <td>-11.9 min</td>
+                <td>61.6%</td>
+                <td>212</td>
+                <td><span class="badge badge-med">MEDIUM (0.560)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#20</strong></td>
+                <td><strong>BAD DOG</strong></td>
+                <td>367033750</td>
+                <td>10.64 km</td>
+                <td>8.57 km</td>
+                <td>+89.5 min</td>
+                <td>99.5%</td>
+                <td>211</td>
+                <td><span class="badge badge-med">MEDIUM (0.688)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#21</strong></td>
+                <td><strong>PADRE ISLAND</strong></td>
+                <td>367525000</td>
+                <td>9.33 km</td>
+                <td>2.87 km</td>
+                <td>-338.6 min</td>
+                <td>92.8%</td>
+                <td>211</td>
+                <td><span class="badge badge-med">MEDIUM (0.665)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#22</strong></td>
+                <td><strong>DEWITT C GREER</strong></td>
+                <td>366978210</td>
+                <td>10.41 km</td>
+                <td>7.78 km</td>
+                <td>+182.2 min</td>
+                <td>86.5%</td>
+                <td>211</td>
+                <td><span class="badge badge-med">MEDIUM (0.643)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#23</strong></td>
+                <td><strong>NORDIC AQUA</strong></td>
+                <td>372267000</td>
+                <td>8.04 km</td>
+                <td>6.10 km</td>
+                <td>+325.6 min</td>
+                <td>28.0%</td>
+                <td>210</td>
+                <td><span class="badge badge-med">MEDIUM (0.439)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#24</strong></td>
+                <td><strong>GREEN KNIGHT</strong></td>
+                <td>368007340</td>
+                <td>17.83 km</td>
+                <td>3.73 km</td>
+                <td>-109.7 min</td>
+                <td>90.2%</td>
+                <td>203</td>
+                <td><span class="badge badge-med">MEDIUM (0.631)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#25</strong></td>
+                <td><strong>CAVALIER</strong></td>
+                <td>366961560</td>
+                <td>12.65 km</td>
+                <td>3.05 km</td>
+                <td>-233.6 min</td>
+                <td>37.4%</td>
+                <td>201</td>
+                <td><span class="badge badge-med">MEDIUM (0.451)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#26</strong></td>
+                <td><strong>RED EAGLE</strong></td>
+                <td>366889000</td>
+                <td>13.60 km</td>
+                <td>7.84 km</td>
+                <td>+115.4 min</td>
+                <td>28.1%</td>
+                <td>199</td>
+                <td><span class="badge badge-med">MEDIUM (0.417)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#27</strong></td>
+                <td><strong>RMS TRITON</strong></td>
+                <td>338253000</td>
+                <td>17.71 km</td>
+                <td>7.86 km</td>
+                <td>-26.4 min</td>
+                <td>27.6%</td>
+                <td>195</td>
+                <td><span class="badge badge-med">MEDIUM (0.407)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#28</strong></td>
+                <td><strong>OVERSEAS CHINOOK</strong></td>
+                <td>366495000</td>
+                <td>9.11 km</td>
+                <td>7.32 km</td>
+                <td>+332.4 min</td>
+                <td>37.1%</td>
+                <td>194</td>
+                <td><span class="badge badge-med">MEDIUM (0.435)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#29</strong></td>
+                <td><strong>MELINDA B ADAMS</strong></td>
+                <td>367300160</td>
+                <td>12.46 km</td>
+                <td>10.24 km</td>
+                <td>+75.8 min</td>
+                <td>86.5%</td>
+                <td>191</td>
+                <td><span class="badge badge-med">MEDIUM (0.582)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#30</strong></td>
+                <td><strong>T RAIN</strong></td>
+                <td>367550950</td>
+                <td>12.44 km</td>
+                <td>1.42 km</td>
+                <td>+316.8 min</td>
+                <td>51.2%</td>
+                <td>191</td>
+                <td><span class="badge badge-med">MEDIUM (0.472)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#31</strong></td>
+                <td><strong>CHARLIE B</strong></td>
+                <td>338763000</td>
+                <td>23.61 km</td>
+                <td>3.90 km</td>
+                <td>-38.2 min</td>
+                <td>86.7%</td>
+                <td>190</td>
+                <td><span class="badge badge-med">MEDIUM (0.580)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#32</strong></td>
+                <td><strong>DEBORAH</strong></td>
+                <td>368000410</td>
+                <td>15.80 km</td>
+                <td>6.77 km</td>
+                <td>-145.9 min</td>
+                <td>36.2%</td>
+                <td>189</td>
+                <td><span class="badge badge-med">MEDIUM (0.421)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#33</strong></td>
+                <td><strong>DIMMIT</strong></td>
+                <td>368044440</td>
+                <td>8.20 km</td>
+                <td>6.97 km</td>
+                <td>+359.6 min</td>
+                <td>92.6%</td>
+                <td>188</td>
+                <td><span class="badge badge-med">MEDIUM (0.592)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#34</strong></td>
+                <td><strong>TEXAS CITY</strong></td>
+                <td>368285070</td>
+                <td>10.46 km</td>
+                <td>8.13 km</td>
+                <td>-213.4 min</td>
+                <td>92.3%</td>
+                <td>188</td>
+                <td><span class="badge badge-med">MEDIUM (0.591)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#35</strong></td>
+                <td><strong>SUCCESS</strong></td>
+                <td>366951820</td>
+                <td>12.38 km</td>
+                <td>11.37 km</td>
+                <td>+89.6 min</td>
+                <td>38.1%</td>
+                <td>187</td>
+                <td><span class="badge badge-med">MEDIUM (0.422)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#36</strong></td>
+                <td><strong>ANIKITOS</strong></td>
+                <td>538010235</td>
+                <td>10.69 km</td>
+                <td>4.38 km</td>
+                <td>+330.1 min</td>
+                <td>38.6%</td>
+                <td>184</td>
+                <td><span class="badge badge-med">MEDIUM (0.417)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#37</strong></td>
+                <td><strong>LYNNE M. ROSE</strong></td>
+                <td>368261750</td>
+                <td>9.21 km</td>
+                <td>6.39 km</td>
+                <td>-446.6 min</td>
+                <td>32.1%</td>
+                <td>182</td>
+                <td><span class="badge badge-low">LOW (0.393)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#38</strong></td>
+                <td><strong>TEXAS</strong></td>
+                <td>366991740</td>
+                <td>10.93 km</td>
+                <td>3.20 km</td>
+                <td>+359.6 min</td>
+                <td>88.9%</td>
+                <td>180</td>
+                <td><span class="badge badge-med">MEDIUM (0.556)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#39</strong></td>
+                <td><strong>STEVEN MAI II</strong></td>
+                <td>367431020</td>
+                <td>13.03 km</td>
+                <td>11.58 km</td>
+                <td>+83.1 min</td>
+                <td>25.2%</td>
+                <td>174</td>
+                <td><span class="badge badge-low">LOW (0.356)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#40</strong></td>
+                <td><strong>PATI R MORAN</strong></td>
+                <td>367445000</td>
+                <td>8.64 km</td>
+                <td>7.50 km</td>
+                <td>-475.3 min</td>
+                <td>32.5%</td>
+                <td>173</td>
+                <td><span class="badge badge-low">LOW (0.375)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#41</strong></td>
+                <td><strong>SYDNEE TAYLOR</strong></td>
+                <td>367149340</td>
+                <td>14.63 km</td>
+                <td>11.52 km</td>
+                <td>-61.4 min</td>
+                <td>93.1%</td>
+                <td>171</td>
+                <td><span class="badge badge-med">MEDIUM (0.540)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#42</strong></td>
+                <td><strong>LEYTE GULF</strong></td>
+                <td>368181960</td>
+                <td>13.71 km</td>
+                <td>9.04 km</td>
+                <td>-147.7 min</td>
+                <td>87.8%</td>
+                <td>169</td>
+                <td><span class="badge badge-med">MEDIUM (0.519)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#43</strong></td>
+                <td><strong>RAY STOKER; JR</strong></td>
+                <td>367151450</td>
+                <td>10.78 km</td>
+                <td>7.35 km</td>
+                <td>-334.1 min</td>
+                <td>93.9%</td>
+                <td>168</td>
+                <td><span class="badge badge-med">MEDIUM (0.532)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#44</strong></td>
+                <td><strong>EVERARD DUPRE</strong></td>
+                <td>368097780</td>
+                <td>9.46 km</td>
+                <td>8.10 km</td>
+                <td>+352.6 min</td>
+                <td>93.1%</td>
+                <td>166</td>
+                <td><span class="badge badge-med">MEDIUM (0.524)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#45</strong></td>
+                <td><strong>CG ALLIGATOR</strong></td>
+                <td>369493387</td>
+                <td>9.29 km</td>
+                <td>7.93 km</td>
+                <td>-370.8 min</td>
+                <td>30.1%</td>
+                <td>166</td>
+                <td><span class="badge badge-low">LOW (0.353)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#46</strong></td>
+                <td><strong>ERIN T</strong></td>
+                <td>366845050</td>
+                <td>12.20 km</td>
+                <td>8.79 km</td>
+                <td>-215.4 min</td>
+                <td>92.3%</td>
+                <td>164</td>
+                <td><span class="badge badge-med">MEDIUM (0.515)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#47</strong></td>
+                <td><strong>FRITZ BLESSEY</strong></td>
+                <td>367087950</td>
+                <td>14.48 km</td>
+                <td>12.37 km</td>
+                <td>-58.4 min</td>
+                <td>33.1%</td>
+                <td>164</td>
+                <td><span class="badge badge-low">LOW (0.357)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#48</strong></td>
+                <td><strong>LUKE K</strong></td>
+                <td>367567460</td>
+                <td>13.36 km</td>
+                <td>7.80 km</td>
+                <td>-274.8 min</td>
+                <td>92.3%</td>
+                <td>163</td>
+                <td><span class="badge badge-med">MEDIUM (0.512)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#49</strong></td>
+                <td><strong>CAPT ALVIN</strong></td>
+                <td>368354850</td>
+                <td>12.53 km</td>
+                <td>11.38 km</td>
+                <td>+151.7 min</td>
+                <td>35.9%</td>
+                <td>163</td>
+                <td><span class="badge badge-low">LOW (0.362)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#50</strong></td>
+                <td><strong>ODYSSEA GOLD</strong></td>
+                <td>368230000</td>
+                <td>11.34 km</td>
+                <td>9.26 km</td>
+                <td>+223.9 min</td>
+                <td>92.8%</td>
+                <td>162</td>
+                <td><span class="badge badge-med">MEDIUM (0.510)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#51</strong></td>
+                <td><strong>GENERAL PATTON</strong></td>
+                <td>367761740</td>
+                <td>13.74 km</td>
+                <td>11.53 km</td>
+                <td>+120.5 min</td>
+                <td>89.9%</td>
+                <td>161</td>
+                <td><span class="badge badge-med">MEDIUM (0.500)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#52</strong></td>
+                <td><strong>LADY LAB</strong></td>
+                <td>367305890</td>
+                <td>11.53 km</td>
+                <td>9.27 km</td>
+                <td>+222.8 min</td>
+                <td>29.7%</td>
+                <td>161</td>
+                <td><span class="badge badge-low">LOW (0.341)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#53</strong></td>
+                <td><strong>JACOB BRENT</strong></td>
+                <td>367615990</td>
+                <td>9.87 km</td>
+                <td>7.81 km</td>
+                <td>-473.9 min</td>
+                <td>94.0%</td>
+                <td>158</td>
+                <td><span class="badge badge-med">MEDIUM (0.501)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#54</strong></td>
+                <td><strong>BILL TULLIER</strong></td>
+                <td>367308970</td>
+                <td>10.30 km</td>
+                <td>8.08 km</td>
+                <td>+354.4 min</td>
+                <td>91.7%</td>
+                <td>157</td>
+                <td><span class="badge badge-med">MEDIUM (0.492)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#55</strong></td>
+                <td><strong>LUBBOCK</strong></td>
+                <td>368136890</td>
+                <td>12.92 km</td>
+                <td>10.69 km</td>
+                <td>-210.7 min</td>
+                <td>93.4%</td>
+                <td>153</td>
+                <td><span class="badge badge-med">MEDIUM (0.483)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#56</strong></td>
+                <td><strong>ALYS</strong></td>
+                <td>368272520</td>
+                <td>14.66 km</td>
+                <td>12.37 km</td>
+                <td>-103.7 min</td>
+                <td>92.5%</td>
+                <td>153</td>
+                <td><span class="badge badge-med">MEDIUM (0.481)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#57</strong></td>
+                <td><strong>COLONEL</strong></td>
+                <td>367053160</td>
+                <td>17.91 km</td>
+                <td>13.43 km</td>
+                <td>-7.5 min</td>
+                <td>94.4%</td>
+                <td>150</td>
+                <td><span class="badge badge-med">MEDIUM (0.476)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#58</strong></td>
+                <td><strong>GINGA PANTHER</strong></td>
+                <td>372792000</td>
+                <td>10.77 km</td>
+                <td>9.76 km</td>
+                <td>+313.9 min</td>
+                <td>31.3%</td>
+                <td>147</td>
+                <td><span class="badge badge-low">LOW (0.315)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#59</strong></td>
+                <td><strong>MISS KELLY</strong></td>
+                <td>367427270</td>
+                <td>14.31 km</td>
+                <td>12.37 km</td>
+                <td>-132.2 min</td>
+                <td>92.7%</td>
+                <td>146</td>
+                <td><span class="badge badge-med">MEDIUM (0.460)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#60</strong></td>
+                <td><strong>BRUTUS</strong></td>
+                <td>366812000</td>
+                <td>30.24 km</td>
+                <td>1.35 km</td>
+                <td>+268.9 min</td>
+                <td>38.2%</td>
+                <td>144</td>
+                <td><span class="badge badge-low">LOW (0.325)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#61</strong></td>
+                <td><strong>LLANO</strong></td>
+                <td>367506740</td>
+                <td>21.40 km</td>
+                <td>11.42 km</td>
+                <td>+63.8 min</td>
+                <td>60.8%</td>
+                <td>141</td>
+                <td><span class="badge badge-low">LOW (0.370)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#62</strong></td>
+                <td><strong>HOUSTON</strong></td>
+                <td>367796610</td>
+                <td>15.02 km</td>
+                <td>3.70 km</td>
+                <td>-474.0 min</td>
+                <td>95.2%</td>
+                <td>140</td>
+                <td><span class="badge badge-med">MEDIUM (0.447)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#63</strong></td>
+                <td><strong>GAS TAURUS</strong></td>
+                <td>636021228</td>
+                <td>11.15 km</td>
+                <td>8.49 km</td>
+                <td>+345.4 min</td>
+                <td>29.0%</td>
+                <td>139</td>
+                <td><span class="badge badge-low">LOW (0.293)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#64</strong></td>
+                <td><strong>MR ROLAND</strong></td>
+                <td>367561320</td>
+                <td>17.87 km</td>
+                <td>13.14 km</td>
+                <td>+77.7 min</td>
+                <td>91.7%</td>
+                <td>138</td>
+                <td><span class="badge badge-med">MEDIUM (0.432)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#65</strong></td>
+                <td><strong>THOR</strong></td>
+                <td>367300350</td>
+                <td>21.48 km</td>
+                <td>8.20 km</td>
+                <td>+135.7 min</td>
+                <td>51.4%</td>
+                <td>136</td>
+                <td><span class="badge badge-low">LOW (0.337)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#66</strong></td>
+                <td><strong>IWO JIMA</strong></td>
+                <td>367761630</td>
+                <td>20.73 km</td>
+                <td>12.50 km</td>
+                <td>-38.7 min</td>
+                <td>83.5%</td>
+                <td>135</td>
+                <td><span class="badge badge-med">MEDIUM (0.405)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#67</strong></td>
+                <td><strong>CAPT BAILEY</strong></td>
+                <td>367714330</td>
+                <td>23.38 km</td>
+                <td>4.00 km</td>
+                <td>-276.9 min</td>
+                <td>25.9%</td>
+                <td>133</td>
+                <td><span class="badge badge-low">LOW (0.274)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#68</strong></td>
+                <td><strong>FRANK JAHN</strong></td>
+                <td>367505030</td>
+                <td>19.72 km</td>
+                <td>12.15 km</td>
+                <td>+105.4 min</td>
+                <td>92.1%</td>
+                <td>132</td>
+                <td><span class="badge badge-med">MEDIUM (0.414)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#69</strong></td>
+                <td><strong>LT DICK DOWLING</strong></td>
+                <td>367773360</td>
+                <td>12.06 km</td>
+                <td>9.10 km</td>
+                <td>+353.8 min</td>
+                <td>33.4%</td>
+                <td>129</td>
+                <td><span class="badge badge-low">LOW (0.281)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#70</strong></td>
+                <td><strong>DOLPHIN</strong></td>
+                <td>367401290</td>
+                <td>19.92 km</td>
+                <td>8.15 km</td>
+                <td>-223.3 min</td>
+                <td>45.3%</td>
+                <td>124</td>
+                <td><span class="badge badge-low">LOW (0.294)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#71</strong></td>
+                <td><strong>TEXAS</strong></td>
+                <td>367626460</td>
+                <td>14.25 km</td>
+                <td>12.35 km</td>
+                <td>-224.3 min</td>
+                <td>92.4%</td>
+                <td>123</td>
+                <td><span class="badge badge-low">LOW (0.387)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#72</strong></td>
+                <td><strong>BETSY BLESSEY</strong></td>
+                <td>366806920</td>
+                <td>21.31 km</td>
+                <td>11.45 km</td>
+                <td>+123.8 min</td>
+                <td>38.5%</td>
+                <td>123</td>
+                <td><span class="badge badge-low">LOW (0.278)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#73</strong></td>
+                <td><strong>POSEIDON</strong></td>
+                <td>367754480</td>
+                <td>20.85 km</td>
+                <td>8.13 km</td>
+                <td>+246.0 min</td>
+                <td>41.9%</td>
+                <td>117</td>
+                <td><span class="badge badge-low">LOW (0.271)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#74</strong></td>
+                <td><strong>WAYNE BETHEL</strong></td>
+                <td>367672380</td>
+                <td>16.78 km</td>
+                <td>14.16 km</td>
+                <td>-149.9 min</td>
+                <td>93.7%</td>
+                <td>116</td>
+                <td><span class="badge badge-low">LOW (0.367)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#75</strong></td>
+                <td><strong>RONNIE ROGERS</strong></td>
+                <td>367113160</td>
+                <td>19.36 km</td>
+                <td>8.15 km</td>
+                <td>+312.5 min</td>
+                <td>92.4%</td>
+                <td>114</td>
+                <td><span class="badge badge-low">LOW (0.358)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#76</strong></td>
+                <td><strong>KENT</strong></td>
+                <td>367582850</td>
+                <td>16.55 km</td>
+                <td>13.60 km</td>
+                <td>-192.5 min</td>
+                <td>93.1%</td>
+                <td>113</td>
+                <td><span class="badge badge-low">LOW (0.357)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#77</strong></td>
+                <td><strong>BRIAN T</strong></td>
+                <td>366906130</td>
+                <td>12.21 km</td>
+                <td>10.03 km</td>
+                <td>-458.3 min</td>
+                <td>27.7%</td>
+                <td>113</td>
+                <td><span class="badge badge-low">LOW (0.236)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#78</strong></td>
+                <td><strong>AQUARAMA</strong></td>
+                <td>248620000</td>
+                <td>13.81 km</td>
+                <td>12.65 km</td>
+                <td>+302.7 min</td>
+                <td>32.9%</td>
+                <td>105</td>
+                <td><span class="badge badge-low">LOW (0.228)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#79</strong></td>
+                <td><strong>SABINE</strong></td>
+                <td>367509510</td>
+                <td>21.66 km</td>
+                <td>11.43 km</td>
+                <td>+200.5 min</td>
+                <td>92.8%</td>
+                <td>102</td>
+                <td><span class="badge badge-low">LOW (0.321)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#80</strong></td>
+                <td><strong>STORHOLMEN</strong></td>
+                <td>538005554</td>
+                <td>14.04 km</td>
+                <td>13.52 km</td>
+                <td>+300.9 min</td>
+                <td>31.9%</td>
+                <td>102</td>
+                <td><span class="badge badge-low">LOW (0.220)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#81</strong></td>
+                <td><strong>KRISTIN</strong></td>
+                <td>368011450</td>
+                <td>16.55 km</td>
+                <td>12.37 km</td>
+                <td>+281.9 min</td>
+                <td>34.2%</td>
+                <td>101</td>
+                <td><span class="badge badge-low">LOW (0.222)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#82</strong></td>
+                <td><strong>AYDEN PHILIP</strong></td>
+                <td>368131890</td>
+                <td>23.78 km</td>
+                <td>11.43 km</td>
+                <td>+176.0 min</td>
+                <td>83.0%</td>
+                <td>100</td>
+                <td><span class="badge badge-low">LOW (0.299)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#83</strong></td>
+                <td><strong>CHEMICAL ENTERPRISE</strong></td>
+                <td>563061100</td>
+                <td>24.57 km</td>
+                <td>4.46 km</td>
+                <td>+357.9 min</td>
+                <td>43.3%</td>
+                <td>100</td>
+                <td><span class="badge badge-low">LOW (0.234)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#84</strong></td>
+                <td><strong>WOODY RICHERSON</strong></td>
+                <td>367507070</td>
+                <td>21.27 km</td>
+                <td>19.73 km</td>
+                <td>+108.6 min</td>
+                <td>92.3%</td>
+                <td>98</td>
+                <td><span class="badge badge-low">LOW (0.308)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#85</strong></td>
+                <td><strong>MILAM</strong></td>
+                <td>366959840</td>
+                <td>22.55 km</td>
+                <td>20.99 km</td>
+                <td>-70.5 min</td>
+                <td>33.9%</td>
+                <td>98</td>
+                <td><span class="badge badge-low">LOW (0.214)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#86</strong></td>
+                <td><strong>BUBBA-JOHN</strong></td>
+                <td>367740310</td>
+                <td>16.43 km</td>
+                <td>14.03 km</td>
+                <td>-266.0 min</td>
+                <td>97.8%</td>
+                <td>97</td>
+                <td><span class="badge badge-low">LOW (0.313)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#87</strong></td>
+                <td><strong>ROMAN HAYS</strong></td>
+                <td>367439810</td>
+                <td>14.11 km</td>
+                <td>11.81 km</td>
+                <td>+357.1 min</td>
+                <td>92.9%</td>
+                <td>94</td>
+                <td><span class="badge badge-low">LOW (0.296)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#88</strong></td>
+                <td><strong>LYNNE</strong></td>
+                <td>367663560</td>
+                <td>19.35 km</td>
+                <td>11.45 km</td>
+                <td>+324.6 min</td>
+                <td>92.8%</td>
+                <td>89</td>
+                <td><span class="badge badge-low">LOW (0.280)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#89</strong></td>
+                <td><strong>MISS MONIE</strong></td>
+                <td>366962010</td>
+                <td>21.30 km</td>
+                <td>18.50 km</td>
+                <td>+148.5 min</td>
+                <td>90.8%</td>
+                <td>86</td>
+                <td><span class="badge badge-low">LOW (0.268)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#90</strong></td>
+                <td><strong>JOHN R WILLIAMS</strong></td>
+                <td>368344380</td>
+                <td>16.16 km</td>
+                <td>13.80 km</td>
+                <td>-324.3 min</td>
+                <td>92.2%</td>
+                <td>85</td>
+                <td><span class="badge badge-low">LOW (0.267)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#91</strong></td>
+                <td><strong>NEVA CALLAIS</strong></td>
+                <td>368095380</td>
+                <td>19.50 km</td>
+                <td>18.41 km</td>
+                <td>+215.3 min</td>
+                <td>37.1%</td>
+                <td>85</td>
+                <td><span class="badge badge-low">LOW (0.190)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#92</strong></td>
+                <td><strong>CHRISTINA BELCHER</strong></td>
+                <td>367138450</td>
+                <td>19.50 km</td>
+                <td>18.39 km</td>
+                <td>-229.0 min</td>
+                <td>47.1%</td>
+                <td>81</td>
+                <td><span class="badge badge-low">LOW (0.195)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#93</strong></td>
+                <td><strong>YASA VEGA</strong></td>
+                <td>538009345</td>
+                <td>20.51 km</td>
+                <td>8.36 km</td>
+                <td>-424.8 min</td>
+                <td>33.4%</td>
+                <td>80</td>
+                <td><span class="badge badge-low">LOW (0.174)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#94</strong></td>
+                <td><strong>EAGLE SAN JOSE</strong></td>
+                <td>248714000</td>
+                <td>17.61 km</td>
+                <td>16.78 km</td>
+                <td>+299.0 min</td>
+                <td>28.8%</td>
+                <td>79</td>
+                <td><span class="badge badge-low">LOW (0.166)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#95</strong></td>
+                <td><strong>CLIPPER ENYO</strong></td>
+                <td>257066990</td>
+                <td>17.47 km</td>
+                <td>16.99 km</td>
+                <td>+306.1 min</td>
+                <td>32.1%</td>
+                <td>76</td>
+                <td><span class="badge badge-low">LOW (0.164)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#96</strong></td>
+                <td><strong>CAPT THOMAS PAUL</strong></td>
+                <td>367780660</td>
+                <td>20.83 km</td>
+                <td>12.44 km</td>
+                <td>+327.2 min</td>
+                <td>43.8%</td>
+                <td>65</td>
+                <td><span class="badge badge-low">LOW (0.153)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#97</strong></td>
+                <td><strong>NEW MISTRAL</strong></td>
+                <td>256680000</td>
+                <td>16.51 km</td>
+                <td>15.02 km</td>
+                <td>+358.0 min</td>
+                <td>32.0%</td>
+                <td>65</td>
+                <td><span class="badge badge-low">LOW (0.140)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#98</strong></td>
+                <td><strong>TEXAS CITY</strong></td>
+                <td>367135470</td>
+                <td>21.27 km</td>
+                <td>19.76 km</td>
+                <td>+238.9 min</td>
+                <td>77.3%</td>
+                <td>61</td>
+                <td><span class="badge badge-low">LOW (0.177)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#99</strong></td>
+                <td><strong>G.BROOKS SPERRY</strong></td>
+                <td>368105620</td>
+                <td>19.71 km</td>
+                <td>18.63 km</td>
+                <td>-332.7 min</td>
+                <td>92.0%</td>
+                <td>50</td>
+                <td><span class="badge badge-low">LOW (0.157)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#100</strong></td>
+                <td><strong>JOE LOCHRICO</strong></td>
+                <td>367772180</td>
+                <td>19.71 km</td>
+                <td>18.45 km</td>
+                <td>-463.6 min</td>
+                <td>44.1%</td>
+                <td>34</td>
+                <td><span class="badge badge-low">LOW (0.080)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#101</strong></td>
+                <td><strong>DAVID B</strong></td>
+                <td>367730910</td>
+                <td>21.63 km</td>
+                <td>19.18 km</td>
+                <td>-462.4 min</td>
+                <td>45.8%</td>
+                <td>19</td>
+                <td><span class="badge badge-low">LOW (0.045)</span></td>
+            </tr>
+            
+
+            <tr>
+                <td><strong>#102</strong></td>
+                <td><strong>BOW OPTIMA</strong></td>
+                <td>257525000</td>
+                <td>23.47 km</td>
+                <td>15.13 km</td>
+                <td>-477.6 min</td>
+                <td>18.6%</td>
+                <td>18</td>
+                <td><span class="badge badge-low">LOW (0.035)</span></td>
+            </tr>
+            
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Geospatial Evidence Map</h2>
+            <iframe class="map-frame" src="maps/attribution_map.html"></iframe>
+        </div>
+
+        <div class="footer">
+            <h3>Disclaimers & Caveats</h3>
+            <ul>
+                <li><strong>Non-Definitive Association:</strong> Outputs represent candidate associations based on available AIS tracking data, not proof of legal liability.</li>
+                <li><strong>Dark Vessel Limitation:</strong> Vessels operating without active AIS transponders cannot be tracked or excluded via AIS data alone.</li>
+                <li><strong>Scientific vs Engineering Separation:</strong> Fréchet parity and DCPA/TCPA follow established maritime literature; multi-metric fusion uses Borda rank aggregation rather than arbitrary weighted sums.</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

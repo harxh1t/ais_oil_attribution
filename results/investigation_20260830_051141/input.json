@@ -1,0 +1,8 @@
+{
+  "lat": 28.04,
+  "lon": -88.04,
+  "time_utc": "2024-08-06 12:00:00 UTC",
+  "spread_km": 10.0,
+  "regime": "contemporaneous",
+  "regime_confirmed_by_user": true
+}

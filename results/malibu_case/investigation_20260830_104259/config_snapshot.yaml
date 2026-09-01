@@ -1,0 +1,30 @@
+ais_backend:
+  provider: marinecadastre
+  us_waters_only: true
+  geoparquet_base_url: null
+search:
+  spatial_radius_km: 50
+  temporal_window_before_hours: 8
+  temporal_window_after_hours: 6
+interpolation:
+  linear_max_gap_minutes: 5
+  spline_max_gap_minutes: 120
+regime_classification:
+  typical_current_speed_km_per_hour: 1.8
+  require_human_confirmation: true
+candidate_filtering:
+  hausdorff_prefilter_km: 25
+  min_sog_knots_to_exclude_anchored: 0.5
+attribution:
+  ranking_method: borda_count
+confidence_labels:
+  high_min_score: 0.75
+  medium_min_score: 0.4
+drift_backtracking:
+  model: openoil
+  oil_type: GENERIC DIESEL
+  seed_number: 2000
+  seed_radius_m: 1000
+cerulean_api:
+  base_url: https://api.cerulean.skytruth.org
+  coverage_start_date: '2023-01-01'

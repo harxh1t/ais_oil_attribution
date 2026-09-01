@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIS Oil-Spill Attribution Report - investigation_20260830_053640</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --border: #334155;
+            --text: #f8fafc;
+            --muted: #94a3b8;
+            --accent: #38bdf8;
+            --gold: #f59e0b;
+            --green: #10b981;
+            --red: #ef4444;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1, h2, h3 {
+            color: var(--text);
+            margin-top: 0;
+        }
+        .header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .highlight-card {
+            border-left: 4px solid var(--accent);
+        }
+        .grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+        .grid-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+        .grid-4 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .stat-val {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-top: 0.25rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        th {
+            background-color: rgba(0, 0, 0, 0.2);
+            color: var(--muted);
+            font-weight: 600;
+        }
+        tr:hover {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.6rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .badge-high { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #059669; }
+        .badge-med { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid #d97706; }
+        .badge-low { background: rgba(148, 163, 184, 0.2); color: #cbd5e1; border: 1px solid #64748b; }
+        .alert {
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+        }
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid #d97706;
+            color: #fbbf24;
+        }
+        .evidence-box {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+        }
+        .map-frame {
+            width: 100%;
+            height: 520px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+        .footer {
+            font-size: 0.85rem;
+            color: var(--muted);
+            margin-top: 3rem;
+            border-top: 1px solid var(--border);
+            padding-top: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>AIS + Satellite Oil-Spill Vessel Attribution Report</h1>
+            <p style="color: var(--muted); margin-bottom: 0;">Investigation ID: <code>investigation_20260830_053640</code></p>
+        </div>
+
+        
+
+        <div class="card">
+            <h2>Incident Parameters & Regime Classification</h2>
+            <div class="grid grid-4">
+                <div>
+                    <div class="stat-label">Observation Location</div>
+                    <div class="stat-val">(34.0169, -118.6631)</div>
+                </div>
+                <div>
+                    <div class="stat-label">Observation Time (UTC)</div>
+                    <div class="stat-val">2024-08-06 01:50:00 UTC</div>
+                </div>
+                <div>
+                    <div class="stat-label">Tightest Spread Uncertainty</div>
+                    <div class="stat-val">~12.00 km</div>
+                </div>
+                <div>
+                    <div class="stat-label">Analysis Regime</div>
+                    <div class="stat-val"><code>DELAYED</code></div>
+                </div>
+            </div>
+            <div class="evidence-box" style="margin-top: 1rem;">
+                <strong>Regime Rationale:</strong> User explicitly specified 'delayed' regime via CLI argument.
+            </div>
+        </div>
+
+        
+        <div class="card highlight-card">
+            <h3>No Vessel Candidate Identified</h3>
+            <p>No transiting AIS-broadcasting vessels correlated with the spill geometry in the search window. This indicates a possible non-broadcasting ("dark") vessel or a fixed infrastructure / subsea source.</p>
+        </div>
+        
+
+        <div class="card">
+            <h2>Candidate Vessels Attribution Table</h2>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Vessel Name</th>
+                            <th>MMSI</th>
+                            <th>Fréchet Parity</th>
+                            <th>DCPA</th>
+                            <th>TCPA</th>
+                            <th>AIS Coverage</th>
+                            <th>Borda Score</th>
+                            <th>Confidence</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td colspan='9' class='text-center'>No candidate vessels identified.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Geospatial Evidence Map</h2>
+            <iframe class="map-frame" src="maps/attribution_map.html"></iframe>
+        </div>
+
+        <div class="footer">
+            <h3>Disclaimers & Caveats</h3>
+            <ul>
+                <li><strong>Non-Definitive Association:</strong> Outputs represent candidate associations based on available AIS tracking data, not proof of legal liability.</li>
+                <li><strong>Dark Vessel Limitation:</strong> Vessels operating without active AIS transponders cannot be tracked or excluded via AIS data alone.</li>
+                <li><strong>Scientific vs Engineering Separation:</strong> Fréchet parity and DCPA/TCPA follow established maritime literature; multi-metric fusion uses Borda rank aggregation rather than arbitrary weighted sums.</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ais-oil-attribution"
+version = "0.1.0"
+description = "AIS + Satellite Oil-Spill Vessel Attribution System"
+authors = [{ name = "Antigravity Research Team" }]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "duckdb>=0.10",
+    "pandas>=2.0",
+    "geopandas>=0.14",
+    "shapely>=2.0",
+    "geopy>=2.4",
+    "pyarrow>=14.0",
+    "folium>=0.15",
+    "numpy>=1.26",
+    "matplotlib>=3.8",
+    "frechetdist>=0.6",
+    "scipy>=1.11",
+    "pyyaml>=6.0",
+    "click>=8.1",
+    "requests>=2.31",
+    "python-dateutil>=2.8",
+]
+
+[project.scripts]
+ais-oil-investigate = "ais_oil_attribution.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-v"

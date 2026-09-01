@@ -1,0 +1,6 @@
+{
+  "regime": "delayed",
+  "rationale": "User explicitly specified 'delayed' regime via CLI argument.",
+  "warning": "WARNING: Location (28.7998, -88.3943) matches Deepwater Horizon / Macondo Well MC252. Subsea point-source blowout (2010), fixed infrastructure rather than moving vessel discharge. Applying vessel-attribution logic to a fixed platform blowout will produce misleading results.",
+  "is_platform_blowout_suspect": true
+}

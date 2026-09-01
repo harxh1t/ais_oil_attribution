@@ -1,0 +1,75 @@
+{
+  "investigation_id": "investigation_20260830_051141",
+  "input": {
+    "lat": 28.04,
+    "lon": -88.04,
+    "time_utc": "2024-08-06 12:00:00 UTC",
+    "spread_km": 10.0,
+    "regime": "contemporaneous",
+    "regime_confirmed_by_user": true
+  },
+  "candidates": [
+    {
+      "rank": 1,
+      "mmsi": 111111111,
+      "vessel_name": "MATCH_VESSEL",
+      "evidence": {
+        "frechet_km": 2.9584227552426157,
+        "dcpa_km": 0.1183359395707946,
+        "tcpa_minutes": 38.0,
+        "coverage_completeness": 0.21126760563380287
+      },
+      "borda_score": 8,
+      "confidence_score": 0.5383411580594679,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 2.96 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 0.12 km at +38.0 min",
+        "21.1% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 2,
+      "mmsi": 333333333,
+      "vessel_name": "CROSSING_VESSEL",
+      "evidence": {
+        "frechet_km": 21.10190763934804,
+        "dcpa_km": 0.19650643325076095,
+        "tcpa_minutes": 27.0,
+        "coverage_completeness": 0.21126760563380287
+      },
+      "borda_score": 6,
+      "confidence_score": 0.403755868544601,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 21.10 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 0.20 km at +27.0 min",
+        "21.1% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 3,
+      "mmsi": 222222222,
+      "vessel_name": "PARALLEL_VESSEL",
+      "evidence": {
+        "frechet_km": 4.912295449812696,
+        "dcpa_km": 3.672685931558802,
+        "tcpa_minutes": 39.0,
+        "coverage_completeness": 0.21126760563380287
+      },
+      "borda_score": 4,
+      "confidence_score": 0.26917057902973396,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 4.91 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 3.67 km at +39.0 min",
+        "21.1% real AIS points (un-interpolated) in observation window"
+      ]
+    }
+  ],
+  "caveats": [
+    "This is a candidate association based on available AIS data, not proof of responsibility.",
+    "AIS coverage is incomplete; a non-broadcasting ('dark') vessel cannot be ruled out.",
+    "No peer-reviewed formula exists for combining these signals into a single probability; Borda rank aggregation was used instead of an arbitrary weighted sum."
+  ]
+}

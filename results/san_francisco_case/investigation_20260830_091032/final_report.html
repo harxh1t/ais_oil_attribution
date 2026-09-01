@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIS Oil-Spill Attribution Dashboard - investigation_20260830_091032</title>
+    <style>
+        :root {
+            --bg: #0b0f19;
+            --surface: #131b2e;
+            --surface-hover: #1c2640;
+            --card-bg: #162036;
+            --border: #22304d;
+            --text: #f8fafc;
+            --muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.15);
+            --gold: #f59e0b;
+            --green: #10b981;
+            --red: #ef4444;
+            --purple: #8b5cf6;
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 1.5rem;
+            line-height: 1.5;
+        }
+        .container {
+            max-width: 1360px;
+            margin: 0 auto;
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 1.25rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .brand-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .brand-pill {
+            background: var(--accent-glow);
+            color: var(--accent);
+            padding: 3px 10px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+        .action-btns {
+            display: flex;
+            gap: 10px;
+        }
+        .btn {
+            background: var(--surface);
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn:hover {
+            background: var(--surface-hover);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        .btn-primary {
+            background: #0284c7;
+            border-color: #0369a1;
+            color: #ffffff;
+        }
+        .btn-primary:hover {
+            background: #0369a1;
+            color: #ffffff;
+        }
+        .grid { display: grid; }
+        .grid-2 { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+        .grid-3 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+        .grid-4 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+        
+        .kpi-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .kpi-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.15rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+        }
+        .stat-val {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-top: 0.35rem;
+        }
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+        }
+        .card h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-top: 0;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .map-wrapper {
+            position: relative;
+            width: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .map-frame {
+            width: 100%;
+            height: 560px;
+            border: none;
+            display: block;
+        }
+        .map-tip {
+            background: rgba(15, 23, 42, 0.85);
+            padding: 8px 12px;
+            font-size: 0.8rem;
+            color: var(--muted);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .evidence-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.25rem;
+        }
+        .evidence-card.primary-evidence {
+            border: 2px solid #ef4444;
+            background: rgba(239, 68, 68, 0.04);
+        }
+        .evidence-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        .rank-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            font-weight: 800;
+            font-size: 0.8rem;
+        }
+        .rank-1 { background: #dc2626; color: #ffffff; }
+        .rank-2 { background: #2563eb; color: #ffffff; }
+        .rank-3 { background: #7c3aed; color: #ffffff; }
+        .rank-4 { background: #475569; color: #ffffff; }
+        
+        .telemetry-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 1rem;
+            background: rgba(0,0,0,0.25);
+            padding: 10px;
+            border-radius: 6px;
+        }
+        .telemetry-item {
+            font-size: 0.8rem;
+        }
+        .tel-label { color: var(--muted); font-size: 0.72rem; }
+        .tel-val { font-weight: 700; color: #ffffff; font-size: 0.95rem; }
+        
+        .evidence-points {
+            font-size: 0.82rem;
+            color: #cbd5e1;
+            line-height: 1.5;
+        }
+        .ev-bullet {
+            margin-bottom: 6px;
+        }
+        
+        .search-toolbar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .search-input {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            min-width: 260px;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        .filter-btn-group {
+            display: flex;
+            gap: 6px;
+        }
+        .filter-btn {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--muted);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .filter-btn.active {
+            background: var(--accent);
+            color: #0b0f19;
+            border-color: var(--accent);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+        }
+        th, td {
+            padding: 10px 14px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        th {
+            background: rgba(0, 0, 0, 0.35);
+            color: var(--muted);
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        tr:hover td {
+            background-color: var(--surface-hover);
+        }
+        .mono-stat {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+        .progress-bar-bg {
+            width: 60px;
+            height: 6px;
+            background: #334155;
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 9999px;
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 8px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+        }
+        .badge-high { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #059669; }
+        .badge-med { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid #d97706; }
+        .badge-low { background: rgba(148, 163, 184, 0.15); color: #94a3b8; border: 1px solid #475569; }
+        .badge-borda { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
+        
+        .alert {
+            padding: 1rem 1.25rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.12);
+            border: 1px solid #d97706;
+            color: #fef3c7;
+        }
+        .footer {
+            font-size: 0.8rem;
+            color: var(--muted);
+            margin-top: 2.5rem;
+            border-top: 1px solid var(--border);
+            padding-top: 1.5rem;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="navbar">
+            <div>
+                <div class="brand-title">
+                    AIS + Satellite Oil-Spill Vessel Attribution
+                    <span class="brand-pill">FORENSIC SUITE</span>
+                </div>
+                <div style="font-size: 0.8rem; color: var(--muted); margin-top: 4px;">
+                    Investigation ID: <code>investigation_20260830_091032</code> | Timestamp: <code>2024-08-06 08:00:00 UTC</code>
+                </div>
+            </div>
+            <div class="action-btns">
+                <a href="workstation.html" class="btn" style="background: rgba(56, 189, 248, 0.2); border: 1px solid var(--accent); color: #fff; font-weight: 700;">🚀 Launch Forensic Workstation</a>
+                <a href="attribution.json" target="_blank" class="btn">📄 Raw JSON</a>
+                <a href="methodology.md" target="_blank" class="btn">🔬 Methodology</a>
+                <button onclick="window.print()" class="btn btn-primary">🖨️ Export PDF / Print</button>
+            </div>
+        </div>
+
+        
+
+        <!-- Top KPI Row -->
+        <div class="kpi-row">
+            <div class="kpi-box">
+                <div class="stat-label">Observation Location</div>
+                <div class="stat-val">37.7800&deg;, -122.6500&deg;</div>
+                <div style="font-size: 0.75rem; color: var(--muted); margin-top: 4px;">Spread: ~8.00 km radius</div>
+            </div>
+            <div class="kpi-box">
+                <div class="stat-label">Analysis Regime</div>
+                <div class="stat-val"><span style="color: var(--accent);">CONTEMPORANEOUS</span></div>
+                <div style="font-size: 0.75rem; color: var(--muted); margin-top: 4px;">Dual-regime physics switch</div>
+            </div>
+            <div class="kpi-box">
+                <div class="stat-label">Vessels Tracked</div>
+                <div class="stat-val">32 <span style="font-size: 0.85rem; font-weight: normal; color: var(--muted);">candidates</span></div>
+                <div style="font-size: 0.75rem; color: #34d399; margin-top: 4px;">2 High, 16 Med, 14 Low</div>
+            </div>
+            <div class="kpi-box">
+                <div class="stat-label">Top Identified Suspect</div>
+                <div class="stat-val" style="font-size: 1.15rem; color: #f87171;">
+                    CALIFORNIA
+                </div>
+                <div style="font-size: 0.75rem; color: var(--muted); margin-top: 4px;">
+                    MMSI: 366808340 | Parity: 19.52 km
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Map Panel -->
+        <div class="card">
+            <h2>
+                <span>🗺️ Geospatial Evidence Map & Telemetry</span>
+                <span style="font-size: 0.8rem; font-weight: normal; color: var(--muted);">Multi-Layer Maritime / Satellite Views</span>
+            </h2>
+            <div class="map-wrapper">
+                <iframe class="map-frame" src="maps/attribution_map.html"></iframe>
+                <div class="map-tip">
+                    <span>💡 <strong>Interactive Tips:</strong> Use layer control (top-right) to toggle between Maritime Ocean and Satellite imagery. Click vessel tracks for telemetry.</span>
+                    <span><a href="maps/attribution_map.html" target="_blank" style="color: var(--accent); text-decoration: none;">↗ Open Standalone Map</a></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Primary Candidates Evidence Breakdown -->
+        
+        <div class="card">
+            <h2>Primary Candidate Vessels & Telemetry Evidence</h2>
+            <div class="grid grid-3" style="gap: 1.25rem;">
+                
+            <div class="evidence-card primary-evidence">
+                <div class="evidence-header">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span class="rank-badge rank-1">#1</span>
+                        <div>
+                            <div style="font-size: 1.1rem; font-weight: 700; color: #F8FAFC;">CALIFORNIA</div>
+                            <div style="font-size: 0.8rem; color: #94A3B8;">MMSI: 366808340</div>
+                        </div>
+                    </div>
+                    <span class="badge badge-high">HIGH (0.758)</span>
+                </div>
+                
+                <div class="telemetry-grid">
+                    <div class="telemetry-item">
+                        <div class="tel-label">Fréchet Parity</div>
+                        <div class="tel-val">19.52 km</div>
+                    </div>
+                    <div class="telemetry-item">
+                        <div class="tel-label">Closest Approach (DCPA)</div>
+                        <div class="tel-val">1.89 km</div>
+                    </div>
+                    <div class="telemetry-item">
+                        <div class="tel-label">CPA Time Offset</div>
+                        <div class="tel-val">-118.4 min</div>
+                    </div>
+                    <div class="telemetry-item">
+                        <div class="tel-label">AIS Signal Integrity</div>
+                        <div class="tel-val">58.3%</div>
+                    </div>
+                </div>
+
+                <div class="evidence-points">
+                    <div class="ev-bullet">🔹 <strong>Track Parity:</strong> Discrete Fréchet similarity of 19.52 km against observed slick centerline.</div>
+                    <div class="ev-bullet">🔹 <strong>Kinematics:</strong> Reached closest point of approach of 1.89 km at 118.4 min prior to observation.</div>
+                    <div class="ev-bullet">🔹 <strong>Broadcast Completeness:</strong> 58.3% authentic un-interpolated AIS transmissions.</div>
+                </div>
+            </div>
+            
+            <div class="evidence-card ">
+                <div class="evidence-header">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span class="rank-badge rank-2">#2</span>
+                        <div>
+                            <div style="font-size: 1.1rem; font-weight: 700; color: #F8FAFC;">OLD BLUE</div>
+                            <div style="font-size: 0.8rem; color: #94A3B8;">MMSI: 366981360</div>
+                        </div>
+                    </div>
+                    <span class="badge badge-high">HIGH (0.854)</span>
+                </div>
+                
+                <div class="telemetry-grid">
+                    <div class="telemetry-item">
+                        <div class="tel-label">Fréchet Parity</div>
+                        <div class="tel-val">21.37 km</div>
+                    </div>
+                    <div class="telemetry-item">
+                        <div class="tel-label">Closest Approach (DCPA)</div>
+                        <div class="tel-val">16.96 km</div>
+                    </div>
+                    <div class="telemetry-item">
+                        <div class="tel-label">CPA Time Offset</div>
+                        <div class="tel-val">+23.6 min</div>
+                    </div>
+                    <div class="telemetry-item">
+                        <div class="tel-label">AIS Signal Integrity</div>
+                        <div class="tel-val">100.0%</div>
+                    </div>
+                </div>
+
+                <div class="evidence-points">
+                    <div class="ev-bullet">🔹 <strong>Track Parity:</strong> Discrete Fréchet similarity of 21.37 km against observed slick centerline.</div>
+                    <div class="ev-bullet">🔹 <strong>Kinematics:</strong> Reached closest point of approach of 16.96 km at 23.6 min after observation.</div>
+                    <div class="ev-bullet">🔹 <strong>Broadcast Completeness:</strong> 100.0% authentic un-interpolated AIS transmissions.</div>
+                </div>
+            </div>
+            
+            <div class="evidence-card ">
+                <div class="evidence-header">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span class="rank-badge rank-3">#3</span>
+                        <div>
+                            <div style="font-size: 1.1rem; font-weight: 700; color: #F8FAFC;">OSCAR TANGO</div>
+                            <div style="font-size: 0.8rem; color: #94A3B8;">MMSI: 338338043</div>
+                        </div>
+                    </div>
+                    <span class="badge badge-med">MEDIUM (0.724)</span>
+                </div>
+                
+                <div class="telemetry-grid">
+                    <div class="telemetry-item">
+                        <div class="tel-label">Fréchet Parity</div>
+                        <div class="tel-val">21.58 km</div>
+                    </div>
+                    <div class="telemetry-item">
+                        <div class="tel-label">Closest Approach (DCPA)</div>
+                        <div class="tel-val">11.33 km</div>
+                    </div>
+                    <div class="telemetry-item">
+                        <div class="tel-label">CPA Time Offset</div>
+                        <div class="tel-val">+278.1 min</div>
+                    </div>
+                    <div class="telemetry-item">
+                        <div class="tel-label">AIS Signal Integrity</div>
+                        <div class="tel-val">90.4%</div>
+                    </div>
+                </div>
+
+                <div class="evidence-points">
+                    <div class="ev-bullet">🔹 <strong>Track Parity:</strong> Discrete Fréchet similarity of 21.58 km against observed slick centerline.</div>
+                    <div class="ev-bullet">🔹 <strong>Kinematics:</strong> Reached closest point of approach of 11.33 km at 278.1 min after observation.</div>
+                    <div class="ev-bullet">🔹 <strong>Broadcast Completeness:</strong> 90.4% authentic un-interpolated AIS transmissions.</div>
+                </div>
+            </div>
+            
+            </div>
+        </div>
+        
+
+        <!-- Drift Backtracking Section (if applicable) -->
+        
+
+        <!-- Interactive Candidate Table -->
+        <div class="card">
+            <h2>
+                <span>📋 Ranked Candidate Vessel Attribution Matrix</span>
+                <span style="font-size: 0.8rem; font-weight: normal; color: var(--muted);">Borda Count Rank Aggregation</span>
+            </h2>
+
+            <div class="search-toolbar">
+                <input type="text" id="vesselSearch" class="search-input" placeholder="🔍 Search vessel name, MMSI, or callsign..." onkeyup="filterTable()">
+                <div class="filter-btn-group">
+                    <button class="filter-btn active" onclick="setConfidenceFilter('ALL', this)">All (32)</button>
+                    <button class="filter-btn" onclick="setConfidenceFilter('HIGH', this)">High (2)</button>
+                    <button class="filter-btn" onclick="setConfidenceFilter('MEDIUM', this)">Medium (16)</button>
+                    <button class="filter-btn" onclick="setConfidenceFilter('LOW', this)">Low (14)</button>
+                </div>
+            </div>
+
+            <div style="overflow-x: auto;">
+                <table id="candidateTable">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Vessel Info</th>
+                            <th>Fréchet Parity</th>
+                            <th>DCPA (Distance)</th>
+                            <th>TCPA (Time Offset)</th>
+                            <th>AIS Completeness</th>
+                            <th>Borda Score</th>
+                            <th>Attribution Confidence</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+            <tr data-conf="HIGH" data-vessel="CALIFORNIA" data-mmsi="366808340">
+                <td><span class="rank-badge rank-1">#1</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">CALIFORNIA</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 366808340</div>
+                </td>
+                <td><span class="mono-stat">19.52 km</span></td>
+                <td><span class="mono-stat">1.89 km</span></td>
+                <td><span class="mono-stat">-118.4 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 58%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">58.3%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">92 pts</span></td>
+                <td><span class="badge badge-high">HIGH (0.758)</span></td>
+            </tr>
+            
+
+            <tr data-conf="HIGH" data-vessel="OLD BLUE" data-mmsi="366981360">
+                <td><span class="rank-badge rank-2">#2</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">OLD BLUE</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 366981360</div>
+                </td>
+                <td><span class="mono-stat">21.37 km</span></td>
+                <td><span class="mono-stat">16.96 km</span></td>
+                <td><span class="mono-stat">+23.6 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">100.0%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">82 pts</span></td>
+                <td><span class="badge badge-high">HIGH (0.854)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="OSCAR TANGO" data-mmsi="338338043">
+                <td><span class="rank-badge rank-3">#3</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">OSCAR TANGO</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 338338043</div>
+                </td>
+                <td><span class="mono-stat">21.58 km</span></td>
+                <td><span class="mono-stat">11.33 km</span></td>
+                <td><span class="mono-stat">+278.1 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 90%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">90.4%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">73 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.724)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="BASS-TUB" data-mmsi="368557000">
+                <td><span class="rank-badge rank-4">#4</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">BASS-TUB</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 368557000</div>
+                </td>
+                <td><span class="mono-stat">24.69 km</span></td>
+                <td><span class="mono-stat">7.86 km</span></td>
+                <td><span class="mono-stat">+140.6 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 65%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">65.2%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">68 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.585)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="BELLA VITA" data-mmsi="338197303">
+                <td><span class="rank-badge rank-4">#5</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">BELLA VITA</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 338197303</div>
+                </td>
+                <td><span class="mono-stat">22.04 km</span></td>
+                <td><span class="mono-stat">17.21 km</span></td>
+                <td><span class="mono-stat">-163.4 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 36%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">35.9%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">68 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.481)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="RAGAZZA" data-mmsi="338493843">
+                <td><span class="rank-badge rank-4">#6</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">RAGAZZA</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 338493843</div>
+                </td>
+                <td><span class="mono-stat">21.65 km</span></td>
+                <td><span class="mono-stat">16.53 km</span></td>
+                <td><span class="mono-stat">+231.9 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 17%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">16.8%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">68 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.414)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="NOW OR NEVER" data-mmsi="338440371">
+                <td><span class="rank-badge rank-4">#7</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">NOW OR NEVER</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 338440371</div>
+                </td>
+                <td><span class="mono-stat">22.01 km</span></td>
+                <td><span class="mono-stat">17.17 km</span></td>
+                <td><span class="mono-stat">-199.4 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 38%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">38.5%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">66 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.476)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="FIREBOAT LIBERTY" data-mmsi="338159944">
+                <td><span class="rank-badge rank-4">#8</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">FIREBOAT LIBERTY</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 338159944</div>
+                </td>
+                <td><span class="mono-stat">22.07 km</span></td>
+                <td><span class="mono-stat">16.62 km</span></td>
+                <td><span class="mono-stat">+211.2 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 54%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">53.9%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">65 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.521)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="DREAMER" data-mmsi="338181286">
+                <td><span class="rank-badge rank-4">#9</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">DREAMER</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 338181286</div>
+                </td>
+                <td><span class="mono-stat">22.19 km</span></td>
+                <td><span class="mono-stat">17.36 km</span></td>
+                <td><span class="mono-stat">+159.1 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 33%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">33.3%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">64 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.444)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="ENHYDRA" data-mmsi="368052630">
+                <td><span class="rank-badge rank-4">#10</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">ENHYDRA</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 368052630</div>
+                </td>
+                <td><span class="mono-stat">25.35 km</span></td>
+                <td><span class="mono-stat">16.09 km</span></td>
+                <td><span class="mono-stat">+140.3 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 4%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">4.1%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">58 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.314)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="WESTIE" data-mmsi="338467397">
+                <td><span class="rank-badge rank-4">#11</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">WESTIE</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 338467397</div>
+                </td>
+                <td><span class="mono-stat">22.27 km</span></td>
+                <td><span class="mono-stat">18.22 km</span></td>
+                <td><span class="mono-stat">-169.6 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 36%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">36.0%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">57 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.404)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="GOLDEN GATE" data-mmsi="367118570">
+                <td><span class="rank-badge rank-4">#12</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">GOLDEN GATE</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367118570</div>
+                </td>
+                <td><span class="mono-stat">24.55 km</span></td>
+                <td><span class="mono-stat">18.25 km</span></td>
+                <td><span class="mono-stat">+124.9 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 90%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">90.0%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">54 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.534)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="ESKENAS" data-mmsi="338253266">
+                <td><span class="rank-badge rank-4">#13</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">ESKENAS</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 338253266</div>
+                </td>
+                <td><span class="mono-stat">22.65 km</span></td>
+                <td><span class="mono-stat">18.61 km</span></td>
+                <td><span class="mono-stat">-171.6 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 29%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">29.4%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">51 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.344)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="ROYAL PRINCE" data-mmsi="366975760">
+                <td><span class="rank-badge rank-4">#14</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">ROYAL PRINCE</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 366975760</div>
+                </td>
+                <td><span class="mono-stat">24.91 km</span></td>
+                <td><span class="mono-stat">15.53 km</span></td>
+                <td><span class="mono-stat">+298.7 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">100.0%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">50 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.521)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="SONOMA" data-mmsi="366969970">
+                <td><span class="rank-badge rank-4">#15</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">SONOMA</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 366969970</div>
+                </td>
+                <td><span class="mono-stat">27.18 km</span></td>
+                <td><span class="mono-stat">17.32 km</span></td>
+                <td><span class="mono-stat">+109.8 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">100.0%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">49 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.510)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="S/V RAPID" data-mmsi="338357651">
+                <td><span class="rank-badge rank-4">#16</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">S/V RAPID</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 338357651</div>
+                </td>
+                <td><span class="mono-stat">24.54 km</span></td>
+                <td><span class="mono-stat">16.36 km</span></td>
+                <td><span class="mono-stat">+330.1 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 43%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">42.7%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">49 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.364)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="HARBOR EMPEROR" data-mmsi="366985270">
+                <td><span class="rank-badge rank-4">#17</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">HARBOR EMPEROR</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 366985270</div>
+                </td>
+                <td><span class="mono-stat">25.23 km</span></td>
+                <td><span class="mono-stat">15.58 km</span></td>
+                <td><span class="mono-stat">+295.6 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 68%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">67.7%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">48 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.419)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="BAY MONARCH" data-mmsi="366985310">
+                <td><span class="rank-badge rank-4">#18</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">BAY MONARCH</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 366985310</div>
+                </td>
+                <td><span class="mono-stat">22.25 km</span></td>
+                <td><span class="mono-stat">17.33 km</span></td>
+                <td><span class="mono-stat">+334.7 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 94%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">93.8%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">47 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.474)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="ANDIAMO" data-mmsi="503012400">
+                <td><span class="rank-badge rank-4">#19</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">ANDIAMO</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 503012400</div>
+                </td>
+                <td><span class="mono-stat">25.82 km</span></td>
+                <td><span class="mono-stat">9.70 km</span></td>
+                <td><span class="mono-stat">+326.5 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 95%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">94.8%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">45 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.457)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="HARBOR PRINCESS" data-mmsi="366975750">
+                <td><span class="rank-badge rank-4">#20</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">HARBOR PRINCESS</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 366975750</div>
+                </td>
+                <td><span class="mono-stat">24.88 km</span></td>
+                <td><span class="mono-stat">15.53 km</span></td>
+                <td><span class="mono-stat">+345.8 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">100.0%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">43 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.448)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="MARIN" data-mmsi="366969980">
+                <td><span class="rank-badge rank-4">#21</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">MARIN</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 366969980</div>
+                </td>
+                <td><span class="mono-stat">27.19 km</span></td>
+                <td><span class="mono-stat">19.28 km</span></td>
+                <td><span class="mono-stat">+13.3 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 99%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">99.5%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">43 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.447)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="NEXTCHAPTER" data-mmsi="338402907">
+                <td><span class="rank-badge rank-4">#22</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">NEXTCHAPTER</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 338402907</div>
+                </td>
+                <td><span class="mono-stat">24.32 km</span></td>
+                <td><span class="mono-stat">19.46 km</span></td>
+                <td><span class="mono-stat">-185.6 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 33%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">32.7%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">42 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.290)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="SURPRISE!" data-mmsi="368060960">
+                <td><span class="rank-badge rank-4">#23</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">SURPRISE!</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 368060960</div>
+                </td>
+                <td><span class="mono-stat">32.22 km</span></td>
+                <td><span class="mono-stat">7.19 km</span></td>
+                <td><span class="mono-stat">+337.8 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 48%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">48.3%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">39 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.301)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="SORPRESA" data-mmsi="338167269">
+                <td><span class="rank-badge rank-4">#24</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">SORPRESA</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 338167269</div>
+                </td>
+                <td><span class="mono-stat">22.24 km</span></td>
+                <td><span class="mono-stat">17.40 km</span></td>
+                <td><span class="mono-stat">-433.2 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 5%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">5.0%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">39 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.213)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="EXPRESSO" data-mmsi="368311420">
+                <td><span class="rank-badge rank-4">#25</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">EXPRESSO</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 368311420</div>
+                </td>
+                <td><span class="mono-stat">22.30 km</span></td>
+                <td><span class="mono-stat">18.27 km</span></td>
+                <td><span class="mono-stat">+347.4 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 61%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">60.9%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">37 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.310)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="DEL NORTE" data-mmsi="366990520">
+                <td><span class="rank-badge rank-4">#26</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">DEL NORTE</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 366990520</div>
+                </td>
+                <td><span class="mono-stat">27.03 km</span></td>
+                <td><span class="mono-stat">19.72 km</span></td>
+                <td><span class="mono-stat">-34.8 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 94%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">93.7%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">36 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.363)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="SAILOR DOG" data-mmsi="338170143">
+                <td><span class="rank-badge rank-4">#27</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">SAILOR DOG</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 338170143</div>
+                </td>
+                <td><span class="mono-stat">24.62 km</span></td>
+                <td><span class="mono-stat">19.44 km</span></td>
+                <td><span class="mono-stat">+333.4 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 58%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">58.2%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">30 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.247)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="ANGEL ISLAND" data-mmsi="367002980">
+                <td><span class="rank-badge rank-4">#28</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">ANGEL ISLAND</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367002980</div>
+                </td>
+                <td><span class="mono-stat">24.75 km</span></td>
+                <td><span class="mono-stat">19.92 km</span></td>
+                <td><span class="mono-stat">+258.0 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 99%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">99.3%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">29 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.301)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="FANCY" data-mmsi="338493781">
+                <td><span class="rank-badge rank-4">#29</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">FANCY</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 338493781</div>
+                </td>
+                <td><span class="mono-stat">24.27 km</span></td>
+                <td><span class="mono-stat">19.41 km</span></td>
+                <td><span class="mono-stat">-391.1 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 37%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">37.0%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">29 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.207)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="WATER WITCH" data-mmsi="338241391">
+                <td><span class="rank-badge rank-4">#30</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">WATER WITCH</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 338241391</div>
+                </td>
+                <td><span class="mono-stat">24.30 km</span></td>
+                <td><span class="mono-stat">19.45 km</span></td>
+                <td><span class="mono-stat">-388.2 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 17%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">17.1%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">27 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.165)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="HORNBLOWER HYBRID" data-mmsi="367380120">
+                <td><span class="rank-badge rank-4">#31</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">HORNBLOWER HYBRID</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367380120</div>
+                </td>
+                <td><span class="mono-stat">25.72 km</span></td>
+                <td><span class="mono-stat">19.67 km</span></td>
+                <td><span class="mono-stat">+299.2 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">100.0%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">21 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.219)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="KITTY KAT" data-mmsi="367310560">
+                <td><span class="rank-badge rank-4">#32</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">KITTY KAT</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367310560</div>
+                </td>
+                <td><span class="mono-stat">25.47 km</span></td>
+                <td><span class="mono-stat">19.51 km</span></td>
+                <td><span class="mono-stat">+359.5 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 46%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">45.7%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">15 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.114)</span></td>
+            </tr>
+            
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Disclaimers & Methodology -->
+        <div class="footer">
+            <h3 style="color: #ffffff; margin-top: 0; font-size: 0.95rem;">Forensic Integrity & Disclaimers</h3>
+            <ul>
+                <li><strong>Attribution vs Proof:</strong> Vessel rankings reflect algorithmic spatial-temporal correlation and trajectory shape similarity against the observed slick, not definitive legal proof of discharge.</li>
+                <li><strong>Non-Broadcasting (Dark) Vessels:</strong> If an uncooperative vessel transited without broadcasting AIS messages, it will not appear in AIS databases and cannot be ruled out.</li>
+                <li><strong>Scientific Discipline:</strong> Metric fusion uses Borda rank aggregation across discrete Fréchet distance and kinematic CPA, avoiding uncalibrated linear weighting formulas.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Client-side Search & Filter Script -->
+    <script>
+        let currentConfFilter = 'ALL';
+
+        function setConfidenceFilter(conf, btn) {
+            currentConfFilter = conf;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            filterTable();
+        }
+
+        function filterTable() {
+            const searchVal = document.getElementById('vesselSearch').value.toUpperCase();
+            const rows = document.querySelectorAll('#candidateTable tbody tr');
+
+            rows.forEach(row => {
+                const conf = row.getAttribute('data-conf') || '';
+                const vessel = row.getAttribute('data-vessel') || '';
+                const mmsi = row.getAttribute('data-mmsi') || '';
+
+                const matchesSearch = vessel.includes(searchVal) || mmsi.includes(searchVal);
+                const matchesConf = (currentConfFilter === 'ALL' || conf === currentConfFilter);
+
+                if (matchesSearch && matchesConf) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

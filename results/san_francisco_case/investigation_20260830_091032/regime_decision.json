@@ -1,0 +1,6 @@
+{
+  "regime": "contemporaneous",
+  "rationale": "No time gap between release and observation provided. Direct contemporaneous AIS correlation path selected (no drift backtracking needed).",
+  "warning": null,
+  "is_platform_blowout_suspect": false
+}

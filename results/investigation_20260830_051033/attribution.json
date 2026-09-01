@@ -1,0 +1,17 @@
+{
+  "investigation_id": "investigation_20260830_051033",
+  "input": {
+    "lat": 28.7998,
+    "lon": -88.3943,
+    "time_utc": "2010-04-24 16:43:00 UTC",
+    "spread_km": 12.44,
+    "regime": "delayed",
+    "regime_confirmed_by_user": true
+  },
+  "candidates": [],
+  "caveats": [
+    "This is a candidate association based on available AIS data, not proof of responsibility.",
+    "AIS coverage is incomplete; a non-broadcasting ('dark') vessel cannot be ruled out.",
+    "No peer-reviewed formula exists for combining these signals into a single probability; Borda rank aggregation was used instead of an arbitrary weighted sum."
+  ]
+}

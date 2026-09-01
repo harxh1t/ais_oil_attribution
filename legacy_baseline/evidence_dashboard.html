@@ -1,0 +1,3241 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>
+Oil Spill Attribution Dashboard
+</title>
+
+
+<link rel="preconnect"
+      href="https://fonts.googleapis.com">
+
+<link rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossorigin>
+
+<link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap"
+    rel="stylesheet"
+>
+
+
+<link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
+
+
+<style>
+
+/* =========================================================
+   VARIABLES
+========================================================= */
+
+:root {
+
+    --bg: #eef1f5;
+
+    --surface: #ffffff;
+
+    --surface-alt: #f7f8fa;
+
+    --border: #e2e7ec;
+
+    --border-soft: #edf0f3;
+
+    --ink: #12181f;
+
+    --ink-soft: #52606d;
+
+    --ink-faint: #8993a0;
+
+    --navy: #12202f;
+
+    --navy-2: #1d3449;
+
+    --accent: #d86628;
+
+    --accent-dark: #b64e19;
+
+    --accent-soft: #fdf1e8;
+
+    --accent-line: #f4c7a5;
+
+    --danger: #c0392b;
+
+    --danger-soft: #fdecea;
+
+    --gold: #c9962b;
+
+    --silver: #8a94a1;
+
+    --bronze: #b0703f;
+
+    --radius-lg: 16px;
+
+    --radius-md: 12px;
+
+    --radius-sm: 8px;
+
+    --shadow-sm:
+        0 1px 2px rgba(16,24,32,.04),
+        0 1px 1px rgba(16,24,32,.03);
+
+    --shadow-md:
+        0 8px 24px rgba(16,24,32,.07),
+        0 2px 6px rgba(16,24,32,.04);
+
+    --font:
+        "Inter",
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    --mono:
+        "JetBrains Mono",
+        "SFMono-Regular",
+        Consolas,
+        monospace;
+
+}
+
+
+/* =========================================================
+   RESET
+========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+
+    margin: 0;
+
+    background: var(--bg);
+
+    color: var(--ink);
+
+    font-family: var(--font);
+
+    line-height: 1.5;
+
+    -webkit-font-smoothing: antialiased;
+
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.header {
+
+    background:
+        linear-gradient(
+            120deg,
+            var(--navy),
+            var(--navy-2)
+        );
+
+    color: white;
+
+    padding: 25px 40px;
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 1000;
+
+    box-shadow:
+        0 5px 25px rgba(10,16,24,.25);
+
+}
+
+.header-inner {
+
+    max-width: 1450px;
+
+    margin: auto;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 20px;
+
+    flex-wrap: wrap;
+
+}
+
+.brand {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+}
+
+.brand-icon {
+
+    width: 48px;
+
+    height: 48px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background:
+        rgba(216,102,40,.18);
+
+    border:
+        1px solid rgba(216,102,40,.4);
+
+    font-size: 22px;
+
+}
+
+.brand h1 {
+
+    margin: 0;
+
+    font-size: 23px;
+
+    font-weight: 750;
+
+}
+
+.brand p {
+
+    margin: 3px 0 0;
+
+    font-size: 12px;
+
+    color:
+        rgba(255,255,255,.62);
+
+}
+
+.header-meta {
+
+    display: flex;
+
+    gap: 9px;
+
+    flex-wrap: wrap;
+
+}
+
+.header-pill {
+
+    border:
+        1px solid rgba(255,255,255,.12);
+
+    background:
+        rgba(255,255,255,.07);
+
+    border-radius: 999px;
+
+    padding: 7px 13px;
+
+    font-family: var(--mono);
+
+    font-size: 11px;
+
+    color:
+        rgba(255,255,255,.82);
+
+}
+
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+.container {
+
+    max-width: 1450px;
+
+    margin: auto;
+
+    padding: 30px 25px 55px;
+
+}
+
+
+/* =========================================================
+   CARDS
+========================================================= */
+
+.card {
+
+    background: var(--surface);
+
+    border:
+        1px solid var(--border);
+
+    border-radius: var(--radius-lg);
+
+    padding: 25px 27px;
+
+    margin-bottom: 22px;
+
+    box-shadow: var(--shadow-sm);
+
+}
+
+.card h2 {
+
+    margin: 0 0 6px;
+
+    font-size: 18px;
+
+    font-weight: 750;
+
+}
+
+.section-eyebrow {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    padding: 4px 10px;
+
+    margin-bottom: 9px;
+
+    border-radius: 999px;
+
+    background: var(--accent-soft);
+
+    border:
+        1px solid var(--accent-line);
+
+    color: var(--accent-dark);
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: .08em;
+
+}
+
+
+/* =========================================================
+   WINNER GRID
+========================================================= */
+
+.hero-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        1.05fr
+        .95fr;
+
+    gap: 22px;
+
+}
+
+.winner {
+
+    position: relative;
+
+    overflow: hidden;
+
+    border:
+        1px solid var(--accent-line);
+
+    background:
+        linear-gradient(
+            180deg,
+            #fffaf6,
+            white 48%
+        );
+
+}
+
+.winner::before {
+
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+
+    right: 0;
+
+    top: 0;
+
+    height: 4px;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--accent-dark),
+            var(--accent)
+        );
+
+}
+
+.winner-name {
+
+    margin-top: 7px;
+
+    font-size: 30px;
+
+    font-weight: 800;
+
+    letter-spacing: -.025em;
+
+}
+
+.winner-type {
+
+    color: var(--ink-faint);
+
+    font-size: 12px;
+
+    margin-top: 2px;
+
+}
+
+.winner-score {
+
+    margin-top: 19px;
+
+    font-family: var(--mono);
+
+    font-size: 43px;
+
+    line-height: 1;
+
+    font-weight: 800;
+
+    color: var(--accent-dark);
+
+}
+
+.mono {
+
+    font-family: var(--mono);
+
+}
+
+.meta {
+
+    color: var(--ink-faint);
+
+    font-size: 11px;
+
+    margin-top: 5px;
+
+    font-family: var(--mono);
+
+}
+
+.metric-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3,1fr);
+
+    gap: 11px;
+
+    margin-top: 19px;
+
+}
+
+.metric {
+
+    padding: 13px;
+
+    background: var(--surface-alt);
+
+    border:
+        1px solid var(--border-soft);
+
+    border-radius: var(--radius-sm);
+
+}
+
+.metric-label {
+
+    color: var(--ink-faint);
+
+    font-size: 9.5px;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: .05em;
+
+}
+
+.metric-value {
+
+    margin-top: 4px;
+
+    font-size: 15px;
+
+    font-weight: 750;
+
+}
+
+
+/* =========================================================
+   NOTE
+========================================================= */
+
+.note {
+
+    margin-top: 18px;
+
+    padding: 13px 15px;
+
+    border-left:
+        3px solid var(--ink-faint);
+
+    background: var(--surface-alt);
+
+    color: var(--ink-soft);
+
+    border-radius:
+        0 var(--radius-sm)
+        var(--radius-sm) 0;
+
+    font-size: 12px;
+
+    line-height: 1.6;
+
+}
+
+.note strong {
+    color: var(--ink);
+}
+
+
+/* =========================================================
+   EVIDENCE
+========================================================= */
+
+.component {
+    margin: 17px 0;
+}
+
+.component-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    margin-bottom: 6px;
+
+    color: var(--ink-soft);
+
+    font-size: 12.5px;
+
+}
+
+.component-header strong {
+
+    font-family: var(--mono);
+
+    color: var(--ink);
+
+}
+
+.bar-background {
+
+    height: 8px;
+
+    overflow: hidden;
+
+    border-radius: 999px;
+
+    background: var(--border-soft);
+
+}
+
+.bar {
+
+    height: 100%;
+
+    border-radius: 999px;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--accent-dark),
+            var(--accent)
+        );
+
+}
+
+
+/* =========================================================
+   TOP 3
+========================================================= */
+
+.candidates {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3,1fr);
+
+    gap: 15px;
+
+}
+
+.candidate-card {
+
+    border:
+        1px solid var(--border);
+
+    border-top:
+        3px solid var(--accent);
+
+    border-radius: var(--radius-md);
+
+    padding: 19px;
+
+    transition:
+        transform .15s,
+        box-shadow .15s;
+
+}
+
+.candidate-card:hover {
+
+    transform:
+        translateY(-3px);
+
+    box-shadow:
+        var(--shadow-md);
+
+}
+
+.candidate-card:nth-child(1) {
+    border-top-color: var(--gold);
+}
+
+.candidate-card:nth-child(2) {
+    border-top-color: var(--silver);
+}
+
+.candidate-card:nth-child(3) {
+    border-top-color: var(--bronze);
+}
+
+.candidate-rank {
+
+    color: var(--ink-faint);
+
+    font-size: 9.5px;
+
+    font-weight: 800;
+
+    letter-spacing: .07em;
+
+}
+
+.candidate-name {
+
+    margin-top: 8px;
+
+    font-size: 18px;
+
+    font-weight: 750;
+
+}
+
+.candidate-type {
+
+    color: var(--ink-faint);
+
+    font-size: 10.5px;
+
+    margin-top: 2px;
+
+}
+
+.candidate-score {
+
+    margin-top: 13px;
+
+    font-family: var(--mono);
+
+    font-size: 25px;
+
+    font-weight: 800;
+
+    color: var(--accent-dark);
+
+}
+
+.candidate-score-label {
+
+    color: var(--ink-faint);
+
+    font-size: 9px;
+
+    text-transform: uppercase;
+
+    letter-spacing: .06em;
+
+}
+
+.candidate-info {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    padding-top: 9px;
+
+    margin-top: 9px;
+
+    border-top:
+        1px dashed var(--border-soft);
+
+    font-size: 11px;
+
+    color: var(--ink-soft);
+
+}
+
+.candidate-info strong {
+    color: var(--ink);
+}
+
+
+/* =========================================================
+   MAP
+========================================================= */
+
+.section-description {
+
+    color: var(--ink-soft);
+
+    font-size: 12.5px;
+
+    margin:
+        0 0 17px;
+
+}
+
+#map {
+
+    width: 100%;
+
+    height: 620px;
+
+    border-radius: var(--radius-md);
+
+    border:
+        1px solid var(--border);
+
+    overflow: hidden;
+
+}
+
+.map-legend {
+
+    background:
+        rgba(255,255,255,.96);
+
+    padding: 12px 14px;
+
+    border-radius: 9px;
+
+    border:
+        1px solid var(--border);
+
+    box-shadow: var(--shadow-md);
+
+    font-size: 11px;
+
+    line-height: 1.8;
+
+}
+
+
+/* =========================================================
+   TIMELINE
+========================================================= */
+
+.timeline-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4,1fr);
+
+    gap: 11px;
+
+}
+
+.timeline-metric {
+
+    background: var(--surface-alt);
+
+    border:
+        1px solid var(--border-soft);
+
+    border-radius: var(--radius-sm);
+
+    padding: 12px 13px;
+
+}
+
+.timeline-label {
+
+    color: var(--ink-faint);
+
+    font-size: 9px;
+
+    text-transform: uppercase;
+
+    font-weight: 800;
+
+    letter-spacing: .05em;
+
+}
+
+.timeline-value {
+
+    margin-top: 4px;
+
+    font-family: var(--mono);
+
+    font-size: 14px;
+
+    font-weight: 750;
+
+}
+
+.timeline-status {
+
+    margin:
+        17px 0;
+
+    padding: 12px 14px;
+
+    border-left:
+        3px solid var(--accent);
+
+    background:
+        var(--accent-soft);
+
+    color:
+        var(--accent-dark);
+
+    font-size: 12px;
+
+    border-radius:
+        0 var(--radius-sm)
+        var(--radius-sm) 0;
+
+}
+
+.timeline-chart {
+
+    border:
+        1px solid var(--border);
+
+    border-radius: var(--radius-md);
+
+    padding: 22px 18px 16px;
+
+    background: var(--surface);
+
+}
+
+.timeline-bars {
+
+    height: 180px;
+
+    display: flex;
+
+    align-items: flex-end;
+
+    gap: 15px;
+
+    border-bottom:
+        1px solid var(--border);
+
+}
+
+.timeline-bar-wrapper {
+
+    flex: 1;
+
+    height: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: flex-end;
+
+    text-align: center;
+
+}
+
+.timeline-bar-value {
+
+    font-family: var(--mono);
+
+    color: var(--ink-soft);
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    margin-bottom: 5px;
+
+}
+
+.timeline-bar {
+
+    width: 75%;
+
+    max-width: 75px;
+
+    min-height: 6px;
+
+    margin: auto auto 0;
+
+    border-radius:
+        6px 6px 2px 2px;
+
+    background:
+        linear-gradient(
+            180deg,
+            var(--accent),
+            var(--accent-dark)
+        );
+
+}
+
+.timeline-spill-bar {
+
+    background:
+        linear-gradient(
+            180deg,
+            #d9503b,
+            var(--danger)
+        );
+
+}
+
+.timeline-label-bottom {
+
+    margin-top: 9px;
+
+    font-size: 11px;
+
+    font-weight: 750;
+
+}
+
+.timeline-time {
+
+    margin-top: 3px;
+
+    color: var(--ink-faint);
+
+    font-family: var(--mono);
+
+    font-size: 9px;
+
+}
+
+.timeline-na {
+
+    height: 30px;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    color: var(--ink-faint);
+
+    font-family: var(--mono);
+
+    font-size: 10px;
+
+}
+
+.observation-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3,1fr);
+
+    gap: 12px;
+
+    margin-top: 16px;
+
+}
+
+.observation {
+
+    padding: 13px;
+
+    border:
+        1px solid var(--border-soft);
+
+    border-radius: var(--radius-sm);
+
+    background: var(--surface-alt);
+
+}
+
+.observation strong {
+
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: var(--ink-faint);
+
+    font-size: 9px;
+
+    text-transform: uppercase;
+
+    letter-spacing: .05em;
+
+}
+
+.observation span {
+
+    font-size: 12px;
+
+}
+
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.table-scroll {
+
+    overflow-x: auto;
+
+    border:
+        1px solid var(--border);
+
+    border-radius: var(--radius-md);
+
+}
+
+table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+    font-size: 12px;
+
+}
+
+th, td {
+
+    padding:
+        12px 14px;
+
+    text-align: left;
+
+    border-bottom:
+        1px solid var(--border-soft);
+
+}
+
+th {
+
+    background: var(--surface-alt);
+
+    color: var(--ink-faint);
+
+    font-size: 9px;
+
+    text-transform: uppercase;
+
+    letter-spacing: .05em;
+
+    font-weight: 800;
+
+}
+
+tbody tr:hover {
+    background: var(--surface-alt);
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.winner-row {
+    background: var(--accent-soft);
+}
+
+.winner-row:hover {
+    background: var(--accent-soft) !important;
+}
+
+.rank-badge {
+
+    display: inline-block;
+
+    min-width: 29px;
+
+    padding: 4px 7px;
+
+    border-radius: 999px;
+
+    background: var(--border-soft);
+
+    text-align: center;
+
+    font-family: var(--mono);
+
+    font-size: 9px;
+
+    font-weight: 750;
+
+}
+
+.winner-row .rank-badge {
+
+    background: var(--accent);
+
+    color: white;
+
+}
+
+.vessel-type {
+
+    margin-top: 2px;
+
+    color: var(--ink-faint);
+
+    font-size: 9.5px;
+
+}
+
+.strong-score {
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   SPILL
+========================================================= */
+
+.spill-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3,1fr);
+
+    gap: 12px;
+
+}
+
+.spill-coordinate {
+
+    padding: 14px;
+
+    background: var(--surface-alt);
+
+    border:
+        1px solid var(--border-soft);
+
+    border-radius: var(--radius-sm);
+
+}
+
+.spill-label {
+
+    color: var(--ink-faint);
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+}
+
+.spill-value {
+
+    margin-top: 4px;
+
+    font-family: var(--mono);
+
+    font-size: 15px;
+
+    font-weight: 750;
+
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.footer {
+
+    text-align: center;
+
+    padding:
+        25px 20px 40px;
+
+    color: var(--ink-faint);
+
+    font-size: 9.5px;
+
+    text-transform: uppercase;
+
+    letter-spacing: .06em;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media(max-width: 1000px) {
+
+    .hero-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .candidates {
+        grid-template-columns: 1fr;
+    }
+
+    .timeline-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .observation-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .spill-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+@media(max-width: 650px) {
+
+    .header {
+        padding: 20px;
+    }
+
+    .container {
+        padding:
+            20px 14px 40px;
+    }
+
+    .metric-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .timeline-grid {
+        grid-template-columns: 1fr;
+    }
+
+    #map {
+        height: 460px;
+    }
+
+    .winner-name {
+        font-size: 24px;
+    }
+
+    .winner-score {
+        font-size: 35px;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- =======================================================
+     HEADER
+======================================================= -->
+
+<header class="header">
+
+<div class="header-inner">
+
+    <div class="brand">
+
+        <div class="brand-icon">
+            🛰️
+        </div>
+
+        <div>
+
+            <h1>
+                Oil Spill Attribution
+            </h1>
+
+            <p>
+                Evidence Fusion &amp; Vessel Attribution
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="header-meta">
+
+        <div class="header-pill">
+            2024-08-06 01:50
+        </div>
+
+        <div class="header-pill">
+            34.0169, -118.6631
+        </div>
+
+        <div class="header-pill">
+            TOP 10
+        </div>
+
+    </div>
+
+</div>
+
+</header>
+
+
+<main class="container">
+
+
+<!-- =======================================================
+     WINNER + EVIDENCE
+======================================================= -->
+
+<div class="hero-grid">
+
+
+<section class="card winner">
+
+    <div class="section-eyebrow">
+        🏆 Highest-Ranked Candidate
+    </div>
+
+    <div class="winner-name">
+        JUNIPER
+    </div>
+
+    <div class="winner-type">
+
+        MMSI 368309480
+        &nbsp;•&nbsp;
+        Pleasure Craft
+
+    </div>
+
+
+    <div class="winner-score">
+        0.5260
+    </div>
+
+    <div class="meta">
+        FINAL EVIDENCE SCORE
+    </div>
+
+
+    <div class="metric-grid">
+
+        <div class="metric">
+
+            <div class="metric-label">
+                Closest AIS Point
+            </div>
+
+            <div class="metric-value">
+                7.90 km
+            </div>
+
+        </div>
+
+
+        <div class="metric">
+
+            <div class="metric-label">
+                Points Within 10 km
+            </div>
+
+            <div class="metric-value">
+
+                5
+
+            </div>
+
+        </div>
+
+
+        <div class="metric">
+
+            <div class="metric-label">
+                Encounter Duration
+            </div>
+
+            <div class="metric-value">
+                96.9 min
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="note">
+
+        <strong>Interpretation:</strong>
+
+        The highest-ranked vessel is the candidate
+        receiving the strongest combined evidence score.
+        The ranking represents analytical evidence and
+        does not by itself establish causation or legal
+        liability.
+
+    </div>
+
+</section>
+
+
+<section class="card">
+
+    <div class="section-eyebrow">
+        📊 Evidence Fusion
+    </div>
+
+    <h2>
+        Evidence Components
+    </h2>
+
+    <p class="section-description">
+
+        Normalized contribution scores for the selected
+        top-ranked candidate.
+
+    </p>
+
+    
+
+    <div class="component">
+
+        <div class="component-header">
+
+            <span>
+                Original Attribution
+            </span>
+
+            <strong>
+                0.803
+            </strong>
+
+        </div>
+
+        <div class="bar-background">
+
+            <div
+                class="bar"
+                style="width:80.3%"
+            ></div>
+
+        </div>
+
+    </div>
+
+    
+
+    <div class="component">
+
+        <div class="component-header">
+
+            <span>
+                Spatial Proximity
+            </span>
+
+            <strong>
+                0.454
+            </strong>
+
+        </div>
+
+        <div class="bar-background">
+
+            <div
+                class="bar"
+                style="width:45.4%"
+            ></div>
+
+        </div>
+
+    </div>
+
+    
+
+    <div class="component">
+
+        <div class="component-header">
+
+            <span>
+                Point-Level Evidence
+            </span>
+
+            <strong>
+                0.035
+            </strong>
+
+        </div>
+
+        <div class="bar-background">
+
+            <div
+                class="bar"
+                style="width:3.5%"
+            ></div>
+
+        </div>
+
+    </div>
+
+    
+
+    <div class="component">
+
+        <div class="component-header">
+
+            <span>
+                Physical Evidence
+            </span>
+
+            <strong>
+                0.646
+            </strong>
+
+        </div>
+
+        <div class="bar-background">
+
+            <div
+                class="bar"
+                style="width:64.6%"
+            ></div>
+
+        </div>
+
+    </div>
+
+    
+
+    <div class="component">
+
+        <div class="component-header">
+
+            <span>
+                Encounter Evidence
+            </span>
+
+            <strong>
+                0.547
+            </strong>
+
+        </div>
+
+        <div class="bar-background">
+
+            <div
+                class="bar"
+                style="width:54.7%"
+            ></div>
+
+        </div>
+
+    </div>
+
+    
+
+    <div class="component">
+
+        <div class="component-header">
+
+            <span>
+                Time-Aware Evidence
+            </span>
+
+            <strong>
+                0.451
+            </strong>
+
+        </div>
+
+        <div class="bar-background">
+
+            <div
+                class="bar"
+                style="width:45.1%"
+            ></div>
+
+        </div>
+
+    </div>
+
+    
+
+</section>
+
+</div>
+
+
+<!-- =======================================================
+     MAP
+======================================================= -->
+
+<section class="card">
+
+    <div class="section-eyebrow">
+        🗺️ Spatial Evidence
+    </div>
+
+    <h2>
+        AIS Trajectory Analysis
+    </h2>
+
+    <p class="section-description">
+
+        Top-three candidate trajectories around the
+        observed spill location. The orange trajectory
+        represents the highest-ranked candidate.
+
+    </p>
+
+    <div id="map"></div>
+
+</section>
+
+
+<!-- =======================================================
+     TOP 3
+======================================================= -->
+
+<section class="card">
+
+    <div class="section-eyebrow">
+        Ranking
+    </div>
+
+    <h2>
+        🏆 Top 3 Candidates
+    </h2>
+
+    <p class="section-description">
+
+        Candidates with the strongest final evidence scores.
+
+    </p>
+
+    <div class="candidates">
+
+        
+
+    <div class="candidate-card">
+
+        <div class="candidate-rank">
+            RANK #1
+        </div>
+
+        <div class="candidate-name">
+            JUNIPER
+        </div>
+
+        <div class="candidate-type">
+            Pleasure Craft
+        </div>
+
+        <div class="candidate-score">
+            0.5260
+        </div>
+
+        <div class="candidate-score-label">
+            Evidence Score
+        </div>
+
+        <div class="candidate-info">
+
+            <span>Closest AIS point</span>
+
+            <strong>
+                7.90 km
+            </strong>
+
+        </div>
+
+        <div class="candidate-info">
+
+            <span>Points within 10 km</span>
+
+            <strong>
+                5
+            </strong>
+
+        </div>
+
+        <div class="candidate-info">
+
+            <span>Encounter duration</span>
+
+            <strong>
+                96.9 min
+            </strong>
+
+        </div>
+
+    </div>
+
+    
+
+    <div class="candidate-card">
+
+        <div class="candidate-rank">
+            RANK #2
+        </div>
+
+        <div class="candidate-name">
+            TICA
+        </div>
+
+        <div class="candidate-type">
+            Sailing
+        </div>
+
+        <div class="candidate-score">
+            0.3803
+        </div>
+
+        <div class="candidate-score-label">
+            Evidence Score
+        </div>
+
+        <div class="candidate-info">
+
+            <span>Closest AIS point</span>
+
+            <strong>
+                13.73 km
+            </strong>
+
+        </div>
+
+        <div class="candidate-info">
+
+            <span>Points within 10 km</span>
+
+            <strong>
+                0
+            </strong>
+
+        </div>
+
+        <div class="candidate-info">
+
+            <span>Encounter duration</span>
+
+            <strong>
+                0.0 min
+            </strong>
+
+        </div>
+
+    </div>
+
+    
+
+    <div class="candidate-card">
+
+        <div class="candidate-rank">
+            RANK #3
+        </div>
+
+        <div class="candidate-name">
+            ANDIAMO
+        </div>
+
+        <div class="candidate-type">
+            Pleasure Craft
+        </div>
+
+        <div class="candidate-score">
+            0.3675
+        </div>
+
+        <div class="candidate-score-label">
+            Evidence Score
+        </div>
+
+        <div class="candidate-info">
+
+            <span>Closest AIS point</span>
+
+            <strong>
+                17.83 km
+            </strong>
+
+        </div>
+
+        <div class="candidate-info">
+
+            <span>Points within 10 km</span>
+
+            <strong>
+                0
+            </strong>
+
+        </div>
+
+        <div class="candidate-info">
+
+            <span>Encounter duration</span>
+
+            <strong>
+                0.0 min
+            </strong>
+
+        </div>
+
+    </div>
+
+    
+
+    </div>
+
+</section>
+
+
+<!-- =======================================================
+     TEMPORAL EVIDENCE
+======================================================= -->
+
+<section class="card">
+
+    <div class="section-eyebrow">
+        ⏱️ Temporal Evidence
+    </div>
+
+    <h2>
+        Candidate Movement Around Spill Time
+    </h2>
+
+    <p class="section-description">
+
+        AIS observations nearest to five requested time
+        offsets around the observed spill time for
+        <strong>JUNIPER</strong>.
+
+    </p>
+
+
+    <div class="timeline-grid">
+
+        <div class="timeline-metric">
+
+            <div class="timeline-label">
+                Candidate
+            </div>
+
+            <div class="timeline-value">
+                JUNIPER
+            </div>
+
+        </div>
+
+
+        <div class="timeline-metric">
+
+            <div class="timeline-label">
+                Spill Time
+            </div>
+
+            <div class="timeline-value">
+                01:50:00
+            </div>
+
+        </div>
+
+
+        <div class="timeline-metric">
+
+            <div class="timeline-label">
+                Closest Encounter
+            </div>
+
+            <div class="timeline-value">
+                7.89 km
+            </div>
+
+        </div>
+
+
+        <div class="timeline-metric">
+
+            <div class="timeline-label">
+                Encounter Duration
+            </div>
+
+            <div class="timeline-value">
+                96.9 min
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="timeline-status">
+
+        All five requested time points have valid timestamped AIS observations.
+
+    </div>
+
+
+    <div
+        id="timeline-chart"
+        class="timeline-chart"
+    ></div>
+
+
+    <div class="observation-grid">
+
+        <div class="observation">
+
+            <strong>
+                Distance at spill
+            </strong>
+
+            <span>
+                10.26 km
+            </span>
+
+        </div>
+
+
+        <div class="observation">
+
+            <strong>
+                Temporal matching
+            </strong>
+
+            <span>
+                Each plotted point uses the actual
+                timestamped AIS observation nearest
+                to its requested offset.
+            </span>
+
+        </div>
+
+
+        <div class="observation">
+
+            <strong>
+                Movement interpretation
+            </strong>
+
+            <span>
+                The vessel was farther from the spill location at the end of the analyzed window than at the beginning.
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <div class="note">
+
+        <strong>Important:</strong>
+
+        The requested timeline values do not imply that
+        an AIS message existed exactly at those times.
+        The actual AIS timestamp used for each observation
+        is displayed below the corresponding bar.
+
+    </div>
+
+</section>
+
+
+<!-- =======================================================
+     FULL RANKING
+======================================================= -->
+
+<section class="card">
+
+    <div class="section-eyebrow">
+        📋 Full Ranking
+    </div>
+
+    <h2>
+        Candidate Vessel Ranking
+    </h2>
+
+    <p class="section-description">
+
+        Top 10 candidates according to the
+        final evidence-ranking pipeline.
+
+    </p>
+
+
+    <div class="table-scroll">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Rank
+                    </th>
+
+                    <th>
+                        Vessel
+                    </th>
+
+                    <th>
+                        MMSI
+                    </th>
+
+                    <th>
+                        Evidence Score
+                    </th>
+
+                    <th>
+                        Closest Distance
+                    </th>
+
+                    <th>
+                        Encounter Duration
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                
+
+    <tr class="winner-row">
+
+        <td>
+
+            <span class="rank-badge">
+                #1
+            </span>
+
+        </td>
+
+        <td>
+
+            <strong>
+                JUNIPER
+            </strong>
+
+            <div class="vessel-type">
+                Pleasure Craft
+            </div>
+
+        </td>
+
+        <td class="mono">
+            368309480
+        </td>
+
+        <td class="mono strong-score">
+            0.5260
+        </td>
+
+        <td>
+            7.90 km
+        </td>
+
+        <td>
+            96.9 min
+        </td>
+
+    </tr>
+
+    
+
+    <tr class="">
+
+        <td>
+
+            <span class="rank-badge">
+                #2
+            </span>
+
+        </td>
+
+        <td>
+
+            <strong>
+                TICA
+            </strong>
+
+            <div class="vessel-type">
+                Sailing
+            </div>
+
+        </td>
+
+        <td class="mono">
+            338456512
+        </td>
+
+        <td class="mono strong-score">
+            0.3803
+        </td>
+
+        <td>
+            13.73 km
+        </td>
+
+        <td>
+            0.0 min
+        </td>
+
+    </tr>
+
+    
+
+    <tr class="">
+
+        <td>
+
+            <span class="rank-badge">
+                #3
+            </span>
+
+        </td>
+
+        <td>
+
+            <strong>
+                ANDIAMO
+            </strong>
+
+            <div class="vessel-type">
+                Pleasure Craft
+            </div>
+
+        </td>
+
+        <td class="mono">
+            367691350
+        </td>
+
+        <td class="mono strong-score">
+            0.3675
+        </td>
+
+        <td>
+            17.83 km
+        </td>
+
+        <td>
+            0.0 min
+        </td>
+
+    </tr>
+
+    
+
+    <tr class="">
+
+        <td>
+
+            <span class="rank-badge">
+                #4
+            </span>
+
+        </td>
+
+        <td>
+
+            <strong>
+                KELLY C
+            </strong>
+
+            <div class="vessel-type">
+                Towing ahead or alongside
+            </div>
+
+        </td>
+
+        <td class="mono">
+            367693690
+        </td>
+
+        <td class="mono strong-score">
+            0.3524
+        </td>
+
+        <td>
+            19.36 km
+        </td>
+
+        <td>
+            0.0 min
+        </td>
+
+    </tr>
+
+    
+
+    <tr class="">
+
+        <td>
+
+            <span class="rank-badge">
+                #5
+            </span>
+
+        </td>
+
+        <td>
+
+            <strong>
+                MAHOUT
+            </strong>
+
+            <div class="vessel-type">
+                Pleasure Craft
+            </div>
+
+        </td>
+
+        <td class="mono">
+            338078421
+        </td>
+
+        <td class="mono strong-score">
+            0.3320
+        </td>
+
+        <td>
+            19.65 km
+        </td>
+
+        <td>
+            0.0 min
+        </td>
+
+    </tr>
+
+    
+
+    <tr class="">
+
+        <td>
+
+            <span class="rank-badge">
+                #6
+            </span>
+
+        </td>
+
+        <td>
+
+            <strong>
+                CG HALIBUT
+            </strong>
+
+            <div class="vessel-type">
+                Law Enforcement
+            </div>
+
+        </td>
+
+        <td class="mono">
+            366999662
+        </td>
+
+        <td class="mono strong-score">
+            0.3255
+        </td>
+
+        <td>
+            19.80 km
+        </td>
+
+        <td>
+            0.0 min
+        </td>
+
+    </tr>
+
+    
+
+    <tr class="">
+
+        <td>
+
+            <span class="rank-badge">
+                #7
+            </span>
+
+        </td>
+
+        <td>
+
+            <strong>
+                NEW DEL MAR
+            </strong>
+
+            <div class="vessel-type">
+                Fishing
+            </div>
+
+        </td>
+
+        <td class="mono">
+            366855060
+        </td>
+
+        <td class="mono strong-score">
+            0.2913
+        </td>
+
+        <td>
+            17.49 km
+        </td>
+
+        <td>
+            0.0 min
+        </td>
+
+    </tr>
+
+    
+
+    <tr class="">
+
+        <td>
+
+            <span class="rank-badge">
+                #8
+            </span>
+
+        </td>
+
+        <td>
+
+            <strong>
+                BELLA VITA
+            </strong>
+
+            <div class="vessel-type">
+                Sailing
+            </div>
+
+        </td>
+
+        <td class="mono">
+            338338181
+        </td>
+
+        <td class="mono strong-score">
+            0.2743
+        </td>
+
+        <td>
+            18.20 km
+        </td>
+
+        <td>
+            0.0 min
+        </td>
+
+    </tr>
+
+    
+
+    <tr class="">
+
+        <td>
+
+            <span class="rank-badge">
+                #9
+            </span>
+
+        </td>
+
+        <td>
+
+            <strong>
+                VA SANTA MONICA
+            </strong>
+
+            <div class="vessel-type">
+                Towing ahead or alongside
+            </div>
+
+        </td>
+
+        <td class="mono">
+            368264950
+        </td>
+
+        <td class="mono strong-score">
+            0.2609
+        </td>
+
+        <td>
+            18.72 km
+        </td>
+
+        <td>
+            0.0 min
+        </td>
+
+    </tr>
+
+    
+
+    <tr class="">
+
+        <td>
+
+            <span class="rank-badge">
+                #10
+            </span>
+
+        </td>
+
+        <td>
+
+            <strong>
+                BAYWATCH 15
+            </strong>
+
+            <div class="vessel-type">
+                Pilot
+            </div>
+
+        </td>
+
+        <td class="mono">
+            338145694
+        </td>
+
+        <td class="mono strong-score">
+            0.6094
+        </td>
+
+        <td>
+            2.01 km
+        </td>
+
+        <td>
+            6.3 min
+        </td>
+
+    </tr>
+
+    
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+
+<!-- =======================================================
+     SPILL REFERENCE
+======================================================= -->
+
+<section class="card">
+
+    <div class="section-eyebrow">
+        📍 Reference
+    </div>
+
+    <h2>
+        Observed Oil Spill
+    </h2>
+
+
+    <div class="spill-grid">
+
+        <div class="spill-coordinate">
+
+            <div class="spill-label">
+                Latitude
+            </div>
+
+            <div class="spill-value">
+                34.016944
+            </div>
+
+        </div>
+
+
+        <div class="spill-coordinate">
+
+            <div class="spill-label">
+                Longitude
+            </div>
+
+            <div class="spill-value">
+                -118.663056
+            </div>
+
+        </div>
+
+
+        <div class="spill-coordinate">
+
+            <div class="spill-label">
+                Observed Time
+            </div>
+
+            <div class="spill-value">
+                2024-08-06 01:50
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="note">
+
+        <strong>Prototype disclaimer:</strong>
+
+        This dashboard presents an evidence-fusion
+        prototype for candidate vessel attribution.
+        A high ranking indicates stronger analytical
+        support relative to the other candidates; it
+        should not be interpreted as definitive proof
+        of pollution causation or legal responsibility.
+
+    </div>
+
+</section>
+
+
+</main>
+
+
+<footer class="footer">
+
+    AIS Oil Spill Attribution Prototype
+
+</footer>
+
+
+<!-- =======================================================
+     LEAFLET
+======================================================= -->
+
+<script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+</script>
+
+
+<script>
+
+
+// ==========================================================
+// PYTHON DATA
+// ==========================================================
+
+const DATA = {"spill": [-118.663056, 34.016944], "spill_time": "2024-08-06 01:50:00", "tracks": [{"rank": 1, "mmsi": 368309480, "name": "JUNIPER", "type": "Pleasure Craft", "score": 0.5259515911538531, "closest_distance": 7.895339270973839, "encounter_duration": 96.91666666666667, "coordinates": [[-118.45134999999998, 33.98254000000003], [-118.45239943340127, 33.966676494829585], [-118.46795871526794, 33.95736760755044], [-118.49128046609948, 33.956065779906325], [-118.51462562215747, 33.95507392056745], [-118.53795282765361, 33.953824325170004], [-118.5612848906067, 33.95269656836459], [-118.58461723612464, 33.95151075452266], [-118.60787774650021, 33.94964595987804], [-118.63112756919404, 33.94763037702442], [-118.65442593217367, 33.946120927979926], [-118.67775782010762, 33.94495000000937], [-118.70105883083417, 33.94353064339003], [-118.72411189314234, 33.940444264608146], [-118.74742876230412, 33.93917100887759], [-118.77076301884762, 33.938092648888905], [-118.79408969676297, 33.93689099314568], [-118.81740704632907, 33.9355809175352], [-118.84072068896958, 33.934240207288596], [-118.8640364554572, 33.93293572320182], [-118.88737189490412, 33.93189525581575], [-118.90373463717918, 33.91930384481039], [-118.917891166983, 33.90380880748791], [-118.93259997821535, 33.88867706672384], [-118.95026479143567, 33.87819998256627], [-118.97361708083928, 33.878096292477274], [-118.99696511150528, 33.8777166247368], [-119.02031236829171, 33.87727297977798], [-119.04366292182563, 33.87703067467622], [-119.06701359033208, 33.876859765031966], [-119.09036127834771, 33.87658701890002], [-119.11371175308015, 33.87650227226273], [-119.1370402865983, 33.875840618220806], [-119.16031085204408, 33.874243688718366], [-119.18365337803249, 33.87374779072196], [-119.2069953330738, 33.87327293296398], [-119.23034143231432, 33.873020482426696], [-119.25368858562204, 33.87272132046689], [-119.2770347240767, 33.87253000655096], [-119.30038225115737, 33.872775962064225], [-119.32372529572032, 33.8731767028546], [-119.34706564762074, 33.8736312405474], [-119.37039521400226, 33.87442215629859], [-119.39371718309059, 33.87535776249431], [-119.41699943994432, 33.87681107930634], [-119.44022263177845, 33.878826172569184], [-119.46339959182554, 33.88117677989883], [-119.48648935748366, 33.88407277116779], [-119.50955800862822, 33.887088058252736], [-119.53265128902643, 33.88994953858413], [-119.55579416195494, 33.89253786692554], [-119.57891136687742, 33.89528414373341], [-119.60210271033074, 33.89755256290546], [-119.62519497039366, 33.90043630965768], [-119.64825918204482, 33.9034842564056], [-119.6712538224461, 33.906878360162], [-119.69426994018598, 33.91017314341874], [-119.71740659441295, 33.9128104381191], [-119.740582192242, 33.915216233107245], [-119.7637665938111, 33.91755949071651], [-119.78687760147773, 33.92036669462234], [-119.80999477263369, 33.923143480197425], [-119.83315616654383, 33.92563592658436], [-119.85633602304489, 33.928016380223454], [-119.8795639515646, 33.93002720007743], [-119.90276806509895, 33.93221661331766], [-119.92588902605978, 33.93493427500621], [-119.94866689806281, 33.93346965413314], [-119.97000989392474, 33.9259428476757], [-119.98754358237368, 33.91566080809352], [-120.00722850628189, 33.905192114531246], [-120.028409085595, 33.89743165960043], [-120.05120035147326, 33.89321889112303], [-120.0739180039026, 33.88874708348361], [-120.09695005413198, 33.8866002731104], [-120.12025622335463, 33.88757813969996], [-120.14346417755677, 33.88905748968276], [-120.16676393212626, 33.88797117464838], [-120.18995631884859, 33.885788738261915], [-120.21311460639014, 33.88698194994908], [-120.23619912647948, 33.88982593306559], [-120.2592421906561, 33.892874205873106], [-120.28232089294501, 33.89575106304257], [-120.3054458169744, 33.89832736316055], [-120.32867425600702, 33.900202584898956], [-120.34292511688652, 33.90299686968589], [-120.35585766322076, 33.90185602988845], [-120.34643851788566, 33.919576046033924], [-120.33818374287016, 33.93774261248761], [-120.32905080559054, 33.95560995446001], [-120.31855480491292, 33.972984803953935], [-120.30913791626968, 33.99075916167686], [-120.30088598717978, 34.008920388173756], [-120.2867369292928, 34.023901960186606], [-120.29569927188375, 34.02904514918688], [-120.29896937659619, 34.04349483144876], [-120.29710938201858, 34.0626078104381], [-120.30142798557773, 34.081726644478145], [-120.31315201503712, 34.07779401883689], [-120.33054, 34.06485000000003]], "spill_time_position": [-118.58461723612464, 33.95151075452266]}, {"rank": 2, "mmsi": 338456512, "name": "TICA", "type": "Sailing", "score": 0.3802511743666276, "closest_distance": 13.728207682613498, "encounter_duration": 0.0, "coordinates": [[-119.26069999999999, 34.24540000000007], [-119.26244212504892, 34.245039322154994], [-119.26387755438445, 34.24916004814126], [-119.26944974870142, 34.248493091085805], [-119.27332756381844, 34.24410601553684], [-119.2792755885662, 34.241570213749284], [-119.2833497937948, 34.23789218910297], [-119.28342659302783, 34.23231166213778], [-119.28354863076245, 34.2267275776648], [-119.28374069121168, 34.22114479537247], [-119.28395068022313, 34.21556237104218], [-119.28417281014927, 34.20998068066485], [-119.28423740124056, 34.20439576747205], [-119.28427082366079, 34.1988115544148], [-119.28342462421807, 34.193281130922294], [-119.28217033114278, 34.18779412379695], [-119.28074467358238, 34.18233871929282], [-119.27892166284578, 34.17698616935175], [-119.27576945793183, 34.172126204743094], [-119.27292357589802, 34.16706719229057], [-119.26996455460181, 34.1620529192422], [-119.2670112941191, 34.157036661209574], [-119.26392307493964, 34.1520846671869], [-119.26003266234254, 34.14753370630256], [-119.25605616346935, 34.14303215721332], [-119.25208340215745, 34.1385283982445], [-119.2481764869374, 34.133985522958376], [-119.2439096016762, 34.1296757989543], [-119.23953781321764, 34.12543584289237], [-119.23523780773404, 34.12114556816009], [-119.23100172813163, 34.11681174732814], [-119.22676177347212, 34.112480569678745], [-119.22259465555582, 34.10810107013827], [-119.21815962804055, 34.10395100861885], [-119.21259688903343, 34.100831877433386], [-119.2069553423012, 34.097803567013045], [-119.20132217701328, 34.094765156094795], [-119.19571323232526, 34.09169578144766], [-119.19013743910686, 34.08858607937928], [-119.18427843837102, 34.085999928482174], [-119.17772210862705, 34.08483490453781], [-119.17115273256249, 34.08369337325022], [-119.16478128944233, 34.08212227387819], [-119.15886664515926, 34.07951816815205], [-119.15276764262873, 34.07755965845995], [-119.14941692115735, 34.08235507580481], [-119.14325434634087, 34.082259235720734], [-119.13718165915883, 34.07987927402953], [-119.13114626597292, 34.07743415991782], [-119.12510075654707, 34.07500662710043], [-119.11911351713893, 34.07248173022633], [-119.11314298118893, 34.06992946934846], [-119.10720339500294, 34.06732798999796], [-119.1012824302989, 34.06469747891244], [-119.09545278869855, 34.06193022532514], [-119.08964939392511, 34.05912466284649], [-119.08379150485858, 34.05639900204505], [-119.0779292131186, 34.053680172914184], [-119.07209776753015, 34.050915956870824], [-119.06628812025541, 34.048120512333455], [-119.06050551685378, 34.045286461440995], [-119.05474056513705, 34.04242782740535], [-119.04874890709328, 34.039948651946546], [-119.04248890871342, 34.03793783796173], [-119.03623425952763, 34.03591589185543], [-119.0299953017792, 34.03386082806378], [-119.02376502417438, 34.03178779883123], [-119.01753222256218, 34.02972075023326], [-119.01110482042888, 34.02812112111443], [-119.00464530045777, 34.026611877190184], [-118.99817814062922, 34.02512615312205], [-118.9917458285853, 34.0235396926922], [-118.98530696023876, 34.02197153015355], [-118.97884008602794, 34.02048555765338], [-118.97237011419536, 34.01900932062234], [-118.96595327457966, 34.01738061485316], [-118.9595171775523, 34.01580607690346], [-118.95306917688576, 34.01426548505258], [-118.94664313750371, 34.01266307567314], [-118.9402158573607, 34.01106397172966], [-118.93377903103493, 34.009494754438755], [-118.92733623958458, 34.00794025952977], [-118.92088614499403, 34.006407534409014], [-118.91441167518435, 34.004947617262395], [-118.90794018225813, 34.00347894792953], [-118.90147252810185, 34.00200100490375], [-118.89501740545798, 34.00048398252249], [-118.88846925668693, 33.99927907717704], [-118.88186604275153, 33.99829953592769], [-118.87526258726736, 33.99732135369785], [-118.86864413020643, 33.99641718750248], [-118.862029163732, 33.9954964589929], [-118.85541718376716, 33.99456091438037], [-118.84880844444027, 33.993610460140395], [-118.84211532375747, 33.99336495940857], [-118.83540929239582, 33.9932808304248], [-118.82870817181005, 33.99305325120791], [-118.82200768823427, 33.992825353198526], [-118.81531361940776, 33.992482735680056], [-118.80863, 33.99202000000002]], "spill_time_position": [-119.12510075654707, 34.07500662710043]}, {"rank": 3, "mmsi": 367691350, "name": "ANDIAMO", "type": "Pleasure Craft", "score": 0.36754359514391455, "closest_distance": 17.82549012386365, "encounter_duration": 0.0, "coordinates": [[-117.92447999999997, 33.61313000000007], [-117.91185716550457, 33.60864228155474], [-117.89578365549849, 33.60331564696907], [-117.88138162660326, 33.596347786155526], [-117.88665992167667, 33.58716518675037], [-117.904311689685, 33.58923238777043], [-117.92197436855633, 33.59127538536454], [-117.93966293523783, 33.59310834980283], [-117.95745544231448, 33.593921225548264], [-117.97528489126854, 33.59413204273162], [-117.99310939406716, 33.59456680879458], [-118.01093062667438, 33.59509268685068], [-118.02874703570373, 33.595705113196814], [-118.04643505482582, 33.597396949280366], [-118.06399497103146, 33.5999406057604], [-118.08114365330476, 33.60402862543715], [-118.09815473980474, 33.60850983393428], [-118.11309287900723, 33.615515027899896], [-118.13006686971254, 33.62009637478869], [-118.14697328089727, 33.62485129949083], [-118.16244473820898, 33.63141934132937], [-118.17788323959513, 33.637911736020826], [-118.1949271149087, 33.6421455560478], [-118.21218270736767, 33.64588740791622], [-118.22879546903496, 33.65133066833195], [-118.2454479914049, 33.65668964363729], [-118.26203522352924, 33.66218924935155], [-118.27853821979225, 33.66786699560564], [-118.29514777213943, 33.673324351534376], [-118.31185682153293, 33.67856070222655], [-118.3282650717235, 33.68443115895638], [-118.34464140962467, 33.69036468142176], [-118.36104291889507, 33.69625490751983], [-118.37740944961679, 33.702213753475895], [-118.39370186960112, 33.708315715912065], [-118.4099496225132, 33.71450156207491], [-118.42620473084436, 33.7206736388542], [-118.4424054000262, 33.72694887864553], [-118.4584334206615, 33.73352890218228], [-118.47456468963676, 33.7399308373775], [-118.4906520586552, 33.74641130619936], [-118.50661877365137, 33.75310037125079], [-118.52258169231582, 33.75979549333933], [-118.53862052239414, 33.76636619161467], [-118.5547391989766, 33.77280168732056], [-118.5707374405031, 33.77944378521312], [-118.58633501542751, 33.786708340328104], [-118.60173610407294, 33.79427512087223], [-118.61712423339293, 33.80186272899], [-118.63248620134202, 33.80948675039224], [-118.64765027890856, 33.81738575258006], [-118.66284094440269, 33.82524929433652], [-118.6781381489155, 33.83296992944871], [-118.693319907257, 33.84084759612116], [-118.70844798477434, 33.84879313604177], [-118.72329073743755, 33.85711366499793], [-118.73802455633725, 33.86556828870348], [-118.75297060058743, 33.873758853950875], [-118.76785694975433, 33.882028153393854], [-118.78277266639219, 33.890259899331575], [-118.79773259700414, 33.89844091706034], [-118.81256462467198, 33.90678483532705], [-118.82731090486388, 33.915234122202875], [-118.84201562254525, 33.923734643846714], [-118.85702992097085, 33.93185398359668], [-118.87189827213797, 33.940156917279594], [-118.88734122586023, 33.94768221375856], [-118.90355323989819, 33.95400723204452], [-118.91962802233886, 33.96057031482123], [-118.9357778577243, 33.967009495726515], [-118.95191198015912, 33.973477667687156], [-118.96798853544225, 33.980045088195936], [-118.98404382665291, 33.986651310518084], [-119.0000395335613, 33.993357600140875], [-119.01610566392371, 33.99994910795794], [-119.03211970057848, 34.0066302545328], [-119.04823474937315, 34.013143162066385], [-119.0643046587129, 34.0197324188668], [-119.08020485852096, 34.026604573686924], [-119.09605048951907, 34.033566121343036], [-119.11182763473187, 34.040620055502615], [-119.1271137436762, 34.048399289681996], [-119.14243836106236, 34.05613204571108], [-119.15789752407231, 34.06367800295165], [-119.17338069559347, 34.07119249948524], [-119.18875325238055, 34.078862116511694], [-119.20409170859772, 34.08658210009602], [-119.21887082041047, 34.09498751859157], [-119.22842488195444, 34.107365051582256], [-119.23516406518635, 34.12114556694744], [-119.24059505078725, 34.135359353265564], [-119.2461467179209, 34.14954261974363], [-119.25290319912348, 34.163275757436374], [-119.25754258012486, 34.17765632781561], [-119.26175009483474, 34.19215618658662], [-119.26773082298946, 34.2062166669838], [-119.2731823064728, 34.22039851146587], [-119.2751445428849, 34.23518566602519], [-119.26900712109219, 34.248807788816165], [-119.26153000000001, 34.24460000000005]], "spill_time_position": [-118.63248620134202, 33.80948675039224]}]};
+
+const TIMELINE_DATA = [{"label": "-30 min", "offset": -30, "distance": 19.924406809672604, "actual_time": "2024-08-06 01:43:05", "difference": 23.083333333333332}, {"label": "-15 min", "offset": -15, "distance": 19.924406809672604, "actual_time": "2024-08-06 01:43:05", "difference": 8.083333333333334}, {"label": "SPILL", "offset": 0, "distance": 10.255950582886264, "actual_time": "2024-08-06 01:49:56", "difference": 0.06397306666666666}, {"label": "+15 min", "offset": 15, "distance": 26.68659478311172, "actual_time": "2024-08-06 02:04:37", "difference": 0.3796296333333334}, {"label": "+30 min", "offset": 30, "distance": 58.9766890481783, "actual_time": "2024-08-06 02:20:17", "difference": 0.28367003333333335}];
+
+
+// ==========================================================
+// TIMELINE
+// ==========================================================
+
+const timelineContainer =
+    document.getElementById(
+        "timeline-chart"
+    );
+
+
+const validPoints =
+    TIMELINE_DATA.filter(
+        point => point.distance !== null
+    );
+
+
+if (validPoints.length === 0) {
+
+    timelineContainer.innerHTML =
+        '<div style="text-align:center;padding:70px;color:#8993a0;">' +
+        'No valid timestamped AIS observations available.' +
+        '</div>';
+
+}
+else {
+
+    const maxDistance =
+        Math.max(
+            ...validPoints.map(
+                point => point.distance
+            )
+        );
+
+
+    let chartHTML =
+        '<div class="timeline-bars">';
+
+
+    TIMELINE_DATA.forEach(
+        point => {
+
+            chartHTML +=
+                '<div class="timeline-bar-wrapper">';
+
+
+            if (point.distance === null) {
+
+                chartHTML +=
+                    '<div class="timeline-na">' +
+                    'N/A' +
+                    '</div>';
+
+            }
+            else {
+
+                chartHTML +=
+                    '<div class="timeline-bar-value">' +
+                    point.distance.toFixed(2) +
+                    ' km' +
+                    '</div>';
+
+
+                const height =
+                    Math.max(
+                        8,
+                        (
+                            point.distance /
+                            maxDistance
+                        ) * 145
+                    );
+
+
+                const cls =
+                    point.offset === 0
+                    ? "timeline-bar timeline-spill-bar"
+                    : "timeline-bar";
+
+
+                chartHTML +=
+                    '<div class="' +
+                    cls +
+                    '" style="height:' +
+                    height +
+                    'px;"></div>';
+
+            }
+
+
+            chartHTML +=
+                '<div class="timeline-label-bottom">' +
+                point.label +
+                '</div>';
+
+
+            if (point.actual_time !== null) {
+
+                chartHTML +=
+                    '<div class="timeline-time">' +
+                    point.actual_time.substring(11,19) +
+                    '</div>';
+
+            }
+            else {
+
+                chartHTML +=
+                    '<div class="timeline-time">' +
+                    'No AIS point' +
+                    '</div>';
+
+            }
+
+
+            chartHTML +=
+                '</div>';
+
+        }
+    );
+
+
+    chartHTML +=
+        '</div>';
+
+
+    timelineContainer.innerHTML =
+        chartHTML;
+
+}
+
+
+// ==========================================================
+// MAP
+// ==========================================================
+
+const map =
+    L.map("map");
+
+
+L.tileLayer(
+
+    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+
+    {
+
+        maxZoom: 19,
+
+        attribution:
+            "&copy; OpenStreetMap contributors"
+
+    }
+
+).addTo(map);
+
+
+// ==========================================================
+// SPILL
+// ==========================================================
+
+const spill =
+    DATA.spill;
+
+
+const spillMarker =
+    L.circleMarker(
+
+        [
+            spill[1],
+            spill[0]
+        ],
+
+        {
+
+            radius: 9,
+
+            weight: 3,
+
+            color: "#8e2d22",
+
+            fillColor: "#e74c3c",
+
+            fillOpacity: .95
+
+        }
+
+    ).addTo(map);
+
+
+spillMarker.bindPopup(
+
+    "<b>Observed Oil Spill</b><br><br>" +
+
+    "Latitude: " +
+    spill[1].toFixed(6) +
+
+    "<br>" +
+
+    "Longitude: " +
+    spill[0].toFixed(6) +
+
+    "<br>" +
+
+    "Time: " +
+    DATA.spill_time
+
+);
+
+
+// ==========================================================
+// EVIDENCE ZONES
+// ==========================================================
+
+[
+
+    {
+
+        radius: 10000,
+
+        color: "#5d6d7e",
+
+        dashArray: "6,6"
+
+    },
+
+    {
+
+        radius: 5000,
+
+        color: "#7f8c8d",
+
+        dashArray: "4,5"
+
+    },
+
+    {
+
+        radius: 1500,
+
+        color: "#d35400",
+
+        dashArray: "3,4"
+
+    }
+
+].forEach(
+
+    zone => {
+
+        L.circle(
+
+            [
+                spill[1],
+                spill[0]
+            ],
+
+            {
+
+                radius:
+                    zone.radius,
+
+                weight: 1.5,
+
+                color:
+                    zone.color,
+
+                fillOpacity: .025,
+
+                dashArray:
+                    zone.dashArray
+
+            }
+
+        ).addTo(map);
+
+    }
+
+);
+
+
+// ==========================================================
+// BOUNDS
+// ==========================================================
+
+const bounds = [
+
+    [
+        spill[1],
+        spill[0]
+    ]
+
+];
+
+
+// ==========================================================
+// TRACKS
+// ==========================================================
+
+DATA.tracks.forEach(
+
+    track => {
+
+        if (
+            !track.coordinates ||
+            track.coordinates.length < 2
+        ) {
+            return;
+        }
+
+
+        const latlngs =
+            track.coordinates.map(
+                coord => [
+                    coord[1],
+                    coord[0]
+                ]
+            );
+
+
+        const winner =
+            track.rank === 1;
+
+
+        const line =
+            L.polyline(
+
+                latlngs,
+
+                {
+
+                    weight:
+                        winner ? 5 : 3,
+
+                    opacity:
+                        winner ? 1 : .48,
+
+                    color:
+                        winner
+                        ? "#d35400"
+                        : "#34495e"
+
+                }
+
+            ).addTo(map);
+
+
+        line.bindPopup(
+
+            "<b>Rank #" +
+            track.rank +
+            " — " +
+            track.name +
+            "</b>" +
+
+            "<br><br>" +
+
+            "MMSI: " +
+            track.mmsi +
+
+            "<br>" +
+
+            "Type: " +
+            track.type +
+
+            "<br>" +
+
+            "Evidence Score: " +
+            track.score.toFixed(4) +
+
+            "<br>" +
+
+            "Closest Distance: " +
+            track.closest_distance.toFixed(2) +
+            " km" +
+
+            "<br>" +
+
+            "Encounter Duration: " +
+            (
+                track.encounter_duration !== null
+                ? track.encounter_duration.toFixed(1) + " min"
+                : "N/A"
+            )
+
+        );
+
+
+        latlngs.forEach(
+            point => bounds.push(point)
+        );
+
+
+        // START
+
+        L.circleMarker(
+
+            latlngs[0],
+
+            {
+
+                radius:
+                    winner ? 6 : 4,
+
+                weight: 1,
+
+                color:
+                    winner
+                    ? "#d35400"
+                    : "#34495e",
+
+                fillOpacity: .9
+
+            }
+
+        )
+
+        .addTo(map)
+
+        .bindPopup(
+
+            "<b>" +
+            track.name +
+            "</b><br>" +
+
+            "Trajectory start"
+
+        );
+
+
+        // END
+
+        const end =
+            latlngs[
+                latlngs.length - 1
+            ];
+
+
+        L.circleMarker(
+
+            end,
+
+            {
+
+                radius: 4,
+
+                weight: 1,
+
+                color:
+                    winner
+                    ? "#d35400"
+                    : "#34495e",
+
+                fillOpacity: .7
+
+            }
+
+        )
+
+        .addTo(map)
+
+        .bindPopup(
+
+            "<b>" +
+            track.name +
+            "</b><br>" +
+
+            "Trajectory end"
+
+        );
+
+
+        // SPILL-TIME POSITION
+
+        if (
+            track.spill_time_position !== null
+        ) {
+
+            const position =
+                track.spill_time_position;
+
+
+            L.circleMarker(
+
+                [
+                    position[1],
+                    position[0]
+                ],
+
+                {
+
+                    radius:
+                        winner ? 7 : 5,
+
+                    weight: 2,
+
+                    color: "#8e2d22",
+
+                    fillColor: "#f39c12",
+
+                    fillOpacity: 1
+
+                }
+
+            )
+
+            .addTo(map)
+
+            .bindPopup(
+
+                "<b>" +
+                track.name +
+                "</b><br><br>" +
+
+                "Rank: #" +
+                track.rank +
+
+                "<br>" +
+
+                "AIS position nearest spill time"
+
+            );
+
+        }
+
+    }
+
+);
+
+
+// ==========================================================
+// FIT MAP
+// ==========================================================
+
+if (bounds.length > 1) {
+
+    map.fitBounds(
+
+        bounds,
+
+        {
+
+            padding: [40,40],
+
+            maxZoom: 13
+
+        }
+
+    );
+
+}
+else {
+
+    map.setView(
+
+        [
+            spill[1],
+            spill[0]
+        ],
+
+        11
+
+    );
+
+}
+
+
+// ==========================================================
+// LEGEND
+// ==========================================================
+
+const legend =
+    L.control({
+        position: "bottomright"
+    });
+
+
+legend.onAdd =
+    function() {
+
+        const div =
+            L.DomUtil.create(
+                "div",
+                "map-legend"
+            );
+
+
+        div.innerHTML =
+
+            "<b>Map Legend</b><br>" +
+
+            "<span style='color:#d35400;'>━━</span> " +
+            "Top candidate<br>" +
+
+            "<span style='color:#34495e;'>━━</span> " +
+            "Other candidates<br>" +
+
+            "🔴 Observed spill<br>" +
+
+            "🟠 Spill-time AIS position<br>" +
+
+            "◯ 10 km / 5 km / 1.5 km zones";
+
+
+        return div;
+
+    };
+
+
+legend.addTo(map);
+
+
+// ==========================================================
+// MAP RESIZE
+// ==========================================================
+
+setTimeout(
+
+    () => map.invalidateSize(),
+
+    300
+
+);
+
+</script>
+
+
+</body>
+
+</html>

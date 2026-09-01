@@ -1,0 +1,1918 @@
+{
+  "investigation_id": "investigation_20260830_103150",
+  "input": {
+    "lat": 29.28,
+    "lon": -94.75,
+    "time_utc": "2024-08-06 14:30:00 UTC",
+    "spread_km": 4.0,
+    "regime": "contemporaneous",
+    "regime_confirmed_by_user": true
+  },
+  "candidates": [
+    {
+      "rank": 1,
+      "mmsi": 369990116,
+      "vessel_name": "CG29116",
+      "evidence": {
+        "frechet_km": 7.919308404613418,
+        "dcpa_km": 5.3593778047904435,
+        "tcpa_minutes": -35.483333333333334,
+        "coverage_completeness": 0.9219512195121952
+      },
+      "borda_score": 246,
+      "confidence_score": 0.7879999999999999,
+      "confidence_label": "HIGH",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 7.92 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 5.36 km at -35.5 min",
+        "92.2% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 2,
+      "mmsi": 367033750,
+      "vessel_name": "BAD DOG",
+      "evidence": {
+        "frechet_km": 6.688525791288362,
+        "dcpa_km": 5.498603219976322,
+        "tcpa_minutes": -59.88333333333333,
+        "coverage_completeness": 0.995433789954338
+      },
+      "borda_score": 245,
+      "confidence_score": 0.8148021308980213,
+      "confidence_label": "HIGH",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 6.69 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 5.50 km at -59.9 min",
+        "99.5% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 3,
+      "mmsi": 366906130,
+      "vessel_name": "BRIAN T",
+      "evidence": {
+        "frechet_km": 7.036335524542659,
+        "dcpa_km": 6.213525533321599,
+        "tcpa_minutes": -14.3,
+        "coverage_completeness": 0.33493589743589747
+      },
+      "borda_score": 244,
+      "confidence_score": 0.5428739316239316,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 7.04 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 6.21 km at -14.3 min",
+        "33.5% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 4,
+      "mmsi": 367107680,
+      "vessel_name": "EXCALIBUR",
+      "evidence": {
+        "frechet_km": 11.89803615422648,
+        "dcpa_km": 4.722527402463978,
+        "tcpa_minutes": -35.53333333333333,
+        "coverage_completeness": 0.5086342229199372
+      },
+      "borda_score": 243,
+      "confidence_score": 0.6109968602825746,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 11.90 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 4.72 km at -35.5 min",
+        "50.9% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 5,
+      "mmsi": 338926437,
+      "vessel_name": "CG EDGAR CULBERTSON",
+      "evidence": {
+        "frechet_km": 7.787564114470963,
+        "dcpa_km": 6.167460603012736,
+        "tcpa_minutes": 23.25,
+        "coverage_completeness": 0.3479623824451411
+      },
+      "borda_score": 236,
+      "confidence_score": 0.5301985370950888,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 7.79 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 6.17 km at +23.2 min",
+        "34.8% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 6,
+      "mmsi": 369385000,
+      "vessel_name": "AET PARTNERSHIP",
+      "evidence": {
+        "frechet_km": 6.711150245555736,
+        "dcpa_km": 5.384488507237164,
+        "tcpa_minutes": -77.86666666666666,
+        "coverage_completeness": 0.467741935483871
+      },
+      "borda_score": 235,
+      "confidence_score": 0.5748655913978494,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 6.71 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 5.38 km at -77.9 min",
+        "46.8% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 7,
+      "mmsi": 368261750,
+      "vessel_name": "LYNNE M. ROSE",
+      "evidence": {
+        "frechet_km": 6.80534212781898,
+        "dcpa_km": 6.192218500439606,
+        "tcpa_minutes": 48.5,
+        "coverage_completeness": 0.375609756097561
+      },
+      "borda_score": 234,
+      "confidence_score": 0.5364878048780487,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 6.81 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 6.19 km at +48.5 min",
+        "37.6% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 8,
+      "mmsi": 367305890,
+      "vessel_name": "LADY LAB",
+      "evidence": {
+        "frechet_km": 6.491340717225398,
+        "dcpa_km": 5.633129292680944,
+        "tcpa_minutes": 72.76666666666667,
+        "coverage_completeness": 0.35101404056162244
+      },
+      "borda_score": 233,
+      "confidence_score": 0.52464378575143,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 6.49 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 5.63 km at +72.8 min",
+        "35.1% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 9,
+      "mmsi": 367119810,
+      "vessel_name": "ROBERT C LANIER",
+      "evidence": {
+        "frechet_km": 8.446036312873941,
+        "dcpa_km": 5.724807400934577,
+        "tcpa_minutes": -21.683333333333334,
+        "coverage_completeness": 0.8
+      },
+      "borda_score": 232,
+      "confidence_score": 0.696,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 8.45 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 5.72 km at -21.7 min",
+        "80.0% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 10,
+      "mmsi": 366889000,
+      "vessel_name": "RED EAGLE",
+      "evidence": {
+        "frechet_km": 10.0965048163145,
+        "dcpa_km": 4.710974440841066,
+        "tcpa_minutes": 102.93333333333334,
+        "coverage_completeness": 0.33281733746130027
+      },
+      "borda_score": 230,
+      "confidence_score": 0.5109133126934984,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 10.10 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 4.71 km at +102.9 min",
+        "33.3% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 11,
+      "mmsi": 368044440,
+      "vessel_name": "DIMMIT",
+      "evidence": {
+        "frechet_km": 6.16639398100322,
+        "dcpa_km": 5.1135571509378135,
+        "tcpa_minutes": -222.2,
+        "coverage_completeness": 0.9984101748807631
+      },
+      "borda_score": 224,
+      "confidence_score": 0.7460731319554849,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 6.17 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 5.11 km at -222.2 min",
+        "99.8% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 12,
+      "mmsi": 368000410,
+      "vessel_name": "DEBORAH",
+      "evidence": {
+        "frechet_km": 13.682590120309582,
+        "dcpa_km": 5.092684882027074,
+        "tcpa_minutes": 54.46666666666667,
+        "coverage_completeness": 0.4370015948963317
+      },
+      "borda_score": 223,
+      "confidence_score": 0.5340855927698033,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 13.68 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 5.09 km at +54.5 min",
+        "43.7% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 13,
+      "mmsi": 366973590,
+      "vessel_name": "LONE STAR",
+      "evidence": {
+        "frechet_km": 14.612840939531743,
+        "dcpa_km": 4.652423879604092,
+        "tcpa_minutes": 70.18333333333334,
+        "coverage_completeness": 1.0
+      },
+      "borda_score": 220,
+      "confidence_score": 0.7333333333333333,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 14.61 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 4.65 km at +70.2 min",
+        "100.0% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 14,
+      "mmsi": 367300160,
+      "vessel_name": "MELINDA B ADAMS",
+      "evidence": {
+        "frechet_km": 7.281972646926468,
+        "dcpa_km": 6.361050117275333,
+        "tcpa_minutes": -62.166666666666664,
+        "coverage_completeness": 0.9963436928702011
+      },
+      "borda_score": 220,
+      "confidence_score": 0.7319926873857404,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 7.28 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 6.36 km at -62.2 min",
+        "99.6% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 15,
+      "mmsi": 367525000,
+      "vessel_name": "PADRE ISLAND",
+      "evidence": {
+        "frechet_km": 11.165421759951956,
+        "dcpa_km": 5.281564838607106,
+        "tcpa_minutes": 60.06666666666667,
+        "coverage_completeness": 1.0
+      },
+      "borda_score": 218,
+      "confidence_score": 0.7266666666666667,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 11.17 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 5.28 km at +60.1 min",
+        "100.0% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 16,
+      "mmsi": 368926560,
+      "vessel_name": "NO 1",
+      "evidence": {
+        "frechet_km": 7.980130578793885,
+        "dcpa_km": 5.2017947816111345,
+        "tcpa_minutes": -168.23333333333332,
+        "coverage_completeness": 0.6597938144329897
+      },
+      "borda_score": 215,
+      "confidence_score": 0.5947594501718213,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 7.98 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 5.20 km at -168.2 min",
+        "66.0% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 17,
+      "mmsi": 367761740,
+      "vessel_name": "GENERAL PATTON",
+      "evidence": {
+        "frechet_km": 8.538962355282328,
+        "dcpa_km": 7.496668360258118,
+        "tcpa_minutes": -29.483333333333334,
+        "coverage_completeness": 1.0
+      },
+      "borda_score": 214,
+      "confidence_score": 0.7133333333333334,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 8.54 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 7.50 km at -29.5 min",
+        "100.0% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 18,
+      "mmsi": 368014710,
+      "vessel_name": "F.M. BROWN",
+      "evidence": {
+        "frechet_km": 6.333249616802871,
+        "dcpa_km": 5.061885378993581,
+        "tcpa_minutes": -320.8833333333333,
+        "coverage_completeness": 0.3650793650793651
+      },
+      "borda_score": 205,
+      "confidence_score": 0.46640211640211643,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 6.33 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 5.06 km at -320.9 min",
+        "36.5% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 19,
+      "mmsi": 367615990,
+      "vessel_name": "JACOB BRENT",
+      "evidence": {
+        "frechet_km": 5.908728474553128,
+        "dcpa_km": 4.7324618328757255,
+        "tcpa_minutes": -374.6333333333333,
+        "coverage_completeness": 1.0
+      },
+      "borda_score": 204,
+      "confidence_score": 0.68,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 5.91 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 4.73 km at -374.6 min",
+        "100.0% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 20,
+      "mmsi": 367300350,
+      "vessel_name": "THOR",
+      "evidence": {
+        "frechet_km": 17.269343361403813,
+        "dcpa_km": 5.212570437499781,
+        "tcpa_minutes": -18.55,
+        "coverage_completeness": 0.5197472353870458
+      },
+      "borda_score": 200,
+      "confidence_score": 0.5065824117956819,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 17.27 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 5.21 km at -18.6 min",
+        "52.0% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 21,
+      "mmsi": 367773360,
+      "vessel_name": "LT DICK DOWLING",
+      "evidence": {
+        "frechet_km": 7.561824638578197,
+        "dcpa_km": 5.525354951092901,
+        "tcpa_minutes": 203.81666666666666,
+        "coverage_completeness": 0.40226171243941844
+      },
+      "borda_score": 196,
+      "confidence_score": 0.4580721593968766,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 7.56 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 5.53 km at +203.8 min",
+        "40.2% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 22,
+      "mmsi": 368285070,
+      "vessel_name": "TEXAS CITY",
+      "evidence": {
+        "frechet_km": 6.6420101079227996,
+        "dcpa_km": 5.194867077735577,
+        "tcpa_minutes": -336.65,
+        "coverage_completeness": 1.0
+      },
+      "borda_score": 194,
+      "confidence_score": 0.6466666666666666,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 6.64 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 5.19 km at -336.6 min",
+        "100.0% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 23,
+      "mmsi": 367308970,
+      "vessel_name": "BILL TULLIER",
+      "evidence": {
+        "frechet_km": 10.169285950045905,
+        "dcpa_km": 5.266957131171088,
+        "tcpa_minutes": 199.98333333333332,
+        "coverage_completeness": 1.0
+      },
+      "borda_score": 190,
+      "confidence_score": 0.6333333333333333,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 10.17 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 5.27 km at +200.0 min",
+        "100.0% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 24,
+      "mmsi": 538009345,
+      "vessel_name": "YASA VEGA",
+      "evidence": {
+        "frechet_km": 8.424347341390025,
+        "dcpa_km": 6.954612489987873,
+        "tcpa_minutes": 146.53333333333333,
+        "coverage_completeness": 0.3342696629213483
+      },
+      "borda_score": 189,
+      "confidence_score": 0.42029494382022475,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 8.42 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 6.95 km at +146.5 min",
+        "33.4% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 25,
+      "mmsi": 367439810,
+      "vessel_name": "ROMAN HAYS",
+      "evidence": {
+        "frechet_km": 8.761823155930399,
+        "dcpa_km": 7.535214481267317,
+        "tcpa_minutes": -98.71666666666667,
+        "coverage_completeness": 0.9983948635634029
+      },
+      "borda_score": 187,
+      "confidence_score": 0.6228330658105938,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 8.76 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 7.54 km at -98.7 min",
+        "99.8% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 26,
+      "mmsi": 366845050,
+      "vessel_name": "ERIN T",
+      "evidence": {
+        "frechet_km": 7.031722610985319,
+        "dcpa_km": 5.194202311010539,
+        "tcpa_minutes": -365.4166666666667,
+        "coverage_completeness": 0.9983818770226537
+      },
+      "borda_score": 186,
+      "confidence_score": 0.6194983818770227,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 7.03 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 5.19 km at -365.4 min",
+        "99.8% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 27,
+      "mmsi": 368001440,
+      "vessel_name": "BAYOU CITY",
+      "evidence": {
+        "frechet_km": 10.325740933174487,
+        "dcpa_km": 4.67559478547046,
+        "tcpa_minutes": -299.95,
+        "coverage_completeness": 0.6188524590163935
+      },
+      "borda_score": 185,
+      "confidence_score": 0.499146174863388,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 10.33 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 4.68 km at -299.9 min",
+        "61.9% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 28,
+      "mmsi": 368007340,
+      "vessel_name": "GREEN KNIGHT",
+      "evidence": {
+        "frechet_km": 22.08732724803182,
+        "dcpa_km": 4.743182839870166,
+        "tcpa_minutes": -35.68333333333333,
+        "coverage_completeness": 0.9967689822294022
+      },
+      "borda_score": 184,
+      "confidence_score": 0.6123424878836833,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 22.09 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 4.74 km at -35.7 min",
+        "99.7% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 29,
+      "mmsi": 369493630,
+      "vessel_name": "CG45630",
+      "evidence": {
+        "frechet_km": 7.946095543504204,
+        "dcpa_km": 5.268361984502586,
+        "tcpa_minutes": -275.65,
+        "coverage_completeness": 1.0
+      },
+      "borda_score": 183,
+      "confidence_score": 0.61,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 7.95 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 5.27 km at -275.6 min",
+        "100.0% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 30,
+      "mmsi": 368354850,
+      "vessel_name": "CAPT ALVIN",
+      "evidence": {
+        "frechet_km": 13.172510509807395,
+        "dcpa_km": 11.31889333790618,
+        "tcpa_minutes": 1.65,
+        "coverage_completeness": 0.360655737704918
+      },
+      "borda_score": 179,
+      "confidence_score": 0.40592896174863385,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 13.17 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 11.32 km at +1.6 min",
+        "36.1% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 31,
+      "mmsi": 636021228,
+      "vessel_name": "GAS TAURUS",
+      "evidence": {
+        "frechet_km": 8.928032439709026,
+        "dcpa_km": 8.044586742687862,
+        "tcpa_minutes": 114.43333333333334,
+        "coverage_completeness": 0.33006993006993
+      },
+      "borda_score": 179,
+      "confidence_score": 0.39680419580419574,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 8.93 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 8.04 km at +114.4 min",
+        "33.0% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 32,
+      "mmsi": 366999613,
+      "vessel_name": "CG HAWK",
+      "evidence": {
+        "frechet_km": 11.132615199738785,
+        "dcpa_km": 7.700648161131683,
+        "tcpa_minutes": 82.41666666666667,
+        "coverage_completeness": 0.4177215189873418
+      },
+      "borda_score": 178,
+      "confidence_score": 0.4205907172995781,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 11.13 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 7.70 km at +82.4 min",
+        "41.8% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 33,
+      "mmsi": 368097780,
+      "vessel_name": "EVERARD DUPRE",
+      "evidence": {
+        "frechet_km": 12.354339449696168,
+        "dcpa_km": 5.3090634385330775,
+        "tcpa_minutes": 197.96666666666667,
+        "coverage_completeness": 1.0
+      },
+      "borda_score": 175,
+      "confidence_score": 0.5833333333333334,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 12.35 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 5.31 km at +198.0 min",
+        "100.0% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 34,
+      "mmsi": 338253000,
+      "vessel_name": "RMS TRITON",
+      "evidence": {
+        "frechet_km": 12.16095258347636,
+        "dcpa_km": 4.755570063239646,
+        "tcpa_minutes": -266.43333333333334,
+        "coverage_completeness": 0.32554517133956384
+      },
+      "borda_score": 175,
+      "confidence_score": 0.38661734164070616,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 12.16 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 4.76 km at -266.4 min",
+        "32.6% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 35,
+      "mmsi": 372267000,
+      "vessel_name": "NORDIC AQUA",
+      "evidence": {
+        "frechet_km": 9.363028464922149,
+        "dcpa_km": 8.098367534939385,
+        "tcpa_minutes": -136.36666666666667,
+        "coverage_completeness": 0.31703910614525144
+      },
+      "borda_score": 175,
+      "confidence_score": 0.3841364059590317,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 9.36 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 8.10 km at -136.4 min",
+        "31.7% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 36,
+      "mmsi": 367561320,
+      "vessel_name": "MR ROLAND",
+      "evidence": {
+        "frechet_km": 11.576568576013985,
+        "dcpa_km": 8.639437231813131,
+        "tcpa_minutes": -72.3,
+        "coverage_completeness": 1.0
+      },
+      "borda_score": 174,
+      "confidence_score": 0.58,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 11.58 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 8.64 km at -72.3 min",
+        "100.0% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 37,
+      "mmsi": 367442390,
+      "vessel_name": "YELLOW ROSE",
+      "evidence": {
+        "frechet_km": 10.685266388540418,
+        "dcpa_km": 4.619514795851522,
+        "tcpa_minutes": -447.4166666666667,
+        "coverage_completeness": 1.0
+      },
+      "borda_score": 170,
+      "confidence_score": 0.5666666666666667,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 10.69 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 4.62 km at -447.4 min",
+        "100.0% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 38,
+      "mmsi": 368230000,
+      "vessel_name": "ODYSSEA GOLD",
+      "evidence": {
+        "frechet_km": 6.399625064830761,
+        "dcpa_km": 5.7314080064099295,
+        "tcpa_minutes": -346.03333333333336,
+        "coverage_completeness": 1.0
+      },
+      "borda_score": 170,
+      "confidence_score": 0.5666666666666667,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 6.40 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 5.73 km at -346.0 min",
+        "100.0% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 39,
+      "mmsi": 367457250,
+      "vessel_name": "GALVESTON",
+      "evidence": {
+        "frechet_km": 14.04735718722327,
+        "dcpa_km": 5.188992057110713,
+        "tcpa_minutes": -225.13333333333333,
+        "coverage_completeness": 1.0
+      },
+      "borda_score": 169,
+      "confidence_score": 0.5633333333333334,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 14.05 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 5.19 km at -225.1 min",
+        "100.0% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 40,
+      "mmsi": 367796610,
+      "vessel_name": "HOUSTON",
+      "evidence": {
+        "frechet_km": 19.09971477422529,
+        "dcpa_km": 4.675009280485678,
+        "tcpa_minutes": 152.96666666666667,
+        "coverage_completeness": 1.0
+      },
+      "borda_score": 167,
+      "confidence_score": 0.5566666666666666,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 19.10 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 4.68 km at +153.0 min",
+        "100.0% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 41,
+      "mmsi": 367391260,
+      "vessel_name": "ROBERT H DEDMAN",
+      "evidence": {
+        "frechet_km": 8.44830830973117,
+        "dcpa_km": 5.726037498807973,
+        "tcpa_minutes": -239.85,
+        "coverage_completeness": 0.8461538461538461
+      },
+      "borda_score": 167,
+      "confidence_score": 0.5138461538461538,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 8.45 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 5.73 km at -239.8 min",
+        "84.6% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 42,
+      "mmsi": 368181960,
+      "vessel_name": "LEYTE GULF",
+      "evidence": {
+        "frechet_km": 8.528700475179123,
+        "dcpa_km": 5.545587842173589,
+        "tcpa_minutes": -297.65,
+        "coverage_completeness": 0.9809688581314879
+      },
+      "borda_score": 164,
+      "confidence_score": 0.5414648212226066,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 8.53 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 5.55 km at -297.6 min",
+        "98.1% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 43,
+      "mmsi": 477231800,
+      "vessel_name": "SAMC SWAN",
+      "evidence": {
+        "frechet_km": 12.839537003935671,
+        "dcpa_km": 7.242399186830104,
+        "tcpa_minutes": -137.98333333333332,
+        "coverage_completeness": 0.44516129032258067
+      },
+      "borda_score": 163,
+      "confidence_score": 0.3926021505376344,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 12.84 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 7.24 km at -138.0 min",
+        "44.5% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 44,
+      "mmsi": 338926922,
+      "vessel_name": "CG26322",
+      "evidence": {
+        "frechet_km": 7.802092928392837,
+        "dcpa_km": 6.219915177553198,
+        "tcpa_minutes": -290.55,
+        "coverage_completeness": 0.36170212765957444
+      },
+      "borda_score": 162,
+      "confidence_score": 0.3676595744680851,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 7.80 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 6.22 km at -290.6 min",
+        "36.2% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 45,
+      "mmsi": 367550950,
+      "vessel_name": "T RAIN",
+      "evidence": {
+        "frechet_km": 14.37227679281078,
+        "dcpa_km": 5.5575291241239055,
+        "tcpa_minutes": 182.78333333333333,
+        "coverage_completeness": 0.5361596009975063
+      },
+      "borda_score": 161,
+      "confidence_score": 0.41220282626766414,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 14.37 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 5.56 km at +182.8 min",
+        "53.6% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 46,
+      "mmsi": 366951820,
+      "vessel_name": "SUCCESS",
+      "evidence": {
+        "frechet_km": 13.082877623248514,
+        "dcpa_km": 11.306166316273279,
+        "tcpa_minutes": -60.416666666666664,
+        "coverage_completeness": 0.3812709030100334
+      },
+      "borda_score": 161,
+      "confidence_score": 0.3706410256410256,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 13.08 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 11.31 km at -60.4 min",
+        "38.1% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 47,
+      "mmsi": 248620000,
+      "vessel_name": "AQUARAMA",
+      "evidence": {
+        "frechet_km": 15.459039831645386,
+        "dcpa_km": 14.583029386436632,
+        "tcpa_minutes": 14.8,
+        "coverage_completeness": 0.38064516129032255
+      },
+      "borda_score": 161,
+      "confidence_score": 0.37047311827956986,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 15.46 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 14.58 km at +14.8 min",
+        "38.1% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 48,
+      "mmsi": 367445000,
+      "vessel_name": "PATI R MORAN",
+      "evidence": {
+        "frechet_km": 10.035991722562478,
+        "dcpa_km": 7.865420934947528,
+        "tcpa_minutes": -199.26666666666668,
+        "coverage_completeness": 0.3849918433931484
+      },
+      "borda_score": 159,
+      "confidence_score": 0.3670228384991844,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 10.04 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 7.87 km at -199.3 min",
+        "38.5% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 49,
+      "mmsi": 367113160,
+      "vessel_name": "RONNIE ROGERS",
+      "evidence": {
+        "frechet_km": 17.057335214682155,
+        "dcpa_km": 5.375733084183859,
+        "tcpa_minutes": 167.15,
+        "coverage_completeness": 0.9984076433121019
+      },
+      "borda_score": 157,
+      "confidence_score": 0.5229166666666666,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 17.06 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 5.38 km at +167.2 min",
+        "99.8% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 50,
+      "mmsi": 367504910,
+      "vessel_name": "DENIA",
+      "evidence": {
+        "frechet_km": 12.250473607736163,
+        "dcpa_km": 5.32841574129624,
+        "tcpa_minutes": -260.8666666666667,
+        "coverage_completeness": 0.5135566188197767
+      },
+      "borda_score": 157,
+      "confidence_score": 0.39604731525784154,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 12.25 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 5.33 km at -260.9 min",
+        "51.4% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 51,
+      "mmsi": 366806920,
+      "vessel_name": "BETSY BLESSEY",
+      "evidence": {
+        "frechet_km": 17.263014829318287,
+        "dcpa_km": 10.27110022502888,
+        "tcpa_minutes": -15.85,
+        "coverage_completeness": 0.45382165605095537
+      },
+      "borda_score": 157,
+      "confidence_score": 0.3804166666666666,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 17.26 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 10.27 km at -15.8 min",
+        "45.4% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 52,
+      "mmsi": 367053160,
+      "vessel_name": "COLONEL",
+      "evidence": {
+        "frechet_km": 12.122822839075035,
+        "dcpa_km": 8.452032128668167,
+        "tcpa_minutes": -157.48333333333332,
+        "coverage_completeness": 1.0
+      },
+      "borda_score": 156,
+      "confidence_score": 0.52,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 12.12 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 8.45 km at -157.5 min",
+        "100.0% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 53,
+      "mmsi": 367151450,
+      "vessel_name": "RAY STOKER; JR",
+      "evidence": {
+        "frechet_km": 8.419202617241979,
+        "dcpa_km": 5.713566620227593,
+        "tcpa_minutes": -361.8833333333333,
+        "coverage_completeness": 0.9984
+      },
+      "borda_score": 155,
+      "confidence_score": 0.5162533333333333,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 8.42 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 5.71 km at -361.9 min",
+        "99.8% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 54,
+      "mmsi": 367401290,
+      "vessel_name": "DOLPHIN",
+      "evidence": {
+        "frechet_km": 17.624897223347244,
+        "dcpa_km": 5.206578750512117,
+        "tcpa_minutes": -161.61666666666667,
+        "coverage_completeness": 0.5263157894736843
+      },
+      "borda_score": 155,
+      "confidence_score": 0.39429824561403515,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 17.62 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 5.21 km at -161.6 min",
+        "52.6% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 55,
+      "mmsi": 366961560,
+      "vessel_name": "CAVALIER",
+      "evidence": {
+        "frechet_km": 10.381626687481493,
+        "dcpa_km": 5.142987405986195,
+        "tcpa_minutes": -475.4,
+        "coverage_completeness": 0.4344391785150079
+      },
+      "borda_score": 155,
+      "confidence_score": 0.3705634544497104,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 10.38 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 5.14 km at -475.4 min",
+        "43.4% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 56,
+      "mmsi": 367505030,
+      "vessel_name": "FRANK JAHN",
+      "evidence": {
+        "frechet_km": 17.061471291716884,
+        "dcpa_km": 10.09835280070548,
+        "tcpa_minutes": -44.583333333333336,
+        "coverage_completeness": 0.9984177215189873
+      },
+      "borda_score": 153,
+      "confidence_score": 0.5095965189873418,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 17.06 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 10.10 km at -44.6 min",
+        "99.8% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 57,
+      "mmsi": 368136890,
+      "vessel_name": "LUBBOCK",
+      "evidence": {
+        "frechet_km": 7.731425624797524,
+        "dcpa_km": 6.750874778267369,
+        "tcpa_minutes": -360.71666666666664,
+        "coverage_completeness": 1.0
+      },
+      "borda_score": 152,
+      "confidence_score": 0.5066666666666667,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 7.73 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 6.75 km at -360.7 min",
+        "100.0% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 58,
+      "mmsi": 367754480,
+      "vessel_name": "POSEIDON",
+      "evidence": {
+        "frechet_km": 17.598370227937583,
+        "dcpa_km": 5.616496378543959,
+        "tcpa_minutes": 98.21666666666667,
+        "coverage_completeness": 0.3996789727126806
+      },
+      "borda_score": 152,
+      "confidence_score": 0.3545853397538791,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 17.60 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 5.62 km at +98.2 min",
+        "40.0% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 59,
+      "mmsi": 366978210,
+      "vessel_name": "DEWITT C GREER",
+      "evidence": {
+        "frechet_km": 11.101071423649595,
+        "dcpa_km": 5.717561755746994,
+        "tcpa_minutes": -272.46666666666664,
+        "coverage_completeness": 1.0
+      },
+      "borda_score": 150,
+      "confidence_score": 0.5,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 11.10 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 5.72 km at -272.5 min",
+        "100.0% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 60,
+      "mmsi": 367431020,
+      "vessel_name": "STEVEN MAI II",
+      "evidence": {
+        "frechet_km": 14.247548129146953,
+        "dcpa_km": 12.242917272977127,
+        "tcpa_minutes": -66.91666666666667,
+        "coverage_completeness": 0.2549668874172185
+      },
+      "borda_score": 150,
+      "confidence_score": 0.3137417218543046,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 14.25 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 12.24 km at -66.9 min",
+        "25.5% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 61,
+      "mmsi": 367567460,
+      "vessel_name": "LUKE K",
+      "evidence": {
+        "frechet_km": 10.605105493899869,
+        "dcpa_km": 5.253806500727439,
+        "tcpa_minutes": -469.6666666666667,
+        "coverage_completeness": 1.0
+      },
+      "borda_score": 148,
+      "confidence_score": 0.49333333333333335,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 10.61 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 5.25 km at -469.7 min",
+        "100.0% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 62,
+      "mmsi": 369493387,
+      "vessel_name": "CG ALLIGATOR",
+      "evidence": {
+        "frechet_km": 7.888812649954239,
+        "dcpa_km": 6.269691019923214,
+        "tcpa_minutes": -388.73333333333335,
+        "coverage_completeness": 0.35350318471337583
+      },
+      "borda_score": 145,
+      "confidence_score": 0.3270966029723992,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 7.89 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 6.27 km at -388.7 min",
+        "35.4% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 63,
+      "mmsi": 366991740,
+      "vessel_name": "TEXAS",
+      "evidence": {
+        "frechet_km": 15.207588580045119,
+        "dcpa_km": 5.438360086417104,
+        "tcpa_minutes": -242.65,
+        "coverage_completeness": 0.9657853810264385
+      },
+      "borda_score": 144,
+      "confidence_score": 0.4717884914463452,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 15.21 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 5.44 km at -242.7 min",
+        "96.6% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 64,
+      "mmsi": 366962010,
+      "vessel_name": "MISS MONIE",
+      "evidence": {
+        "frechet_km": 17.327986806788836,
+        "dcpa_km": 15.7976727187894,
+        "tcpa_minutes": -1.5,
+        "coverage_completeness": 1.0
+      },
+      "borda_score": 141,
+      "confidence_score": 0.47,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 17.33 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 15.80 km at -1.5 min",
+        "100.0% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 65,
+      "mmsi": 367136040,
+      "vessel_name": "NEW BUCCANEER",
+      "evidence": {
+        "frechet_km": 13.808945569664232,
+        "dcpa_km": 5.137957326874426,
+        "tcpa_minutes": -475.43333333333334,
+        "coverage_completeness": 1.0
+      },
+      "borda_score": 138,
+      "confidence_score": 0.46,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 13.81 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 5.14 km at -475.4 min",
+        "100.0% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 66,
+      "mmsi": 367509510,
+      "vessel_name": "SABINE",
+      "evidence": {
+        "frechet_km": 17.769841402383967,
+        "dcpa_km": 10.389674727300365,
+        "tcpa_minutes": 60.15,
+        "coverage_completeness": 0.9984126984126984
+      },
+      "borda_score": 129,
+      "confidence_score": 0.42965873015873013,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 17.77 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 10.39 km at +60.1 min",
+        "99.8% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 67,
+      "mmsi": 368095380,
+      "vessel_name": "NEVA CALLAIS",
+      "evidence": {
+        "frechet_km": 17.09398246388823,
+        "dcpa_km": 15.679974334614922,
+        "tcpa_minutes": 65.26666666666667,
+        "coverage_completeness": 0.4145161290322581
+      },
+      "borda_score": 124,
+      "confidence_score": 0.29233333333333333,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 17.09 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 15.68 km at +65.3 min",
+        "41.5% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 68,
+      "mmsi": 367714330,
+      "vessel_name": "CAPT BAILEY",
+      "evidence": {
+        "frechet_km": 20.541292272764217,
+        "dcpa_km": 4.921890156313687,
+        "tcpa_minutes": -254.43333333333334,
+        "coverage_completeness": 0.2682170542635659
+      },
+      "borda_score": 124,
+      "confidence_score": 0.2620981912144703,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 20.54 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 4.92 km at -254.4 min",
+        "26.8% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 69,
+      "mmsi": 367507070,
+      "vessel_name": "WOODY RICHERSON",
+      "evidence": {
+        "frechet_km": 17.25717742704661,
+        "dcpa_km": 16.48489635664383,
+        "tcpa_minutes": -41.38333333333333,
+        "coverage_completeness": 1.0
+      },
+      "borda_score": 123,
+      "confidence_score": 0.41,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 17.26 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 16.48 km at -41.4 min",
+        "100.0% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 70,
+      "mmsi": 367506740,
+      "vessel_name": "LLANO",
+      "evidence": {
+        "frechet_km": 18.207714089138694,
+        "dcpa_km": 10.317198275224511,
+        "tcpa_minutes": -74.43333333333334,
+        "coverage_completeness": 0.7532258064516129
+      },
+      "borda_score": 122,
+      "confidence_score": 0.35648924731182796,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 18.21 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 10.32 km at -74.4 min",
+        "75.3% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 71,
+      "mmsi": 368344380,
+      "vessel_name": "JOHN R WILLIAMS",
+      "evidence": {
+        "frechet_km": 18.471172423805253,
+        "dcpa_km": 16.13139341991035,
+        "tcpa_minutes": 19.583333333333332,
+        "coverage_completeness": 1.0
+      },
+      "borda_score": 121,
+      "confidence_score": 0.4033333333333333,
+      "confidence_label": "MEDIUM",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 18.47 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 16.13 km at +19.6 min",
+        "100.0% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 72,
+      "mmsi": 367663560,
+      "vessel_name": "LYNNE",
+      "evidence": {
+        "frechet_km": 17.056772570155243,
+        "dcpa_km": 10.350446498119602,
+        "tcpa_minutes": 161.8,
+        "coverage_completeness": 1.0
+      },
+      "borda_score": 119,
+      "confidence_score": 0.39666666666666667,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 17.06 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 10.35 km at +161.8 min",
+        "100.0% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 73,
+      "mmsi": 538010235,
+      "vessel_name": "ANIKITOS",
+      "evidence": {
+        "frechet_km": 18.056423256235313,
+        "dcpa_km": 7.772780885061084,
+        "tcpa_minutes": 160.56666666666666,
+        "coverage_completeness": 0.4612903225806452
+      },
+      "borda_score": 118,
+      "confidence_score": 0.28738709677419355,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 18.06 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 7.77 km at +160.6 min",
+        "46.1% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 74,
+      "mmsi": 538005554,
+      "vessel_name": "STORHOLMEN",
+      "evidence": {
+        "frechet_km": 17.392952831417304,
+        "dcpa_km": 16.274319434750485,
+        "tcpa_minutes": 51.833333333333336,
+        "coverage_completeness": 0.36935483870967745
+      },
+      "borda_score": 118,
+      "confidence_score": 0.26930645161290323,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 17.39 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 16.27 km at +51.8 min",
+        "36.9% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 75,
+      "mmsi": 367761630,
+      "vessel_name": "IWO JIMA",
+      "evidence": {
+        "frechet_km": 16.98257804927145,
+        "dcpa_km": 10.07998203747128,
+        "tcpa_minutes": -201.18333333333334,
+        "coverage_completeness": 0.897887323943662
+      },
+      "borda_score": 116,
+      "confidence_score": 0.366924882629108,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 16.98 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 10.08 km at -201.2 min",
+        "89.8% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 76,
+      "mmsi": 256680000,
+      "vessel_name": "NEW MISTRAL",
+      "evidence": {
+        "frechet_km": 16.64323066788612,
+        "dcpa_km": 16.19464637750594,
+        "tcpa_minutes": 99.98333333333333,
+        "coverage_completeness": 0.364951768488746
+      },
+      "borda_score": 115,
+      "confidence_score": 0.26161575562700967,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 16.64 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 16.19 km at +100.0 min",
+        "36.5% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 77,
+      "mmsi": 367740310,
+      "vessel_name": "BUBBA-JOHN",
+      "evidence": {
+        "frechet_km": 10.924390892782966,
+        "dcpa_km": 9.398634932152019,
+        "tcpa_minutes": -417.1333333333333,
+        "coverage_completeness": 0.9777777777777777
+      },
+      "borda_score": 109,
+      "confidence_score": 0.35929629629629634,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 10.92 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 9.40 km at -417.1 min",
+        "97.8% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 78,
+      "mmsi": 367149340,
+      "vessel_name": "SYDNEE TAYLOR",
+      "evidence": {
+        "frechet_km": 16.492052029272685,
+        "dcpa_km": 11.716581936938331,
+        "tcpa_minutes": -211.38333333333333,
+        "coverage_completeness": 0.9984076433121019
+      },
+      "borda_score": 106,
+      "confidence_score": 0.353052016985138,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 16.49 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 11.72 km at -211.4 min",
+        "99.8% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 79,
+      "mmsi": 367135470,
+      "vessel_name": "TEXAS CITY",
+      "evidence": {
+        "frechet_km": 17.14190068045188,
+        "dcpa_km": 16.49137446543862,
+        "tcpa_minutes": 90.11666666666666,
+        "coverage_completeness": 0.7867078825347759
+      },
+      "borda_score": 105,
+      "confidence_score": 0.3126738794435857,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 17.14 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 16.49 km at +90.1 min",
+        "78.7% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 80,
+      "mmsi": 338926425,
+      "vessel_name": "CG JACOB POROO",
+      "evidence": {
+        "frechet_km": 22.555041494499655,
+        "dcpa_km": 7.087308501396394,
+        "tcpa_minutes": -178.35,
+        "coverage_completeness": 0.616
+      },
+      "borda_score": 101,
+      "confidence_score": 0.2720266666666667,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 22.56 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 7.09 km at -178.3 min",
+        "61.6% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 81,
+      "mmsi": 367087950,
+      "vessel_name": "FRITZ BLESSEY",
+      "evidence": {
+        "frechet_km": 16.301456149535028,
+        "dcpa_km": 13.876774723459723,
+        "tcpa_minutes": -222.55,
+        "coverage_completeness": 0.3941841680129241
+      },
+      "borda_score": 99,
+      "confidence_score": 0.23004038772213248,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 16.30 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 13.88 km at -222.6 min",
+        "39.4% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 82,
+      "mmsi": 368272520,
+      "vessel_name": "ALYS",
+      "evidence": {
+        "frechet_km": 16.530673734384333,
+        "dcpa_km": 13.868978937445712,
+        "tcpa_minutes": -231.4,
+        "coverage_completeness": 0.9984152139461173
+      },
+      "borda_score": 96,
+      "confidence_score": 0.3197464342313788,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 16.53 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 13.87 km at -231.4 min",
+        "99.8% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 83,
+      "mmsi": 368105620,
+      "vessel_name": "G.BROOKS SPERRY",
+      "evidence": {
+        "frechet_km": 17.070024861379068,
+        "dcpa_km": 15.870320903893933,
+        "tcpa_minutes": 185.98333333333332,
+        "coverage_completeness": 1.0
+      },
+      "borda_score": 91,
+      "confidence_score": 0.30333333333333334,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 17.07 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 15.87 km at +186.0 min",
+        "100.0% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 84,
+      "mmsi": 367780660,
+      "vessel_name": "CAPT THOMAS PAUL",
+      "evidence": {
+        "frechet_km": 20.18365831315251,
+        "dcpa_km": 10.66146887125708,
+        "tcpa_minutes": 172.86666666666667,
+        "coverage_completeness": 0.5207667731629393
+      },
+      "borda_score": 87,
+      "confidence_score": 0.2205111821086262,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 20.18 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 10.66 km at +172.9 min",
+        "52.1% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 85,
+      "mmsi": 367427270,
+      "vessel_name": "MISS KELLY",
+      "evidence": {
+        "frechet_km": 16.07878540726468,
+        "dcpa_km": 13.878448992223868,
+        "tcpa_minutes": -285.7,
+        "coverage_completeness": 0.9984152139461173
+      },
+      "borda_score": 86,
+      "confidence_score": 0.2864395139989435,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 16.08 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 13.88 km at -285.7 min",
+        "99.8% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 86,
+      "mmsi": 366495000,
+      "vessel_name": "OVERSEAS CHINOOK",
+      "evidence": {
+        "frechet_km": 19.992692509132212,
+        "dcpa_km": 9.5121466179835,
+        "tcpa_minutes": -203.21666666666667,
+        "coverage_completeness": 0.4500818330605565
+      },
+      "borda_score": 86,
+      "confidence_score": 0.20784506273867978,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 19.99 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 9.51 km at -203.2 min",
+        "45.0% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 87,
+      "mmsi": 368011450,
+      "vessel_name": "KRISTIN",
+      "evidence": {
+        "frechet_km": 18.95256822646796,
+        "dcpa_km": 13.866502160899106,
+        "tcpa_minutes": 189.88333333333333,
+        "coverage_completeness": 0.40445859872611467
+      },
+      "borda_score": 83,
+      "confidence_score": 0.19428343949044585,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 18.95 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 13.87 km at +189.9 min",
+        "40.4% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 88,
+      "mmsi": 248714000,
+      "vessel_name": "EAGLE SAN JOSE",
+      "evidence": {
+        "frechet_km": 19.855433330459327,
+        "dcpa_km": 18.885986620117013,
+        "tcpa_minutes": 97.98333333333333,
+        "coverage_completeness": 0.3272980501392758
+      },
+      "borda_score": 78,
+      "confidence_score": 0.17254874651810584,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 19.86 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 18.89 km at +98.0 min",
+        "32.7% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 89,
+      "mmsi": 367626460,
+      "vessel_name": "TEXAS",
+      "evidence": {
+        "frechet_km": 16.014572964775958,
+        "dcpa_km": 13.850935317556576,
+        "tcpa_minutes": -376.51666666666665,
+        "coverage_completeness": 0.9984177215189873
+      },
+      "borda_score": 77,
+      "confidence_score": 0.2564636075949367,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 16.01 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 13.85 km at -376.5 min",
+        "99.8% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 90,
+      "mmsi": 368316640,
+      "vessel_name": "CHIPPEWA",
+      "evidence": {
+        "frechet_km": 16.98979334474245,
+        "dcpa_km": 16.538065195119188,
+        "tcpa_minutes": 239.2,
+        "coverage_completeness": 0.29930069930069925
+      },
+      "borda_score": 75,
+      "confidence_score": 0.1624125874125874,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 16.99 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 16.54 km at +239.2 min",
+        "29.9% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 91,
+      "mmsi": 367772180,
+      "vessel_name": "JOE LOCHRICO",
+      "evidence": {
+        "frechet_km": 17.05219475696823,
+        "dcpa_km": 15.843708068595232,
+        "tcpa_minutes": -314.65,
+        "coverage_completeness": 0.40480000000000005
+      },
+      "borda_score": 68,
+      "confidence_score": 0.15921066666666667,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 17.05 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 15.84 km at -314.6 min",
+        "40.5% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 92,
+      "mmsi": 257066990,
+      "vessel_name": "CLIPPER ENYO",
+      "evidence": {
+        "frechet_km": 20.58394025465116,
+        "dcpa_km": 19.581210395359516,
+        "tcpa_minutes": 117.21666666666667,
+        "coverage_completeness": 0.36790923824959476
+      },
+      "borda_score": 67,
+      "confidence_score": 0.1527498649378714,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 20.58 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 19.58 km at +117.2 min",
+        "36.8% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 93,
+      "mmsi": 367672380,
+      "vessel_name": "WAYNE BETHEL",
+      "evidence": {
+        "frechet_km": 19.155565859129776,
+        "dcpa_km": 16.628272087277693,
+        "tcpa_minutes": -176.41666666666666,
+        "coverage_completeness": 0.9984101748807631
+      },
+      "borda_score": 65,
+      "confidence_score": 0.21649443561208268,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 19.16 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 16.63 km at -176.4 min",
+        "99.8% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 94,
+      "mmsi": 538008103,
+      "vessel_name": "PROMETHEUS LIGHT",
+      "evidence": {
+        "frechet_km": 17.470791721332287,
+        "dcpa_km": 16.394836298743712,
+        "tcpa_minutes": 239.66666666666666,
+        "coverage_completeness": 0.3623595505617978
+      },
+      "borda_score": 63,
+      "confidence_score": 0.14304775280898877,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 17.47 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 16.39 km at +239.7 min",
+        "36.2% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 95,
+      "mmsi": 367138450,
+      "vessel_name": "CHRISTINA BELCHER",
+      "evidence": {
+        "frechet_km": 17.05551041929185,
+        "dcpa_km": 15.656688345184321,
+        "tcpa_minutes": -378.98333333333335,
+        "coverage_completeness": 0.5566188197767146
+      },
+      "borda_score": 61,
+      "confidence_score": 0.15825624667729932,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 17.06 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 15.66 km at -379.0 min",
+        "55.7% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 96,
+      "mmsi": 367730910,
+      "vessel_name": "DAVID B",
+      "evidence": {
+        "frechet_km": 17.50252522753711,
+        "dcpa_km": 16.559232170465197,
+        "tcpa_minutes": 239.13333333333333,
+        "coverage_completeness": 0.499194847020934
+      },
+      "borda_score": 60,
+      "confidence_score": 0.1499194847020934,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 17.50 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 16.56 km at +239.1 min",
+        "49.9% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 97,
+      "mmsi": 366959840,
+      "vessel_name": "MILAM",
+      "evidence": {
+        "frechet_km": 18.408101869930256,
+        "dcpa_km": 17.464852613184913,
+        "tcpa_minutes": -220.55,
+        "coverage_completeness": 0.3941841680129241
+      },
+      "borda_score": 56,
+      "confidence_score": 0.13012385568120627,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 18.41 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 17.46 km at -220.6 min",
+        "39.4% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 98,
+      "mmsi": 367789330,
+      "vessel_name": "TDW",
+      "evidence": {
+        "frechet_km": 24.714552587035588,
+        "dcpa_km": 10.319855319300279,
+        "tcpa_minutes": -306.93333333333334,
+        "coverage_completeness": 0.9983844911147012
+      },
+      "borda_score": 53,
+      "confidence_score": 0.1765239633817986,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 24.71 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 10.32 km at -306.9 min",
+        "99.8% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 99,
+      "mmsi": 367582850,
+      "vessel_name": "KENT",
+      "evidence": {
+        "frechet_km": 18.979156152569445,
+        "dcpa_km": 15.831009333371778,
+        "tcpa_minutes": -342.48333333333335,
+        "coverage_completeness": 1.0
+      },
+      "borda_score": 43,
+      "confidence_score": 0.14333333333333334,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 18.98 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 15.83 km at -342.5 min",
+        "100.0% real AIS points (un-interpolated) in observation window"
+      ]
+    },
+    {
+      "rank": 100,
+      "mmsi": 538010420,
+      "vessel_name": "DAT VENUS",
+      "evidence": {
+        "frechet_km": 19.43065930634727,
+        "dcpa_km": 16.902284192753296,
+        "tcpa_minutes": -458.35,
+        "coverage_completeness": 0.38636363636363635
+      },
+      "borda_score": 17,
+      "confidence_score": 0.039280303030303027,
+      "confidence_label": "LOW",
+      "explanation": [
+        "Fr\u00e9chet parity distance of 19.43 km against slick geometry",
+        "Closest kinematic approach (DCPA) of 16.90 km at -458.4 min",
+        "38.6% real AIS points (un-interpolated) in observation window"
+      ]
+    }
+  ],
+  "caveats": [
+    "This is a candidate association based on available AIS data, not proof of responsibility.",
+    "AIS coverage is incomplete; a non-broadcasting ('dark') vessel cannot be ruled out.",
+    "No peer-reviewed formula exists for combining these signals into a single probability; Borda rank aggregation was used instead of an arbitrary weighted sum."
+  ]
+}

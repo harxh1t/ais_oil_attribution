@@ -1,0 +1,6 @@
+{
+  "regime": "delayed",
+  "rationale": "User explicitly specified 'delayed' regime via CLI argument.",
+  "warning": null,
+  "is_platform_blowout_suspect": false
+}

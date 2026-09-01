@@ -1,0 +1,2610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIS Oil-Spill Attribution Dashboard - investigation_20260830_103150</title>
+    <style>
+        :root {
+            --bg: #0b0f19;
+            --surface: #131b2e;
+            --surface-hover: #1c2640;
+            --card-bg: #162036;
+            --border: #22304d;
+            --text: #f8fafc;
+            --muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.15);
+            --gold: #f59e0b;
+            --green: #10b981;
+            --red: #ef4444;
+            --purple: #8b5cf6;
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 1.5rem;
+            line-height: 1.5;
+        }
+        .container {
+            max-width: 1360px;
+            margin: 0 auto;
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 1.25rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .brand-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .brand-pill {
+            background: var(--accent-glow);
+            color: var(--accent);
+            padding: 3px 10px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+        .action-btns {
+            display: flex;
+            gap: 10px;
+        }
+        .btn {
+            background: var(--surface);
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn:hover {
+            background: var(--surface-hover);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        .btn-primary {
+            background: #0284c7;
+            border-color: #0369a1;
+            color: #ffffff;
+        }
+        .btn-primary:hover {
+            background: #0369a1;
+            color: #ffffff;
+        }
+        .grid { display: grid; }
+        .grid-2 { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+        .grid-3 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+        .grid-4 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+        
+        .kpi-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .kpi-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.15rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+        }
+        .stat-val {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-top: 0.35rem;
+        }
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+        }
+        .card h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-top: 0;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .map-wrapper {
+            position: relative;
+            width: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .map-frame {
+            width: 100%;
+            height: 560px;
+            border: none;
+            display: block;
+        }
+        .map-tip {
+            background: rgba(15, 23, 42, 0.85);
+            padding: 8px 12px;
+            font-size: 0.8rem;
+            color: var(--muted);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .evidence-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.25rem;
+        }
+        .evidence-card.primary-evidence {
+            border: 2px solid #ef4444;
+            background: rgba(239, 68, 68, 0.04);
+        }
+        .evidence-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        .rank-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            font-weight: 800;
+            font-size: 0.8rem;
+        }
+        .rank-1 { background: #dc2626; color: #ffffff; }
+        .rank-2 { background: #2563eb; color: #ffffff; }
+        .rank-3 { background: #7c3aed; color: #ffffff; }
+        .rank-4 { background: #475569; color: #ffffff; }
+        
+        .telemetry-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 1rem;
+            background: rgba(0,0,0,0.25);
+            padding: 10px;
+            border-radius: 6px;
+        }
+        .telemetry-item {
+            font-size: 0.8rem;
+        }
+        .tel-label { color: var(--muted); font-size: 0.72rem; }
+        .tel-val { font-weight: 700; color: #ffffff; font-size: 0.95rem; }
+        
+        .evidence-points {
+            font-size: 0.82rem;
+            color: #cbd5e1;
+            line-height: 1.5;
+        }
+        .ev-bullet {
+            margin-bottom: 6px;
+        }
+        
+        .search-toolbar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .search-input {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            min-width: 260px;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        .filter-btn-group {
+            display: flex;
+            gap: 6px;
+        }
+        .filter-btn {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--muted);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .filter-btn.active {
+            background: var(--accent);
+            color: #0b0f19;
+            border-color: var(--accent);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+        }
+        th, td {
+            padding: 10px 14px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        th {
+            background: rgba(0, 0, 0, 0.35);
+            color: var(--muted);
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        tr:hover td {
+            background-color: var(--surface-hover);
+        }
+        .mono-stat {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+        .progress-bar-bg {
+            width: 60px;
+            height: 6px;
+            background: #334155;
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 9999px;
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 8px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+        }
+        .badge-high { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #059669; }
+        .badge-med { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid #d97706; }
+        .badge-low { background: rgba(148, 163, 184, 0.15); color: #94a3b8; border: 1px solid #475569; }
+        .badge-borda { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
+        
+        .alert {
+            padding: 1rem 1.25rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.12);
+            border: 1px solid #d97706;
+            color: #fef3c7;
+        }
+        .footer {
+            font-size: 0.8rem;
+            color: var(--muted);
+            margin-top: 2.5rem;
+            border-top: 1px solid var(--border);
+            padding-top: 1.5rem;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="navbar">
+            <div>
+                <div class="brand-title">
+                    AIS + Satellite Oil-Spill Vessel Attribution
+                    <span class="brand-pill">FORENSIC SUITE</span>
+                </div>
+                <div style="font-size: 0.8rem; color: var(--muted); margin-top: 4px;">
+                    Investigation ID: <code>investigation_20260830_103150</code> | Timestamp: <code>2024-08-06 14:30:00 UTC</code>
+                </div>
+            </div>
+            <div class="action-btns">
+                <a href="workstation.html" class="btn" style="background: rgba(56, 189, 248, 0.2); border: 1px solid var(--accent); color: #fff; font-weight: 700;">🚀 Launch Forensic Workstation</a>
+                <a href="attribution.json" target="_blank" class="btn">📄 Raw JSON</a>
+                <a href="methodology.md" target="_blank" class="btn">🔬 Methodology</a>
+                <button onclick="window.print()" class="btn btn-primary">🖨️ Export PDF / Print</button>
+            </div>
+        </div>
+
+        
+
+        <!-- Top KPI Row -->
+        <div class="kpi-row">
+            <div class="kpi-box">
+                <div class="stat-label">Observation Location</div>
+                <div class="stat-val">29.2800&deg;, -94.7500&deg;</div>
+                <div style="font-size: 0.75rem; color: var(--muted); margin-top: 4px;">Spread: ~4.00 km radius</div>
+            </div>
+            <div class="kpi-box">
+                <div class="stat-label">Analysis Regime</div>
+                <div class="stat-val"><span style="color: var(--accent);">CONTEMPORANEOUS</span></div>
+                <div style="font-size: 0.75rem; color: var(--muted); margin-top: 4px;">Dual-regime physics switch</div>
+            </div>
+            <div class="kpi-box">
+                <div class="stat-label">Vessels Tracked</div>
+                <div class="stat-val">100 <span style="font-size: 0.85rem; font-weight: normal; color: var(--muted);">candidates</span></div>
+                <div style="font-size: 0.75rem; color: #34d399; margin-top: 4px;">2 High, 51 Med, 47 Low</div>
+            </div>
+            <div class="kpi-box">
+                <div class="stat-label">Top Identified Suspect</div>
+                <div class="stat-val" style="font-size: 1.15rem; color: #f87171;">
+                    CG29116
+                </div>
+                <div style="font-size: 0.75rem; color: var(--muted); margin-top: 4px;">
+                    MMSI: 369990116 | Parity: 7.92 km
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Map Panel -->
+        <div class="card">
+            <h2>
+                <span>🗺️ Geospatial Evidence Map & Telemetry</span>
+                <span style="font-size: 0.8rem; font-weight: normal; color: var(--muted);">Multi-Layer Maritime / Satellite Views</span>
+            </h2>
+            <div class="map-wrapper">
+                <iframe class="map-frame" src="maps/attribution_map.html"></iframe>
+                <div class="map-tip">
+                    <span>💡 <strong>Interactive Tips:</strong> Use layer control (top-right) to toggle between Maritime Ocean and Satellite imagery. Click vessel tracks for telemetry.</span>
+                    <span><a href="maps/attribution_map.html" target="_blank" style="color: var(--accent); text-decoration: none;">↗ Open Standalone Map</a></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Primary Candidates Evidence Breakdown -->
+        
+        <div class="card">
+            <h2>Primary Candidate Vessels & Telemetry Evidence</h2>
+            <div class="grid grid-3" style="gap: 1.25rem;">
+                
+            <div class="evidence-card primary-evidence">
+                <div class="evidence-header">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span class="rank-badge rank-1">#1</span>
+                        <div>
+                            <div style="font-size: 1.1rem; font-weight: 700; color: #F8FAFC;">CG29116</div>
+                            <div style="font-size: 0.8rem; color: #94A3B8;">MMSI: 369990116</div>
+                        </div>
+                    </div>
+                    <span class="badge badge-high">HIGH (0.788)</span>
+                </div>
+                
+                <div class="telemetry-grid">
+                    <div class="telemetry-item">
+                        <div class="tel-label">Fréchet Parity</div>
+                        <div class="tel-val">7.92 km</div>
+                    </div>
+                    <div class="telemetry-item">
+                        <div class="tel-label">Closest Approach (DCPA)</div>
+                        <div class="tel-val">5.36 km</div>
+                    </div>
+                    <div class="telemetry-item">
+                        <div class="tel-label">CPA Time Offset</div>
+                        <div class="tel-val">-35.5 min</div>
+                    </div>
+                    <div class="telemetry-item">
+                        <div class="tel-label">AIS Signal Integrity</div>
+                        <div class="tel-val">92.2%</div>
+                    </div>
+                </div>
+
+                <div class="evidence-points">
+                    <div class="ev-bullet">🔹 <strong>Track Parity:</strong> Discrete Fréchet similarity of 7.92 km against observed slick centerline.</div>
+                    <div class="ev-bullet">🔹 <strong>Kinematics:</strong> Reached closest point of approach of 5.36 km at 35.5 min prior to observation.</div>
+                    <div class="ev-bullet">🔹 <strong>Broadcast Completeness:</strong> 92.2% authentic un-interpolated AIS transmissions.</div>
+                </div>
+            </div>
+            
+            <div class="evidence-card ">
+                <div class="evidence-header">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span class="rank-badge rank-2">#2</span>
+                        <div>
+                            <div style="font-size: 1.1rem; font-weight: 700; color: #F8FAFC;">BAD DOG</div>
+                            <div style="font-size: 0.8rem; color: #94A3B8;">MMSI: 367033750</div>
+                        </div>
+                    </div>
+                    <span class="badge badge-high">HIGH (0.815)</span>
+                </div>
+                
+                <div class="telemetry-grid">
+                    <div class="telemetry-item">
+                        <div class="tel-label">Fréchet Parity</div>
+                        <div class="tel-val">6.69 km</div>
+                    </div>
+                    <div class="telemetry-item">
+                        <div class="tel-label">Closest Approach (DCPA)</div>
+                        <div class="tel-val">5.50 km</div>
+                    </div>
+                    <div class="telemetry-item">
+                        <div class="tel-label">CPA Time Offset</div>
+                        <div class="tel-val">-59.9 min</div>
+                    </div>
+                    <div class="telemetry-item">
+                        <div class="tel-label">AIS Signal Integrity</div>
+                        <div class="tel-val">99.5%</div>
+                    </div>
+                </div>
+
+                <div class="evidence-points">
+                    <div class="ev-bullet">🔹 <strong>Track Parity:</strong> Discrete Fréchet similarity of 6.69 km against observed slick centerline.</div>
+                    <div class="ev-bullet">🔹 <strong>Kinematics:</strong> Reached closest point of approach of 5.50 km at 59.9 min prior to observation.</div>
+                    <div class="ev-bullet">🔹 <strong>Broadcast Completeness:</strong> 99.5% authentic un-interpolated AIS transmissions.</div>
+                </div>
+            </div>
+            
+            <div class="evidence-card ">
+                <div class="evidence-header">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span class="rank-badge rank-3">#3</span>
+                        <div>
+                            <div style="font-size: 1.1rem; font-weight: 700; color: #F8FAFC;">BRIAN T</div>
+                            <div style="font-size: 0.8rem; color: #94A3B8;">MMSI: 366906130</div>
+                        </div>
+                    </div>
+                    <span class="badge badge-med">MEDIUM (0.543)</span>
+                </div>
+                
+                <div class="telemetry-grid">
+                    <div class="telemetry-item">
+                        <div class="tel-label">Fréchet Parity</div>
+                        <div class="tel-val">7.04 km</div>
+                    </div>
+                    <div class="telemetry-item">
+                        <div class="tel-label">Closest Approach (DCPA)</div>
+                        <div class="tel-val">6.21 km</div>
+                    </div>
+                    <div class="telemetry-item">
+                        <div class="tel-label">CPA Time Offset</div>
+                        <div class="tel-val">-14.3 min</div>
+                    </div>
+                    <div class="telemetry-item">
+                        <div class="tel-label">AIS Signal Integrity</div>
+                        <div class="tel-val">33.5%</div>
+                    </div>
+                </div>
+
+                <div class="evidence-points">
+                    <div class="ev-bullet">🔹 <strong>Track Parity:</strong> Discrete Fréchet similarity of 7.04 km against observed slick centerline.</div>
+                    <div class="ev-bullet">🔹 <strong>Kinematics:</strong> Reached closest point of approach of 6.21 km at 14.3 min prior to observation.</div>
+                    <div class="ev-bullet">🔹 <strong>Broadcast Completeness:</strong> 33.5% authentic un-interpolated AIS transmissions.</div>
+                </div>
+            </div>
+            
+            </div>
+        </div>
+        
+
+        <!-- Drift Backtracking Section (if applicable) -->
+        
+
+        <!-- Interactive Candidate Table -->
+        <div class="card">
+            <h2>
+                <span>📋 Ranked Candidate Vessel Attribution Matrix</span>
+                <span style="font-size: 0.8rem; font-weight: normal; color: var(--muted);">Borda Count Rank Aggregation</span>
+            </h2>
+
+            <div class="search-toolbar">
+                <input type="text" id="vesselSearch" class="search-input" placeholder="🔍 Search vessel name, MMSI, or callsign..." onkeyup="filterTable()">
+                <div class="filter-btn-group">
+                    <button class="filter-btn active" onclick="setConfidenceFilter('ALL', this)">All (100)</button>
+                    <button class="filter-btn" onclick="setConfidenceFilter('HIGH', this)">High (2)</button>
+                    <button class="filter-btn" onclick="setConfidenceFilter('MEDIUM', this)">Medium (51)</button>
+                    <button class="filter-btn" onclick="setConfidenceFilter('LOW', this)">Low (47)</button>
+                </div>
+            </div>
+
+            <div style="overflow-x: auto;">
+                <table id="candidateTable">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Vessel Info</th>
+                            <th>Fréchet Parity</th>
+                            <th>DCPA (Distance)</th>
+                            <th>TCPA (Time Offset)</th>
+                            <th>AIS Completeness</th>
+                            <th>Borda Score</th>
+                            <th>Attribution Confidence</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+            <tr data-conf="HIGH" data-vessel="CG29116" data-mmsi="369990116">
+                <td><span class="rank-badge rank-1">#1</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">CG29116</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 369990116</div>
+                </td>
+                <td><span class="mono-stat">7.92 km</span></td>
+                <td><span class="mono-stat">5.36 km</span></td>
+                <td><span class="mono-stat">-35.5 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 92%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">92.2%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">246 pts</span></td>
+                <td><span class="badge badge-high">HIGH (0.788)</span></td>
+            </tr>
+            
+
+            <tr data-conf="HIGH" data-vessel="BAD DOG" data-mmsi="367033750">
+                <td><span class="rank-badge rank-2">#2</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">BAD DOG</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367033750</div>
+                </td>
+                <td><span class="mono-stat">6.69 km</span></td>
+                <td><span class="mono-stat">5.50 km</span></td>
+                <td><span class="mono-stat">-59.9 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">99.5%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">245 pts</span></td>
+                <td><span class="badge badge-high">HIGH (0.815)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="BRIAN T" data-mmsi="366906130">
+                <td><span class="rank-badge rank-3">#3</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">BRIAN T</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 366906130</div>
+                </td>
+                <td><span class="mono-stat">7.04 km</span></td>
+                <td><span class="mono-stat">6.21 km</span></td>
+                <td><span class="mono-stat">-14.3 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 33%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">33.5%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">244 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.543)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="EXCALIBUR" data-mmsi="367107680">
+                <td><span class="rank-badge rank-4">#4</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">EXCALIBUR</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367107680</div>
+                </td>
+                <td><span class="mono-stat">11.90 km</span></td>
+                <td><span class="mono-stat">4.72 km</span></td>
+                <td><span class="mono-stat">-35.5 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 51%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">50.9%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">243 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.611)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="CG EDGAR CULBERTSON" data-mmsi="338926437">
+                <td><span class="rank-badge rank-4">#5</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">CG EDGAR CULBERTSON</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 338926437</div>
+                </td>
+                <td><span class="mono-stat">7.79 km</span></td>
+                <td><span class="mono-stat">6.17 km</span></td>
+                <td><span class="mono-stat">+23.2 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 35%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">34.8%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">236 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.530)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="AET PARTNERSHIP" data-mmsi="369385000">
+                <td><span class="rank-badge rank-4">#6</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">AET PARTNERSHIP</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 369385000</div>
+                </td>
+                <td><span class="mono-stat">6.71 km</span></td>
+                <td><span class="mono-stat">5.38 km</span></td>
+                <td><span class="mono-stat">-77.9 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 47%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">46.8%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">235 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.575)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="LYNNE M. ROSE" data-mmsi="368261750">
+                <td><span class="rank-badge rank-4">#7</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">LYNNE M. ROSE</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 368261750</div>
+                </td>
+                <td><span class="mono-stat">6.81 km</span></td>
+                <td><span class="mono-stat">6.19 km</span></td>
+                <td><span class="mono-stat">+48.5 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 38%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">37.6%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">234 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.536)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="LADY LAB" data-mmsi="367305890">
+                <td><span class="rank-badge rank-4">#8</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">LADY LAB</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367305890</div>
+                </td>
+                <td><span class="mono-stat">6.49 km</span></td>
+                <td><span class="mono-stat">5.63 km</span></td>
+                <td><span class="mono-stat">+72.8 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 35%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">35.1%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">233 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.525)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="ROBERT C LANIER" data-mmsi="367119810">
+                <td><span class="rank-badge rank-4">#9</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">ROBERT C LANIER</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367119810</div>
+                </td>
+                <td><span class="mono-stat">8.45 km</span></td>
+                <td><span class="mono-stat">5.72 km</span></td>
+                <td><span class="mono-stat">-21.7 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 80%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">80.0%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">232 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.696)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="RED EAGLE" data-mmsi="366889000">
+                <td><span class="rank-badge rank-4">#10</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">RED EAGLE</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 366889000</div>
+                </td>
+                <td><span class="mono-stat">10.10 km</span></td>
+                <td><span class="mono-stat">4.71 km</span></td>
+                <td><span class="mono-stat">+102.9 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 33%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">33.3%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">230 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.511)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="DIMMIT" data-mmsi="368044440">
+                <td><span class="rank-badge rank-4">#11</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">DIMMIT</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 368044440</div>
+                </td>
+                <td><span class="mono-stat">6.17 km</span></td>
+                <td><span class="mono-stat">5.11 km</span></td>
+                <td><span class="mono-stat">-222.2 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">99.8%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">224 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.746)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="DEBORAH" data-mmsi="368000410">
+                <td><span class="rank-badge rank-4">#12</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">DEBORAH</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 368000410</div>
+                </td>
+                <td><span class="mono-stat">13.68 km</span></td>
+                <td><span class="mono-stat">5.09 km</span></td>
+                <td><span class="mono-stat">+54.5 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 44%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">43.7%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">223 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.534)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="LONE STAR" data-mmsi="366973590">
+                <td><span class="rank-badge rank-4">#13</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">LONE STAR</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 366973590</div>
+                </td>
+                <td><span class="mono-stat">14.61 km</span></td>
+                <td><span class="mono-stat">4.65 km</span></td>
+                <td><span class="mono-stat">+70.2 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">100.0%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">220 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.733)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="MELINDA B ADAMS" data-mmsi="367300160">
+                <td><span class="rank-badge rank-4">#14</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">MELINDA B ADAMS</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367300160</div>
+                </td>
+                <td><span class="mono-stat">7.28 km</span></td>
+                <td><span class="mono-stat">6.36 km</span></td>
+                <td><span class="mono-stat">-62.2 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">99.6%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">220 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.732)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="PADRE ISLAND" data-mmsi="367525000">
+                <td><span class="rank-badge rank-4">#15</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">PADRE ISLAND</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367525000</div>
+                </td>
+                <td><span class="mono-stat">11.17 km</span></td>
+                <td><span class="mono-stat">5.28 km</span></td>
+                <td><span class="mono-stat">+60.1 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">100.0%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">218 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.727)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="NO 1" data-mmsi="368926560">
+                <td><span class="rank-badge rank-4">#16</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">NO 1</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 368926560</div>
+                </td>
+                <td><span class="mono-stat">7.98 km</span></td>
+                <td><span class="mono-stat">5.20 km</span></td>
+                <td><span class="mono-stat">-168.2 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 66%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">66.0%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">215 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.595)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="GENERAL PATTON" data-mmsi="367761740">
+                <td><span class="rank-badge rank-4">#17</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">GENERAL PATTON</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367761740</div>
+                </td>
+                <td><span class="mono-stat">8.54 km</span></td>
+                <td><span class="mono-stat">7.50 km</span></td>
+                <td><span class="mono-stat">-29.5 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">100.0%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">214 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.713)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="F.M. BROWN" data-mmsi="368014710">
+                <td><span class="rank-badge rank-4">#18</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">F.M. BROWN</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 368014710</div>
+                </td>
+                <td><span class="mono-stat">6.33 km</span></td>
+                <td><span class="mono-stat">5.06 km</span></td>
+                <td><span class="mono-stat">-320.9 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 37%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">36.5%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">205 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.466)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="JACOB BRENT" data-mmsi="367615990">
+                <td><span class="rank-badge rank-4">#19</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">JACOB BRENT</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367615990</div>
+                </td>
+                <td><span class="mono-stat">5.91 km</span></td>
+                <td><span class="mono-stat">4.73 km</span></td>
+                <td><span class="mono-stat">-374.6 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">100.0%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">204 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.680)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="THOR" data-mmsi="367300350">
+                <td><span class="rank-badge rank-4">#20</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">THOR</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367300350</div>
+                </td>
+                <td><span class="mono-stat">17.27 km</span></td>
+                <td><span class="mono-stat">5.21 km</span></td>
+                <td><span class="mono-stat">-18.6 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 52%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">52.0%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">200 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.507)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="LT DICK DOWLING" data-mmsi="367773360">
+                <td><span class="rank-badge rank-4">#21</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">LT DICK DOWLING</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367773360</div>
+                </td>
+                <td><span class="mono-stat">7.56 km</span></td>
+                <td><span class="mono-stat">5.53 km</span></td>
+                <td><span class="mono-stat">+203.8 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 40%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">40.2%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">196 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.458)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="TEXAS CITY" data-mmsi="368285070">
+                <td><span class="rank-badge rank-4">#22</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">TEXAS CITY</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 368285070</div>
+                </td>
+                <td><span class="mono-stat">6.64 km</span></td>
+                <td><span class="mono-stat">5.19 km</span></td>
+                <td><span class="mono-stat">-336.6 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">100.0%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">194 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.647)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="BILL TULLIER" data-mmsi="367308970">
+                <td><span class="rank-badge rank-4">#23</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">BILL TULLIER</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367308970</div>
+                </td>
+                <td><span class="mono-stat">10.17 km</span></td>
+                <td><span class="mono-stat">5.27 km</span></td>
+                <td><span class="mono-stat">+200.0 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">100.0%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">190 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.633)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="YASA VEGA" data-mmsi="538009345">
+                <td><span class="rank-badge rank-4">#24</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">YASA VEGA</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 538009345</div>
+                </td>
+                <td><span class="mono-stat">8.42 km</span></td>
+                <td><span class="mono-stat">6.95 km</span></td>
+                <td><span class="mono-stat">+146.5 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 33%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">33.4%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">189 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.420)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="ROMAN HAYS" data-mmsi="367439810">
+                <td><span class="rank-badge rank-4">#25</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">ROMAN HAYS</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367439810</div>
+                </td>
+                <td><span class="mono-stat">8.76 km</span></td>
+                <td><span class="mono-stat">7.54 km</span></td>
+                <td><span class="mono-stat">-98.7 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">99.8%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">187 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.623)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="ERIN T" data-mmsi="366845050">
+                <td><span class="rank-badge rank-4">#26</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">ERIN T</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 366845050</div>
+                </td>
+                <td><span class="mono-stat">7.03 km</span></td>
+                <td><span class="mono-stat">5.19 km</span></td>
+                <td><span class="mono-stat">-365.4 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">99.8%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">186 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.619)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="BAYOU CITY" data-mmsi="368001440">
+                <td><span class="rank-badge rank-4">#27</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">BAYOU CITY</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 368001440</div>
+                </td>
+                <td><span class="mono-stat">10.33 km</span></td>
+                <td><span class="mono-stat">4.68 km</span></td>
+                <td><span class="mono-stat">-299.9 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 62%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">61.9%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">185 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.499)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="GREEN KNIGHT" data-mmsi="368007340">
+                <td><span class="rank-badge rank-4">#28</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">GREEN KNIGHT</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 368007340</div>
+                </td>
+                <td><span class="mono-stat">22.09 km</span></td>
+                <td><span class="mono-stat">4.74 km</span></td>
+                <td><span class="mono-stat">-35.7 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">99.7%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">184 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.612)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="CG45630" data-mmsi="369493630">
+                <td><span class="rank-badge rank-4">#29</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">CG45630</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 369493630</div>
+                </td>
+                <td><span class="mono-stat">7.95 km</span></td>
+                <td><span class="mono-stat">5.27 km</span></td>
+                <td><span class="mono-stat">-275.6 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">100.0%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">183 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.610)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="CAPT ALVIN" data-mmsi="368354850">
+                <td><span class="rank-badge rank-4">#30</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">CAPT ALVIN</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 368354850</div>
+                </td>
+                <td><span class="mono-stat">13.17 km</span></td>
+                <td><span class="mono-stat">11.32 km</span></td>
+                <td><span class="mono-stat">+1.6 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 36%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">36.1%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">179 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.406)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="GAS TAURUS" data-mmsi="636021228">
+                <td><span class="rank-badge rank-4">#31</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">GAS TAURUS</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 636021228</div>
+                </td>
+                <td><span class="mono-stat">8.93 km</span></td>
+                <td><span class="mono-stat">8.04 km</span></td>
+                <td><span class="mono-stat">+114.4 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 33%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">33.0%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">179 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.397)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="CG HAWK" data-mmsi="366999613">
+                <td><span class="rank-badge rank-4">#32</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">CG HAWK</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 366999613</div>
+                </td>
+                <td><span class="mono-stat">11.13 km</span></td>
+                <td><span class="mono-stat">7.70 km</span></td>
+                <td><span class="mono-stat">+82.4 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 42%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">41.8%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">178 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.421)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="EVERARD DUPRE" data-mmsi="368097780">
+                <td><span class="rank-badge rank-4">#33</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">EVERARD DUPRE</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 368097780</div>
+                </td>
+                <td><span class="mono-stat">12.35 km</span></td>
+                <td><span class="mono-stat">5.31 km</span></td>
+                <td><span class="mono-stat">+198.0 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">100.0%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">175 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.583)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="RMS TRITON" data-mmsi="338253000">
+                <td><span class="rank-badge rank-4">#34</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">RMS TRITON</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 338253000</div>
+                </td>
+                <td><span class="mono-stat">12.16 km</span></td>
+                <td><span class="mono-stat">4.76 km</span></td>
+                <td><span class="mono-stat">-266.4 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 33%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">32.6%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">175 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.387)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="NORDIC AQUA" data-mmsi="372267000">
+                <td><span class="rank-badge rank-4">#35</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">NORDIC AQUA</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 372267000</div>
+                </td>
+                <td><span class="mono-stat">9.36 km</span></td>
+                <td><span class="mono-stat">8.10 km</span></td>
+                <td><span class="mono-stat">-136.4 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 32%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">31.7%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">175 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.384)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="MR ROLAND" data-mmsi="367561320">
+                <td><span class="rank-badge rank-4">#36</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">MR ROLAND</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367561320</div>
+                </td>
+                <td><span class="mono-stat">11.58 km</span></td>
+                <td><span class="mono-stat">8.64 km</span></td>
+                <td><span class="mono-stat">-72.3 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">100.0%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">174 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.580)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="YELLOW ROSE" data-mmsi="367442390">
+                <td><span class="rank-badge rank-4">#37</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">YELLOW ROSE</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367442390</div>
+                </td>
+                <td><span class="mono-stat">10.69 km</span></td>
+                <td><span class="mono-stat">4.62 km</span></td>
+                <td><span class="mono-stat">-447.4 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">100.0%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">170 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.567)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="ODYSSEA GOLD" data-mmsi="368230000">
+                <td><span class="rank-badge rank-4">#38</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">ODYSSEA GOLD</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 368230000</div>
+                </td>
+                <td><span class="mono-stat">6.40 km</span></td>
+                <td><span class="mono-stat">5.73 km</span></td>
+                <td><span class="mono-stat">-346.0 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">100.0%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">170 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.567)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="GALVESTON" data-mmsi="367457250">
+                <td><span class="rank-badge rank-4">#39</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">GALVESTON</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367457250</div>
+                </td>
+                <td><span class="mono-stat">14.05 km</span></td>
+                <td><span class="mono-stat">5.19 km</span></td>
+                <td><span class="mono-stat">-225.1 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">100.0%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">169 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.563)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="HOUSTON" data-mmsi="367796610">
+                <td><span class="rank-badge rank-4">#40</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">HOUSTON</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367796610</div>
+                </td>
+                <td><span class="mono-stat">19.10 km</span></td>
+                <td><span class="mono-stat">4.68 km</span></td>
+                <td><span class="mono-stat">+153.0 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">100.0%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">167 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.557)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="ROBERT H DEDMAN" data-mmsi="367391260">
+                <td><span class="rank-badge rank-4">#41</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">ROBERT H DEDMAN</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367391260</div>
+                </td>
+                <td><span class="mono-stat">8.45 km</span></td>
+                <td><span class="mono-stat">5.73 km</span></td>
+                <td><span class="mono-stat">-239.8 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 85%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">84.6%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">167 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.514)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="LEYTE GULF" data-mmsi="368181960">
+                <td><span class="rank-badge rank-4">#42</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">LEYTE GULF</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 368181960</div>
+                </td>
+                <td><span class="mono-stat">8.53 km</span></td>
+                <td><span class="mono-stat">5.55 km</span></td>
+                <td><span class="mono-stat">-297.6 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 98%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">98.1%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">164 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.541)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="SAMC SWAN" data-mmsi="477231800">
+                <td><span class="rank-badge rank-4">#43</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">SAMC SWAN</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 477231800</div>
+                </td>
+                <td><span class="mono-stat">12.84 km</span></td>
+                <td><span class="mono-stat">7.24 km</span></td>
+                <td><span class="mono-stat">-138.0 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 45%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">44.5%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">163 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.393)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="CG26322" data-mmsi="338926922">
+                <td><span class="rank-badge rank-4">#44</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">CG26322</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 338926922</div>
+                </td>
+                <td><span class="mono-stat">7.80 km</span></td>
+                <td><span class="mono-stat">6.22 km</span></td>
+                <td><span class="mono-stat">-290.6 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 36%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">36.2%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">162 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.368)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="T RAIN" data-mmsi="367550950">
+                <td><span class="rank-badge rank-4">#45</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">T RAIN</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367550950</div>
+                </td>
+                <td><span class="mono-stat">14.37 km</span></td>
+                <td><span class="mono-stat">5.56 km</span></td>
+                <td><span class="mono-stat">+182.8 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 54%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">53.6%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">161 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.412)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="SUCCESS" data-mmsi="366951820">
+                <td><span class="rank-badge rank-4">#46</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">SUCCESS</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 366951820</div>
+                </td>
+                <td><span class="mono-stat">13.08 km</span></td>
+                <td><span class="mono-stat">11.31 km</span></td>
+                <td><span class="mono-stat">-60.4 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 38%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">38.1%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">161 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.371)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="AQUARAMA" data-mmsi="248620000">
+                <td><span class="rank-badge rank-4">#47</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">AQUARAMA</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 248620000</div>
+                </td>
+                <td><span class="mono-stat">15.46 km</span></td>
+                <td><span class="mono-stat">14.58 km</span></td>
+                <td><span class="mono-stat">+14.8 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 38%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">38.1%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">161 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.370)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="PATI R MORAN" data-mmsi="367445000">
+                <td><span class="rank-badge rank-4">#48</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">PATI R MORAN</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367445000</div>
+                </td>
+                <td><span class="mono-stat">10.04 km</span></td>
+                <td><span class="mono-stat">7.87 km</span></td>
+                <td><span class="mono-stat">-199.3 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 38%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">38.5%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">159 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.367)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="RONNIE ROGERS" data-mmsi="367113160">
+                <td><span class="rank-badge rank-4">#49</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">RONNIE ROGERS</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367113160</div>
+                </td>
+                <td><span class="mono-stat">17.06 km</span></td>
+                <td><span class="mono-stat">5.38 km</span></td>
+                <td><span class="mono-stat">+167.2 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">99.8%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">157 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.523)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="DENIA" data-mmsi="367504910">
+                <td><span class="rank-badge rank-4">#50</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">DENIA</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367504910</div>
+                </td>
+                <td><span class="mono-stat">12.25 km</span></td>
+                <td><span class="mono-stat">5.33 km</span></td>
+                <td><span class="mono-stat">-260.9 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 51%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">51.4%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">157 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.396)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="BETSY BLESSEY" data-mmsi="366806920">
+                <td><span class="rank-badge rank-4">#51</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">BETSY BLESSEY</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 366806920</div>
+                </td>
+                <td><span class="mono-stat">17.26 km</span></td>
+                <td><span class="mono-stat">10.27 km</span></td>
+                <td><span class="mono-stat">-15.8 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 45%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">45.4%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">157 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.380)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="COLONEL" data-mmsi="367053160">
+                <td><span class="rank-badge rank-4">#52</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">COLONEL</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367053160</div>
+                </td>
+                <td><span class="mono-stat">12.12 km</span></td>
+                <td><span class="mono-stat">8.45 km</span></td>
+                <td><span class="mono-stat">-157.5 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">100.0%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">156 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.520)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="RAY STOKER; JR" data-mmsi="367151450">
+                <td><span class="rank-badge rank-4">#53</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">RAY STOKER; JR</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367151450</div>
+                </td>
+                <td><span class="mono-stat">8.42 km</span></td>
+                <td><span class="mono-stat">5.71 km</span></td>
+                <td><span class="mono-stat">-361.9 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">99.8%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">155 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.516)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="DOLPHIN" data-mmsi="367401290">
+                <td><span class="rank-badge rank-4">#54</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">DOLPHIN</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367401290</div>
+                </td>
+                <td><span class="mono-stat">17.62 km</span></td>
+                <td><span class="mono-stat">5.21 km</span></td>
+                <td><span class="mono-stat">-161.6 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 53%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">52.6%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">155 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.394)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="CAVALIER" data-mmsi="366961560">
+                <td><span class="rank-badge rank-4">#55</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">CAVALIER</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 366961560</div>
+                </td>
+                <td><span class="mono-stat">10.38 km</span></td>
+                <td><span class="mono-stat">5.14 km</span></td>
+                <td><span class="mono-stat">-475.4 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 43%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">43.4%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">155 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.371)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="FRANK JAHN" data-mmsi="367505030">
+                <td><span class="rank-badge rank-4">#56</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">FRANK JAHN</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367505030</div>
+                </td>
+                <td><span class="mono-stat">17.06 km</span></td>
+                <td><span class="mono-stat">10.10 km</span></td>
+                <td><span class="mono-stat">-44.6 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">99.8%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">153 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.510)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="LUBBOCK" data-mmsi="368136890">
+                <td><span class="rank-badge rank-4">#57</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">LUBBOCK</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 368136890</div>
+                </td>
+                <td><span class="mono-stat">7.73 km</span></td>
+                <td><span class="mono-stat">6.75 km</span></td>
+                <td><span class="mono-stat">-360.7 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">100.0%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">152 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.507)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="POSEIDON" data-mmsi="367754480">
+                <td><span class="rank-badge rank-4">#58</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">POSEIDON</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367754480</div>
+                </td>
+                <td><span class="mono-stat">17.60 km</span></td>
+                <td><span class="mono-stat">5.62 km</span></td>
+                <td><span class="mono-stat">+98.2 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 40%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">40.0%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">152 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.355)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="DEWITT C GREER" data-mmsi="366978210">
+                <td><span class="rank-badge rank-4">#59</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">DEWITT C GREER</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 366978210</div>
+                </td>
+                <td><span class="mono-stat">11.10 km</span></td>
+                <td><span class="mono-stat">5.72 km</span></td>
+                <td><span class="mono-stat">-272.5 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">100.0%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">150 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.500)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="STEVEN MAI II" data-mmsi="367431020">
+                <td><span class="rank-badge rank-4">#60</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">STEVEN MAI II</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367431020</div>
+                </td>
+                <td><span class="mono-stat">14.25 km</span></td>
+                <td><span class="mono-stat">12.24 km</span></td>
+                <td><span class="mono-stat">-66.9 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 25%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">25.5%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">150 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.314)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="LUKE K" data-mmsi="367567460">
+                <td><span class="rank-badge rank-4">#61</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">LUKE K</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367567460</div>
+                </td>
+                <td><span class="mono-stat">10.61 km</span></td>
+                <td><span class="mono-stat">5.25 km</span></td>
+                <td><span class="mono-stat">-469.7 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">100.0%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">148 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.493)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="CG ALLIGATOR" data-mmsi="369493387">
+                <td><span class="rank-badge rank-4">#62</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">CG ALLIGATOR</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 369493387</div>
+                </td>
+                <td><span class="mono-stat">7.89 km</span></td>
+                <td><span class="mono-stat">6.27 km</span></td>
+                <td><span class="mono-stat">-388.7 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 35%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">35.4%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">145 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.327)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="TEXAS" data-mmsi="366991740">
+                <td><span class="rank-badge rank-4">#63</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">TEXAS</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 366991740</div>
+                </td>
+                <td><span class="mono-stat">15.21 km</span></td>
+                <td><span class="mono-stat">5.44 km</span></td>
+                <td><span class="mono-stat">-242.7 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 97%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">96.6%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">144 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.472)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="MISS MONIE" data-mmsi="366962010">
+                <td><span class="rank-badge rank-4">#64</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">MISS MONIE</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 366962010</div>
+                </td>
+                <td><span class="mono-stat">17.33 km</span></td>
+                <td><span class="mono-stat">15.80 km</span></td>
+                <td><span class="mono-stat">-1.5 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">100.0%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">141 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.470)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="NEW BUCCANEER" data-mmsi="367136040">
+                <td><span class="rank-badge rank-4">#65</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">NEW BUCCANEER</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367136040</div>
+                </td>
+                <td><span class="mono-stat">13.81 km</span></td>
+                <td><span class="mono-stat">5.14 km</span></td>
+                <td><span class="mono-stat">-475.4 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">100.0%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">138 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.460)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="SABINE" data-mmsi="367509510">
+                <td><span class="rank-badge rank-4">#66</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">SABINE</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367509510</div>
+                </td>
+                <td><span class="mono-stat">17.77 km</span></td>
+                <td><span class="mono-stat">10.39 km</span></td>
+                <td><span class="mono-stat">+60.1 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">99.8%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">129 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.430)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="NEVA CALLAIS" data-mmsi="368095380">
+                <td><span class="rank-badge rank-4">#67</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">NEVA CALLAIS</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 368095380</div>
+                </td>
+                <td><span class="mono-stat">17.09 km</span></td>
+                <td><span class="mono-stat">15.68 km</span></td>
+                <td><span class="mono-stat">+65.3 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 41%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">41.5%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">124 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.292)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="CAPT BAILEY" data-mmsi="367714330">
+                <td><span class="rank-badge rank-4">#68</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">CAPT BAILEY</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367714330</div>
+                </td>
+                <td><span class="mono-stat">20.54 km</span></td>
+                <td><span class="mono-stat">4.92 km</span></td>
+                <td><span class="mono-stat">-254.4 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 27%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">26.8%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">124 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.262)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="WOODY RICHERSON" data-mmsi="367507070">
+                <td><span class="rank-badge rank-4">#69</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">WOODY RICHERSON</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367507070</div>
+                </td>
+                <td><span class="mono-stat">17.26 km</span></td>
+                <td><span class="mono-stat">16.48 km</span></td>
+                <td><span class="mono-stat">-41.4 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">100.0%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">123 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.410)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="LLANO" data-mmsi="367506740">
+                <td><span class="rank-badge rank-4">#70</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">LLANO</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367506740</div>
+                </td>
+                <td><span class="mono-stat">18.21 km</span></td>
+                <td><span class="mono-stat">10.32 km</span></td>
+                <td><span class="mono-stat">-74.4 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 75%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">75.3%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">122 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.356)</span></td>
+            </tr>
+            
+
+            <tr data-conf="MEDIUM" data-vessel="JOHN R WILLIAMS" data-mmsi="368344380">
+                <td><span class="rank-badge rank-4">#71</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">JOHN R WILLIAMS</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 368344380</div>
+                </td>
+                <td><span class="mono-stat">18.47 km</span></td>
+                <td><span class="mono-stat">16.13 km</span></td>
+                <td><span class="mono-stat">+19.6 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">100.0%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">121 pts</span></td>
+                <td><span class="badge badge-med">MEDIUM (0.403)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="LYNNE" data-mmsi="367663560">
+                <td><span class="rank-badge rank-4">#72</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">LYNNE</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367663560</div>
+                </td>
+                <td><span class="mono-stat">17.06 km</span></td>
+                <td><span class="mono-stat">10.35 km</span></td>
+                <td><span class="mono-stat">+161.8 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">100.0%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">119 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.397)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="ANIKITOS" data-mmsi="538010235">
+                <td><span class="rank-badge rank-4">#73</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">ANIKITOS</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 538010235</div>
+                </td>
+                <td><span class="mono-stat">18.06 km</span></td>
+                <td><span class="mono-stat">7.77 km</span></td>
+                <td><span class="mono-stat">+160.6 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 46%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">46.1%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">118 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.287)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="STORHOLMEN" data-mmsi="538005554">
+                <td><span class="rank-badge rank-4">#74</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">STORHOLMEN</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 538005554</div>
+                </td>
+                <td><span class="mono-stat">17.39 km</span></td>
+                <td><span class="mono-stat">16.27 km</span></td>
+                <td><span class="mono-stat">+51.8 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 37%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">36.9%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">118 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.269)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="IWO JIMA" data-mmsi="367761630">
+                <td><span class="rank-badge rank-4">#75</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">IWO JIMA</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367761630</div>
+                </td>
+                <td><span class="mono-stat">16.98 km</span></td>
+                <td><span class="mono-stat">10.08 km</span></td>
+                <td><span class="mono-stat">-201.2 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 90%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">89.8%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">116 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.367)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="NEW MISTRAL" data-mmsi="256680000">
+                <td><span class="rank-badge rank-4">#76</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">NEW MISTRAL</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 256680000</div>
+                </td>
+                <td><span class="mono-stat">16.64 km</span></td>
+                <td><span class="mono-stat">16.19 km</span></td>
+                <td><span class="mono-stat">+100.0 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 36%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">36.5%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">115 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.262)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="BUBBA-JOHN" data-mmsi="367740310">
+                <td><span class="rank-badge rank-4">#77</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">BUBBA-JOHN</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367740310</div>
+                </td>
+                <td><span class="mono-stat">10.92 km</span></td>
+                <td><span class="mono-stat">9.40 km</span></td>
+                <td><span class="mono-stat">-417.1 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 98%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">97.8%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">109 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.359)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="SYDNEE TAYLOR" data-mmsi="367149340">
+                <td><span class="rank-badge rank-4">#78</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">SYDNEE TAYLOR</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367149340</div>
+                </td>
+                <td><span class="mono-stat">16.49 km</span></td>
+                <td><span class="mono-stat">11.72 km</span></td>
+                <td><span class="mono-stat">-211.4 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">99.8%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">106 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.353)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="TEXAS CITY" data-mmsi="367135470">
+                <td><span class="rank-badge rank-4">#79</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">TEXAS CITY</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367135470</div>
+                </td>
+                <td><span class="mono-stat">17.14 km</span></td>
+                <td><span class="mono-stat">16.49 km</span></td>
+                <td><span class="mono-stat">+90.1 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 79%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">78.7%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">105 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.313)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="CG JACOB POROO" data-mmsi="338926425">
+                <td><span class="rank-badge rank-4">#80</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">CG JACOB POROO</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 338926425</div>
+                </td>
+                <td><span class="mono-stat">22.56 km</span></td>
+                <td><span class="mono-stat">7.09 km</span></td>
+                <td><span class="mono-stat">-178.3 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 62%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">61.6%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">101 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.272)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="FRITZ BLESSEY" data-mmsi="367087950">
+                <td><span class="rank-badge rank-4">#81</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">FRITZ BLESSEY</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367087950</div>
+                </td>
+                <td><span class="mono-stat">16.30 km</span></td>
+                <td><span class="mono-stat">13.88 km</span></td>
+                <td><span class="mono-stat">-222.6 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 39%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">39.4%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">99 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.230)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="ALYS" data-mmsi="368272520">
+                <td><span class="rank-badge rank-4">#82</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">ALYS</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 368272520</div>
+                </td>
+                <td><span class="mono-stat">16.53 km</span></td>
+                <td><span class="mono-stat">13.87 km</span></td>
+                <td><span class="mono-stat">-231.4 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">99.8%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">96 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.320)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="G.BROOKS SPERRY" data-mmsi="368105620">
+                <td><span class="rank-badge rank-4">#83</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">G.BROOKS SPERRY</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 368105620</div>
+                </td>
+                <td><span class="mono-stat">17.07 km</span></td>
+                <td><span class="mono-stat">15.87 km</span></td>
+                <td><span class="mono-stat">+186.0 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">100.0%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">91 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.303)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="CAPT THOMAS PAUL" data-mmsi="367780660">
+                <td><span class="rank-badge rank-4">#84</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">CAPT THOMAS PAUL</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367780660</div>
+                </td>
+                <td><span class="mono-stat">20.18 km</span></td>
+                <td><span class="mono-stat">10.66 km</span></td>
+                <td><span class="mono-stat">+172.9 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 52%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">52.1%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">87 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.221)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="MISS KELLY" data-mmsi="367427270">
+                <td><span class="rank-badge rank-4">#85</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">MISS KELLY</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367427270</div>
+                </td>
+                <td><span class="mono-stat">16.08 km</span></td>
+                <td><span class="mono-stat">13.88 km</span></td>
+                <td><span class="mono-stat">-285.7 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">99.8%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">86 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.286)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="OVERSEAS CHINOOK" data-mmsi="366495000">
+                <td><span class="rank-badge rank-4">#86</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">OVERSEAS CHINOOK</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 366495000</div>
+                </td>
+                <td><span class="mono-stat">19.99 km</span></td>
+                <td><span class="mono-stat">9.51 km</span></td>
+                <td><span class="mono-stat">-203.2 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 45%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">45.0%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">86 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.208)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="KRISTIN" data-mmsi="368011450">
+                <td><span class="rank-badge rank-4">#87</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">KRISTIN</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 368011450</div>
+                </td>
+                <td><span class="mono-stat">18.95 km</span></td>
+                <td><span class="mono-stat">13.87 km</span></td>
+                <td><span class="mono-stat">+189.9 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 40%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">40.4%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">83 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.194)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="EAGLE SAN JOSE" data-mmsi="248714000">
+                <td><span class="rank-badge rank-4">#88</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">EAGLE SAN JOSE</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 248714000</div>
+                </td>
+                <td><span class="mono-stat">19.86 km</span></td>
+                <td><span class="mono-stat">18.89 km</span></td>
+                <td><span class="mono-stat">+98.0 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 33%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">32.7%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">78 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.173)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="TEXAS" data-mmsi="367626460">
+                <td><span class="rank-badge rank-4">#89</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">TEXAS</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367626460</div>
+                </td>
+                <td><span class="mono-stat">16.01 km</span></td>
+                <td><span class="mono-stat">13.85 km</span></td>
+                <td><span class="mono-stat">-376.5 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">99.8%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">77 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.256)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="CHIPPEWA" data-mmsi="368316640">
+                <td><span class="rank-badge rank-4">#90</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">CHIPPEWA</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 368316640</div>
+                </td>
+                <td><span class="mono-stat">16.99 km</span></td>
+                <td><span class="mono-stat">16.54 km</span></td>
+                <td><span class="mono-stat">+239.2 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 30%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">29.9%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">75 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.162)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="JOE LOCHRICO" data-mmsi="367772180">
+                <td><span class="rank-badge rank-4">#91</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">JOE LOCHRICO</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367772180</div>
+                </td>
+                <td><span class="mono-stat">17.05 km</span></td>
+                <td><span class="mono-stat">15.84 km</span></td>
+                <td><span class="mono-stat">-314.6 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 40%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">40.5%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">68 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.159)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="CLIPPER ENYO" data-mmsi="257066990">
+                <td><span class="rank-badge rank-4">#92</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">CLIPPER ENYO</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 257066990</div>
+                </td>
+                <td><span class="mono-stat">20.58 km</span></td>
+                <td><span class="mono-stat">19.58 km</span></td>
+                <td><span class="mono-stat">+117.2 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 37%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">36.8%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">67 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.153)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="WAYNE BETHEL" data-mmsi="367672380">
+                <td><span class="rank-badge rank-4">#93</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">WAYNE BETHEL</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367672380</div>
+                </td>
+                <td><span class="mono-stat">19.16 km</span></td>
+                <td><span class="mono-stat">16.63 km</span></td>
+                <td><span class="mono-stat">-176.4 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">99.8%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">65 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.216)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="PROMETHEUS LIGHT" data-mmsi="538008103">
+                <td><span class="rank-badge rank-4">#94</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">PROMETHEUS LIGHT</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 538008103</div>
+                </td>
+                <td><span class="mono-stat">17.47 km</span></td>
+                <td><span class="mono-stat">16.39 km</span></td>
+                <td><span class="mono-stat">+239.7 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 36%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">36.2%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">63 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.143)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="CHRISTINA BELCHER" data-mmsi="367138450">
+                <td><span class="rank-badge rank-4">#95</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">CHRISTINA BELCHER</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367138450</div>
+                </td>
+                <td><span class="mono-stat">17.06 km</span></td>
+                <td><span class="mono-stat">15.66 km</span></td>
+                <td><span class="mono-stat">-379.0 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 56%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">55.7%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">61 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.158)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="DAVID B" data-mmsi="367730910">
+                <td><span class="rank-badge rank-4">#96</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">DAVID B</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367730910</div>
+                </td>
+                <td><span class="mono-stat">17.50 km</span></td>
+                <td><span class="mono-stat">16.56 km</span></td>
+                <td><span class="mono-stat">+239.1 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 50%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">49.9%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">60 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.150)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="MILAM" data-mmsi="366959840">
+                <td><span class="rank-badge rank-4">#97</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">MILAM</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 366959840</div>
+                </td>
+                <td><span class="mono-stat">18.41 km</span></td>
+                <td><span class="mono-stat">17.46 km</span></td>
+                <td><span class="mono-stat">-220.6 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 39%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">39.4%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">56 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.130)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="TDW" data-mmsi="367789330">
+                <td><span class="rank-badge rank-4">#98</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">TDW</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367789330</div>
+                </td>
+                <td><span class="mono-stat">24.71 km</span></td>
+                <td><span class="mono-stat">10.32 km</span></td>
+                <td><span class="mono-stat">-306.9 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">99.8%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">53 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.177)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="KENT" data-mmsi="367582850">
+                <td><span class="rank-badge rank-4">#99</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">KENT</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 367582850</div>
+                </td>
+                <td><span class="mono-stat">18.98 km</span></td>
+                <td><span class="mono-stat">15.83 km</span></td>
+                <td><span class="mono-stat">-342.5 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">100.0%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">43 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.143)</span></td>
+            </tr>
+            
+
+            <tr data-conf="LOW" data-vessel="DAT VENUS" data-mmsi="538010420">
+                <td><span class="rank-badge rank-4">#100</span></td>
+                <td>
+                    <div style="font-weight: 700; color: #F8FAFC;">DAT VENUS</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: 538010420</div>
+                </td>
+                <td><span class="mono-stat">19.43 km</span></td>
+                <td><span class="mono-stat">16.90 km</span></td>
+                <td><span class="mono-stat">-458.4 min</span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 39%;"></div></div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">38.6%</span>
+                    </div>
+                </td>
+                <td><span class="badge badge-borda">17 pts</span></td>
+                <td><span class="badge badge-low">LOW (0.039)</span></td>
+            </tr>
+            
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Disclaimers & Methodology -->
+        <div class="footer">
+            <h3 style="color: #ffffff; margin-top: 0; font-size: 0.95rem;">Forensic Integrity & Disclaimers</h3>
+            <ul>
+                <li><strong>Attribution vs Proof:</strong> Vessel rankings reflect algorithmic spatial-temporal correlation and trajectory shape similarity against the observed slick, not definitive legal proof of discharge.</li>
+                <li><strong>Non-Broadcasting (Dark) Vessels:</strong> If an uncooperative vessel transited without broadcasting AIS messages, it will not appear in AIS databases and cannot be ruled out.</li>
+                <li><strong>Scientific Discipline:</strong> Metric fusion uses Borda rank aggregation across discrete Fréchet distance and kinematic CPA, avoiding uncalibrated linear weighting formulas.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Client-side Search & Filter Script -->
+    <script>
+        let currentConfFilter = 'ALL';
+
+        function setConfidenceFilter(conf, btn) {
+            currentConfFilter = conf;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            filterTable();
+        }
+
+        function filterTable() {
+            const searchVal = document.getElementById('vesselSearch').value.toUpperCase();
+            const rows = document.querySelectorAll('#candidateTable tbody tr');
+
+            rows.forEach(row => {
+                const conf = row.getAttribute('data-conf') || '';
+                const vessel = row.getAttribute('data-vessel') || '';
+                const mmsi = row.getAttribute('data-mmsi') || '';
+
+                const matchesSearch = vessel.includes(searchVal) || mmsi.includes(searchVal);
+                const matchesConf = (currentConfFilter === 'ALL' || conf === currentConfFilter);
+
+                if (matchesSearch && matchesConf) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
