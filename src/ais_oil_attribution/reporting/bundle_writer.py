@@ -11,6 +11,8 @@ import yaml
 from ais_oil_attribution.reporting.html_report import generate_html_report
 from ais_oil_attribution.reporting.maps import generate_attribution_map
 from ais_oil_attribution.reporting.reconstruction_3d_dashboard import generate_reconstruction_3d_dashboard
+from ais_oil_attribution.reporting.reconstruction_3d_v2_dashboard import generate_reconstruction_3d_v2_dashboard
+from ais_oil_attribution.reporting.reconstruction_3d_v3_dashboard import generate_reconstruction_3d_v3_dashboard
 from ais_oil_attribution.reporting.workstation_dashboard import generate_workstation_dashboard
 
 SOURCES_MD_CONTENT = """# References & Methodological Sources
@@ -209,6 +211,32 @@ Metrics:
         slick_coords=slick_coords,
         origin_estimate=origin_estimate,
         output_html_path=recon_3d_path,
+    )
+
+    # 12. Standalone 3D Reconstruction Studio v2 (Forensics Workspace v2)
+    recon_3d_v2_path = bundle_dir / "reconstruction_3d_v2.html"
+    generate_reconstruction_3d_v2_dashboard(
+        investigation_id=investigation_id,
+        input_data=input_data,
+        regime_decision=regime_decision,
+        scores_df=scores_df,
+        reconstructed_df=reconstructed_df,
+        slick_coords=slick_coords,
+        origin_estimate=origin_estimate,
+        output_html_path=recon_3d_v2_path,
+    )
+
+    # 13. AI-Assisted Maritime Forensics Workstation v3
+    recon_3d_v3_path = bundle_dir / "reconstruction_3d_v3.html"
+    generate_reconstruction_3d_v3_dashboard(
+        investigation_id=investigation_id,
+        input_data=input_data,
+        regime_decision=regime_decision,
+        scores_df=scores_df,
+        reconstructed_df=reconstructed_df,
+        slick_coords=slick_coords,
+        origin_estimate=origin_estimate,
+        output_html_path=recon_3d_v3_path,
     )
 
     return bundle_dir

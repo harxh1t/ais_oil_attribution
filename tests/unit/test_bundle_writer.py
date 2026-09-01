@@ -82,6 +82,10 @@ def test_write_investigation_bundle_creates_all_artifacts(tmp_path: Path):
     assert (bundle_path / "sources.md").exists()
     assert (bundle_path / "maps" / "attribution_map.html").exists()
     assert (bundle_path / "final_report.html").exists()
+    assert (bundle_path / "workstation.html").exists()
+    assert (bundle_path / "reconstruction_3d.html").exists()
+    assert (bundle_path / "reconstruction_3d_v2.html").exists()
+    assert (bundle_path / "reconstruction_3d_v3.html").exists()
 
     # Verify attribution.json content schema
     attr_json = json.loads((bundle_path / "attribution.json").read_text(encoding="utf-8"))
