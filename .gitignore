@@ -47,3 +47,6 @@ Thumbs.db
 debug_*.py
 debug_*.parquet
 test_tmp.parquet
+
+legacy/
+legacy_baseline/
