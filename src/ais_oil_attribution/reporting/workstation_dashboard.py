@@ -1446,7 +1446,7 @@ def generate_workstation_dashboard(
                 subdomains: 'abcd'
             }});
             basemapLayers.sat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{{z}}/{{y}}/{{x}}', {{ maxZoom: 18 }});
-            basemapLayers.osm = L.tileLayer('https://{{s}}.tile.openstreetmap.org/{{z}}/{{x}}/{{y}}.png', {{ maxZoom: 18 }});
+            basemapLayers.osm = L.tileLayer('https://{{s}}.basemaps.cartocdn.com/rastertiles/voyager/{{z}}/{{x}}/{{y}}{{r}}.png', {{ maxZoom: 18, subdomains: 'abcd' }});
             basemapLayers.ocean = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean/MapServer/tile/{{z}}/{{y}}/{{x}}', {{ maxZoom: 18 }});
 
             activeBasemap2D = basemapLayers.dark;
@@ -3454,7 +3454,7 @@ def generate_workstation_dashboard(
                 subdomains: 'abcd'
             }});
             basemapLayers.sat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{{z}}/{{y}}/{{x}}', {{ maxZoom: 18 }});
-            basemapLayers.osm = L.tileLayer('https://{{s}}.tile.openstreetmap.org/{{z}}/{{x}}/{{y}}.png', {{ maxZoom: 18 }});
+            basemapLayers.osm = L.tileLayer('https://{{s}}.basemaps.cartocdn.com/rastertiles/voyager/{{z}}/{{x}}/{{y}}{{r}}.png', {{ maxZoom: 18, subdomains: 'abcd' }});
             basemapLayers.ocean = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean/MapServer/tile/{{z}}/{{y}}/{{x}}', {{ maxZoom: 18 }});
 
             activeBasemap2D = basemapLayers.dark;
