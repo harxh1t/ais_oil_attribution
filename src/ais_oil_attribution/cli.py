@@ -1,8 +1,9 @@
 """Command Line Interface for AIS Oil-Spill Vessel Attribution."""
 
 import sys
-import click
 from pathlib import Path
+from typing import Optional
+import click
 
 
 @click.command(name="ais-oil-investigate")
@@ -15,7 +16,25 @@ from pathlib import Path
 @click.option("--oil-type", type=str, default=None, help="Oil type name for drift modeling (e.g. 'GENERIC DIESEL').")
 @click.option("--output-dir", type=click.Path(), default="results", help="Directory where investigation bundles are saved.")
 @click.option("--non-interactive", is_flag=True, default=False, help="Run without requiring interactive human confirmation.")
-def main(lat: float, lon: float, time_str: str, spread_km: float, regime: str, config_path: str | None, oil_type: str | None, output_dir: str, non_interactive: bool):
+@click.option("--ranking-method", type=click.Choice(["borda", "topsis", "llr"], case_sensitive=False), default="borda", help="Candidate ranking method (borda, topsis, llr).")
+@click.option("--enable-forward-fit", is_flag=True, default=False, help="Enable Longépé-style forward-fit trajectory recreation evidence channel.")
+@click.option("--ship-detections", "ship_detections_path", type=click.Path(exists=True), default=None, help="Optional GeoJSON file containing satellite SAR ship detections.")
+@click.option("--drift-backend", type=click.Choice(["analytic", "opendrift"], case_sensitive=False), default="analytic", help="Drift model backend.")
+def main(
+    lat: float,
+    lon: float,
+    time_str: str,
+    spread_km: float,
+    regime: str,
+    config_path: Optional[str],
+    oil_type: Optional[str],
+    output_dir: str,
+    non_interactive: bool,
+    ranking_method: str,
+    enable_forward_fit: bool,
+    ship_detections_path: Optional[str],
+    drift_backend: str,
+):
     """
     AIS + Satellite Oil-Spill Vessel Attribution System.
     Investigates marine oil pollution incidents by correlating AIS vessel tracks with observed slicks.
@@ -33,6 +52,10 @@ def main(lat: float, lon: float, time_str: str, spread_km: float, regime: str, c
             oil_type=oil_type,
             output_dir=output_dir,
             non_interactive=non_interactive,
+            ranking_method=ranking_method,
+            include_forward_fit=enable_forward_fit,
+            ship_detections_path=ship_detections_path,
+            drift_backend=drift_backend,
         )
         report_path = investigation_result.get("report_path")
         workstation_path = investigation_result.get("workstation_path")
@@ -41,9 +64,14 @@ def main(lat: float, lon: float, time_str: str, spread_km: float, regime: str, c
         click.echo("\n=======================================================")
         click.echo("  INVESTIGATION COMPLETE")
         click.echo("=======================================================")
+        click.echo(f"Ranking Engine: {ranking_method.upper()}")
         if top_candidate:
             click.echo(f"Top Candidate: {top_candidate.get('vessel_name')} (MMSI: {top_candidate.get('mmsi')})")
             click.echo(f"Confidence: {top_candidate.get('confidence_label')} ({top_candidate.get('confidence_score'):.3f})")
+            if "forward_fit_score" in top_candidate and top_candidate["forward_fit_score"] is not None:
+                click.echo(f"Forward-Fit Score: {top_candidate['forward_fit_score']:.2f}")
+            if "evidence_posterior" in top_candidate and top_candidate["evidence_posterior"] is not None:
+                click.echo(f"Evidence Posterior (Synthetic Calibrated): {top_candidate['evidence_posterior']:.3f}")
         else:
             click.echo("No vessel candidate identified (possible dark vessel or non-vessel source).")
         click.echo(f"Classic Report: {report_path}")

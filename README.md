@@ -1,109 +1,160 @@
-# WAKE: AI-Assisted Satellite & AIS Maritime Oil-Spill Vessel Attribution System
+﻿# WAKE: AI-Assisted Satellite & AIS Maritime Oil-Spill Vessel Attribution System
 
-[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Tests: 32 Passed](https://img.shields.io/badge/tests-32%20passed%20(100%25)-brightgreen.svg)]()
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue.svg)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Tests: 45 Passed](https://img.shields.io/badge/tests-45%20passed%20(100%25)-brightgreen.svg)]()
+[![CI: Passing](https://img.shields.io/badge/CI-GitHub%20Actions-brightgreen.svg)]()
 [![Three.js](https://img.shields.io/badge/3D%20Engine-Three.js%20r128-black.svg)](https://threejs.org/)
 
 An AI-assisted, research-driven maritime forensics and vessel attribution workstation correlating satellite Synthetic Aperture Radar (SAR) oil slicks with AIS vessel trajectories, hydrodynamic drift models, and multi-criteria mathematical consensus.
+
+**Repository:** [https://github.com/harxh1t/ais_oil_attribution.git](https://github.com/harxh1t/ais_oil_attribution.git)
 
 ---
 
 ## 🌊 Overview
 
-Illegal oily waste discharges from commercial vessels ("magic pipe" dumps) pose a major global environmental threat. While satellite SAR constellations (e.g., ESA Sentinel-1) can detect oil slicks across global waters, finding the responsible vessel is challenging due to:
-1. **The "Age of Slick" Gap:** Ocean currents and wind drift disperse oil slicks kilometers away from the original release point over 6–24 hours.
-2. **Opaque Attribution:** Simple Euclidean distance fails when ships make evasive maneuvers or cross the drift corridor at different times.
-3. **Data Integrity:** Blurring the line between ground-truth observed AIS broadcasts and model-interpolated positions risks inadmissible evidence.
+Illegal oily waste discharges from commercial vessels ("magic pipe" dumps) pose a major global environmental threat. While satellite SAR constellations (e.g., ESA Sentinel-1) can detect oil slicks across global waters, identifying the responsible vessel is challenging due to:
+1. **The "Age of Slick" Gap:** Ocean currents and surface winds transport and disperse slicks kilometers away from the release origin over 6–24 hours.
+2. **Opaque Multi-Ship Traffic:** Simple Euclidean proximity fails when ships make evasive maneuvers, travel in separation schemes, or cross the drift corridor at different times.
+3. **Data Integrity & Dark Ships:** Blurring observed AIS broadcasts with interpolated points risks inadmissible evidence, and non-transmitting (dark) vessels must be explicitly accounted for.
 
-**WAKE** solves this with an auditable 5-stage pipeline combining **Reverse Lagrangian Hydrodynamic Backtracking**, **Kinematic/Geometric Curve Parity (Discrete Fréchet Distance)**, **Borda Count Consensus Ranking**, and an interactive **3D WebGL Investigation Workstation**.
-
----
-
-## 🚀 Key Features
-
-* **Multi-Regime Classification:** Distinguishes between *Contemporaneous* (<1h time delta) and *Delayed/Aged* (>1h) spill scenarios.
-* **Hydrodynamic Reverse Drift Modeling:** Simulates Lagrangian particle advection backward in time forced by HYCOM/CMEMS ocean currents and GFS surface wind fields.
-* **Multi-Metric Mathematical Consensus:**
-  * **DCPA (Distance at Closest Point of Approach):** Exact metric proximity.
-  * **TCPA (Time to Closest Point of Approach):** Relative lead/lag offset against inferred release epoch.
-  * **Discrete Fréchet Distance:** Evaluates geometric curve shape parity between the vessel's track and the skeletonized slick centerline.
-  * **AIS Continuity Index:** Evaluates observation completeness and flags intentional AIS dropouts.
-  * **Borda Count Rank Aggregation:** Combines multiple criteria without arbitrary weighting bias.
-* **Forensic Evidence Integrity:** Explicit visual and structural distinction between *Observed* raw broadcasts, *Interpolated* segments, and *Inferred* hydrodynamic drift particles.
-* **Interactive 3D/2D Forensic Workstation (`reconstruction_3d_v3.html`):**
-  * Multi-row forensic timeline (Spill event, SAR passes, Vessel kinematics, AIS gaps).
-  * AI Copilot with real-time **Contradiction Detection** and **"What Changed?"** reasoning.
-  * Interactive **Evidence Graph** & **Scenario Lab** for what-if uncertainty sensitivity testing.
-  * Universal Command Palette (`Ctrl+K` / `Cmd+K`) and single-click camera evidence dives.
-  * Self-contained, auditable JSON case findings export.
+**WAKE** solves this with a modular, 5-stage pipeline combining **Reverse Lagrangian Hydrodynamic Backtracking**, **Forward-Fit Advection Matching**, **Gated Discrete Fréchet Kinematic Parity**, **Multi-Method Decision Ranking (Borda, TOPSIS, LLR)**, and an interactive **3D WebGL Investigation Workstation**.
 
 ---
 
-## 🏗️ Architecture & Pipeline
+## 🚀 Key Upgrades & Features
+
+* **Pluggable Drift Architectures (`src/ais_oil_attribution/drift/`):**
+  * `OpenDriftModel`: High-fidelity numerical Lagrangian backtracking forced by HYCOM ocean currents and GFS surface wind fields.
+  * `AnalyticDriftModel`: Deterministic, seedable advection-diffusion drift engine for reproducible testing and offline CI benchmarks.
+* **Forward-Fit Advection Evidence (`Longépé et al.`):**
+  * Forward-advects virtual oil releases from candidate trajectories to the satellite observation epoch.
+  * Measures bidirectional Chamfer distance ($d_{\text{chamfer}}$) and particle-in-slick fraction.
+* **Gated Discrete Fréchet Distance:**
+  * Evaluates trajectory vs. skeletonized slick centerline shape alignment.
+  * Automatically gated ($N \ge 3$) to prevent metric corruption on non-elongated/amorphous slicks.
+* **Multi-Hypothesis Ranking Algorithms:**
+  * **Borda Count (Default):** Robust consensus rank aggregation across all active channels.
+  * **TOPSIS:** Multi-criteria decision analysis computing geometric proximity to ideal best and worst solutions.
+  * **Calibrated Log-Likelihood Ratio (LLR):** Evaluates vessel candidate hypotheses against an explicit **Dark / Unobserved Vessel Hypothesis ($H_0$)** with calibrated case-level abstention.
+* **SAR Dark Vessel Detection Cross-Check:** Flags unassociated radar targets lacking AIS transponder signals.
+* **Forensic Track Provenance:** Explicit point-level labels (`n_observed`, `n_interp`, `n_gap`) maintaining chain of custody.
+* **Interactive 3D WebGL Studio (`reconstruction_3d_v3.html`):** Multi-row forensic timeline, AI Copilot with contradiction detection, and Scenario Lab.
+
+---
+
+## 🏗️ System Architecture
 
 ```
-[ SAR Slick GeoJSON ]
-          │
-          ▼
+[ Satellite SAR Slick & Detection GeoJSON ]
+                      │
+                      ▼
 [ Stage 1: Input Validation & Regime Classification ]
-          │
-          ▼
-[ Stage 2: Hydrodynamic Reverse Drift Modeling (OpenDrift / NOAA GNOME) ]
-          │
-          ▼
-[ Stage 3: Dynamic AIS Stream & Trajectory Reconstruction (DuckDB / GeoParquet) ]
-          │
-          ▼
-[ Stage 4: Multi-Channel Mathematical Scoring & Borda Consensus ]
-          │
-          ▼
-[ Stage 5: Auditable Case Bundle Generation (Reports & 3D WebGL Studio) ]
+                      │
+                      ▼
+[ Stage 2: Hydrodynamic Reverse Drift Modeling (OpenDrift / Analytic) ]
+                      │
+                      ▼
+[ Stage 3: AIS Stream Ingestion & Kinematic Reconstruction (DuckDB / GeoParquet) ]
+                      │
+                      ▼
+[ Stage 4: Multi-Channel Evidence Extraction ]
+  ├── DCPA (Distance at Closest Approach)
+  ├── TCPA (Time at Closest Approach)
+  ├── Discrete Fréchet Distance (Elongation-Gated)
+  ├── Forward-Fit Chamfer & Particle-in-Slick
+  ├── AIS Track Coverage & Gap Provenance
+  └── SAR Dark Vessel Cross-Check
+                      │
+                      ▼
+[ Stage 5: Multi-Method Candidate Ranking ]
+  ├── Borda Count Consensus (Default)
+  ├── TOPSIS Multi-Criteria
+  └── Calibrated LLR & Case-Level Abstention
+                      │
+                      ▼
+[ Stage 6: Auditable Case Bundle Generation ]
+  ├── attribution.json & attribution_scores.parquet
+  ├── final_report.html & workstation.html
+  └── reconstruction_3d_v3.html (3D Forensic Studio)
 ```
 
 ---
 
-## 📦 Project Structure
+## 📊 Empirical Validation Benchmark Results
 
-```
-├── config/
-│   └── default_config.yaml                  # Pipeline thresholds, hyperparams, & scoring weights
-├── src/ais_oil_attribution/
-│   ├── cli.py                               # CLI entry point (`ais-oil-investigate`)
-│   ├── core/                                # Orchestrator, regime classifier, input validation
-│   ├── data/                                # DuckDB GeoParquet reader, Cerulean client, environmental data
-│   ├── drift/                               # OpenDrift reverse Lagrangian backtracking
-│   ├── processing/                          # AIS cleaning, gap classification, spline reconstruction
-│   ├── attribution/                         # DCPA, TCPA, Fréchet geometry, Borda ranking, confidence
-│   ├── uncertainty/                         # Error ellipse propagation & sensitivity bounding
-│   └── reporting/                           # HTML table report, 2D Console, and 3D WebGL Workstations
-├── tests/                                   # Full unit, integration, and benchmark test suite (32 tests)
-└── pyproject.toml                           # Package configuration and dependencies
-```
+WAKE includes a rigorous, offline validation benchmark (`ais-oil-benchmark`) evaluating ranking accuracy, calibration, and trajectory reconstruction on synthetic cases with intentional physics mismatch, background decoys, and negative controls (zero discharge).
+
+### 1. Multi-Method Ranking Performance ($N=25$ cases, Seed 42)
+
+| Method | Top-1 Accuracy (95% CI) | Top-3 Accuracy (95% CI) | MRR | NDCG@3 | NDCG@5 | Negative Control Abstention |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|
+| **BORDA (Default)** | **0.47** [0.20, 0.73] | **0.67** [0.40, 0.87] | **0.611** | **0.575** | **0.659** | 0.0% (Forced rank) |
+| **TOPSIS** | 0.13 [0.00, 0.33] | 0.47 [0.26, 0.73] | 0.364 | 0.326 | 0.406 | 0.0% (Forced rank) |
+| **CALIBRATED LLR** | 0.07 [0.00, 0.20] | 0.40 [0.20, 0.67] | 0.297 | 0.260 | 0.314 | **100.0%** (0 false attributions) |
+
+> **Takeaway:** Borda Count provides the strongest candidate retrieval ranking under noisy drift conditions. Calibrated LLR excels at conservative decision-support by abstaining on 100% of negative control cases where no observed AIS vessel caused the spill.
+
+### 2. Probabilistic Calibration & Redundancy Diagnostics
+* **LLR Brier Score:** `0.0544` (held-out test set)
+* **Expected Calibration Error (ECE):** `0.0417`
+* **Evidence Channel Collinearity (VIF):**
+  * $\text{DCPA}: 1.36$
+  * $\text{TCPA}: 1.24$
+  * $\text{Coverage Completeness}: 1.02$
+  * $\text{Forward-Fit Score}: 1.58$
+  * *(All VIF $\ll 5.0$, confirming non-redundant, independent evidence channels)*
+
+### 3. Masked AIS Trajectory Reconstruction Benchmark
+Kinematic interpolation accuracy evaluated under artificial signal dropouts:
+
+| Gap Duration | Position RMSE (m) | P95 Position Error (m) | Max Error (m) |
+|:---:|:---:|:---:|:---:|
+| **1 min** | 318.3 m | 521.1 m | 548.4 m |
+| **5 min** | 173.4 m | 445.4 m | 539.2 m |
+| **15 min** | 107.1 m | 339.7 m | 553.1 m |
+| **30 min** | 76.8 m | 0.0 m | 546.6 m |
+| **60 min** | 56.7 m | 1.4 m | 506.5 m |
 
 ---
 
 ## 🛠️ Installation & Setup
 
 ### Prerequisites
-* Python 3.10+
+* Python 3.10, 3.11, or 3.12
 * Git
 
 ### Installation
 ```bash
 # Clone the repository
-git clone https://github.com/<your-username>/wake-maritime-attribution.git
-cd wake-maritime-attribution
+git clone https://github.com/harxh1t/ais_oil_attribution.git
+cd ais_oil_attribution
 
-# Install dependencies in editable mode
-pip install -e .
+# Install dependencies in editable mode (including dev & test tools)
+pip install -e ".[dev]"
 ```
 
 ---
 
 ## 💻 Usage
 
-### Run an Attribution Investigation via CLI
+### 1. Run an Attribution Investigation
+
+**PowerShell (Windows):**
+```powershell
+ais-oil-investigate `
+  --lat 34.016944 `
+  --lon -118.663056 `
+  --time "2024-08-06 01:50:00" `
+  --spread 12.0 `
+  --regime delayed `
+  --ranking-method borda `
+  --enable-forward-fit `
+  --output-dir results/malibu_case
+```
+
+**Bash (Linux / macOS):**
 ```bash
 ais-oil-investigate \
   --lat 34.016944 \
@@ -111,14 +162,25 @@ ais-oil-investigate \
   --time "2024-08-06 01:50:00" \
   --spread 12.0 \
   --regime delayed \
-  --output-dir results/my_investigation
+  --ranking-method borda \
+  --enable-forward-fit \
+  --output-dir results/malibu_case
 ```
 
-### Generated Artifacts in Output Bundle
-Each investigation automatically produces a self-contained bundle:
-* `input.json` & `attribution.json`: Machine-readable case metadata & scores.
-* `attribution_scores.parquet`: Complete candidate ranking table.
-* `reconstructed_tracks.parquet`: Interpolated & observed trajectory points.
+### 2. Run the Offline Validation Benchmark
+```bash
+# Run quick CI sanity benchmark
+ais-oil-benchmark --quick --output-dir results/benchmark_quick
+
+# Run full rigorous 25-case benchmark
+ais-oil-benchmark --cases 25 --output-dir results/benchmark
+```
+
+### 3. Generated Artifacts in Investigation Bundle
+Each investigation outputs a structured forensic bundle:
+* `attribution.json`: Machine-readable case findings, candidate ranks, and confidence metrics.
+* `attribution_scores.parquet`: Parquet table with complete multi-channel scores.
+* `reconstructed_tracks.parquet`: Reconstructed vessel coordinates with point provenance labels.
 * `final_report.html`: Formal executive evidence dossier.
 * `workstation.html`: 2D GIS forensic console.
 * `reconstruction_3d_v3.html`: Interactive 3D WebGL AI Forensics Workstation.
@@ -127,13 +189,21 @@ Each investigation automatically produces a self-contained bundle:
 
 ## 🧪 Testing
 
-Run the full pytest suite (100% pass rate):
+Execute the comprehensive test suite across all 45 unit, benchmark, and regression tests:
 ```bash
 pytest -v
 ```
 
 ---
 
+## ⚠️ Limitations & Decision-Support Disclaimer
+
+1. **Decision Support Only:** WAKE is designed as an investigative decision-support and screening tool. Its outputs constitute probabilistic physical hypotheses and do not replace formal maritime law enforcement boardings, chemical fingerprinting, or judicial proceedings.
+2. **AIS Coverage:** Vessel attribution depends on AIS broadcast availability. Non-transmitting vessels or deliberate transponder shutdowns may require SAR radar ship detection cross-checking or dark vessel estimation.
+3. **Hydrodynamic Resolution:** Oceanographic drift accuracy is bounded by the spatial and temporal resolution of underlying meteorological and ocean current models (e.g., HYCOM, GFS).
+
+---
+
 ## ⚖️ License
 
-Distributed under the MIT License. See `LICENSE` for details.
+Distributed under the MIT License. See [LICENSE](LICENSE) for details.

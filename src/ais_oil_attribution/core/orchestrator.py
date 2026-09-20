@@ -8,7 +8,10 @@ import pandas as pd
 
 from ais_oil_attribution.attribution.geometry import frechet_km
 from ais_oil_attribution.attribution.proximity import calculate_vessel_cpa_to_slick
-from ais_oil_attribution.attribution.ranking import borda_rank
+from ais_oil_attribution.attribution.ranking import borda_rank, rank_candidates
+from ais_oil_attribution.attribution.forward_fit import evaluate_forward_fit
+from ais_oil_attribution.data.satellite.ship_detections import load_ship_detections, cross_check_sar_detections_with_ais
+from ais_oil_attribution.drift.factory import get_drift_model
 from ais_oil_attribution.core.config_loader import load_config
 from ais_oil_attribution.core.input_validator import validate_input
 from ais_oil_attribution.core.regime_classifier import classify_regime
@@ -34,6 +37,10 @@ def run_investigation(
     forcing_source: Optional[str] = None,
     slick_coords_override: Optional[np.ndarray] = None,
     ais_data_override: Optional[pd.DataFrame] = None,
+    ranking_method: Optional[str] = None,
+    include_forward_fit: bool = False,
+    ship_detections_path: Optional[str] = None,
+    drift_backend: str = "analytic",
 ) -> Dict[str, Any]:
     """
     Executes the full 12-step investigation pipeline (§12).
@@ -44,6 +51,11 @@ def run_investigation(
         if "drift_backtracking" not in config:
             config["drift_backtracking"] = {}
         config["drift_backtracking"]["oil_type"] = oil_type
+
+    active_ranking_method = ranking_method or config.get("attribution", {}).get("ranking_method", "borda")
+    if "attribution" not in config:
+        config["attribution"] = {}
+    config["attribution"]["ranking_method"] = active_ranking_method
 
     # 2. Step 1: Validate Input
     validated_input = validate_input(
@@ -180,16 +192,23 @@ def run_investigation(
     survivor_mmsis = candidates_df[candidates_df["passed_prefilter"]]["mmsi"].tolist() if not candidates_df.empty else []
 
     scored_records = []
+    is_streak_slick = slick_coords is not None and len(slick_coords) >= 3
+
+    # Drift model for forward-fit if requested
+    drift_mod = get_drift_model(drift_backend) if include_forward_fit else None
+
     for mmsi in survivor_mmsis:
         v_track = reconstructed_df[reconstructed_df["mmsi"] == mmsi]
         cand_row = candidates_df[candidates_df["mmsi"] == mmsi].iloc[0]
 
         track_coords = np.column_stack([v_track["lat"].values, v_track["lon"].values])
 
-        # Parity metric: discrete Fréchet distance to slick centerline
-        f_km = frechet_km(track_coords, slick_coords)
+        # Parity metric: discrete Fréchet distance (GATED: only if streak geometry exists)
+        f_km = None
+        if is_streak_slick:
+            f_km = float(frechet_km(track_coords, slick_coords))
 
-        # Proximity & Temporality: DCPA and TCPA to slick centroid
+        # Proximity & Temporality: DCPA and TCPA to slick centroid / backtrack origin
         cpa_lat = origin_estimate.best_guess_lat if origin_estimate else validated_input.lat
         cpa_lon = origin_estimate.best_guess_lon if origin_estimate else validated_input.lon
         dcpa_km, tcpa_min = calculate_vessel_cpa_to_slick(
@@ -199,20 +218,61 @@ def run_investigation(
             obs_time=validated_input.time_utc,
         )
 
-        scored_records.append({
+        # Forward-fit attribution evidence (Longépé-style)
+        ff_score = None
+        ff_chamfer = None
+        ff_provenance = {}
+        if include_forward_fit:
+            ff_res = evaluate_forward_fit(
+                candidate_mmsi=int(mmsi),
+                candidate_track_df=v_track,
+                slick_coords=slick_coords,
+                slick_center_lat=validated_input.lat,
+                slick_center_lon=validated_input.lon,
+                spread_km=validated_input.spread_km,
+                sar_observation_time=validated_input.time_utc,
+                drift_model=drift_mod,
+            )
+            ff_score = ff_res.forward_fit_score
+            ff_chamfer = ff_res.chamfer_distance_km
+            ff_provenance = ff_res.provenance
+
+        cand_record = {
             "mmsi": int(mmsi),
             "vessel_name": str(cand_row["vessel_name"]),
-            "frechet_km": float(f_km),
+            "frechet_km": f_km,
             "dcpa_km": float(dcpa_km),
             "tcpa_minutes": float(tcpa_min),
             "coverage_completeness": float(cand_row["coverage_completeness"]),
-        })
+        }
+        if ff_score is not None:
+            cand_record["forward_fit_score"] = float(ff_score)
+            cand_record["chamfer_km"] = float(ff_chamfer)
+            cand_record["provenance"] = ff_provenance
+
+        scored_records.append(cand_record)
 
     scores_df = pd.DataFrame(scored_records)
 
-    # Rank aggregation
+    # Multi-method rank aggregation (Borda, TOPSIS, or LLR)
+    is_abstained = False
+    abstention_reason = None
     if not scores_df.empty:
-        scores_df = borda_rank(scores_df, config=config)
+        scores_df = rank_candidates(scores_df, method=active_ranking_method, config=config)
+        if "confidence_label" in scores_df.columns and (scores_df["confidence_label"] == "INCONCLUSIVE / ABSTAIN").any():
+            is_abstained = True
+            abstention_reason = "Candidate evidence posteriors below decision threshold; dark vessel cannot be ruled out."
+
+    # Optional SAR Ship Detection cross-check
+    sar_detections = []
+    if ship_detections_path:
+        raw_dets = load_ship_detections(ship_detections_path)
+        sar_detections = cross_check_sar_detections_with_ais(
+            raw_dets,
+            reconstructed_df=reconstructed_df,
+            spill_lat=validated_input.lat,
+            spill_lon=validated_input.lon,
+        )
 
     # 12. Step 12: Write Reproducible Investigation Bundle
     timestamp_str = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
@@ -233,6 +293,8 @@ def run_investigation(
         "rationale": regime_decision.rationale,
         "warning": regime_decision.warning,
         "is_platform_blowout_suspect": regime_decision.is_platform_blowout_suspect,
+        "is_abstained": is_abstained,
+        "abstention_reason": abstention_reason,
     }
 
     bundle_path = write_investigation_bundle(

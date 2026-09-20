@@ -31,7 +31,10 @@ def reconstruct_track(
         empty_df["gap_before_seconds"] = pd.Series(dtype="float64")
         return empty_df
 
-    pts = points.sort_values("timestamp").reset_index(drop=True).copy()
+    pts = points.copy()
+    if not pd.api.types.is_datetime64_any_dtype(pts["timestamp"]):
+        pts["timestamp"] = pd.to_datetime(pts["timestamp"], utc=True)
+    pts = pts.sort_values("timestamp").reset_index(drop=True)
     pts["is_interpolated"] = False
     pts["interpolation_method"] = "none"
     pts["gap_before_seconds"] = 0.0
@@ -54,14 +57,15 @@ def reconstruct_track(
             cs_lat, cs_lon = None, None
 
     result_rows = []
-    mmsi = pts.loc[0, "mmsi"]
-    vessel_name = pts.loc[0, "vessel_name"]
-    imo = pts.loc[0, "imo"]
-    vtype = pts.loc[0, "vessel_type_code"]
-    nav_status = pts.loc[0, "nav_status"]
-    length_m = pts.loc[0, "length_m"]
-    width_m = pts.loc[0, "width_m"]
-    draft_m = pts.loc[0, "draft_m"]
+    first_row = pts.iloc[0]
+    mmsi = first_row.get("mmsi")
+    vessel_name = first_row.get("vessel_name", f"VESSEL_{mmsi}")
+    imo = first_row.get("imo", None)
+    vtype = first_row.get("vessel_type_code", None)
+    nav_status = first_row.get("nav_status", None)
+    length_m = first_row.get("length_m", None)
+    width_m = first_row.get("width_m", None)
+    draft_m = first_row.get("draft_m", None)
 
     # First point
     first_pt = pts.iloc[0].to_dict()
@@ -211,3 +215,7 @@ def reconstruct_all_tracks(
     if reconstructed_list:
         return pd.concat(reconstructed_list, ignore_index=True).sort_values(["mmsi", "timestamp"]).reset_index(drop=True)
     return pd.DataFrame()
+
+
+# Backward/Forward compatible alias
+reconstruct_candidate_trajectories = reconstruct_all_tracks

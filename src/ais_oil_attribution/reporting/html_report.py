@@ -41,8 +41,11 @@ def generate_html_report(
         for _, row in scores_df.iterrows():
             rank = int(row["final_rank"])
             rank_badge = f'<span class="rank-badge rank-{min(rank, 4)}">#{rank}</span>'
-            badge_class = "badge-high" if row["confidence_label"] == "HIGH" else ("badge-med" if row["confidence_label"] == "MEDIUM" else "badge-low")
+            badge_class = "badge-high" if row["confidence_label"] == "HIGH" else ("badge-med" if row["confidence_label"] == "MEDIUM" else ("badge-low" if row["confidence_label"] == "LOW" else "badge-abstain"))
             
+            frechet_str = f"{row['frechet_km']:.2f} km" if pd.notna(row.get("frechet_km")) else '<span style="color: #64748B;">N/A (Non-streak)</span>'
+            ff_str = f"{row['forward_fit_score']:.2f}" if pd.notna(row.get("forward_fit_score")) else '<span style="color: #64748B;">--</span>'
+
             table_rows.append(f"""
             <tr data-conf="{row['confidence_label']}" data-vessel="{str(row['vessel_name']).upper()}" data-mmsi="{row['mmsi']}">
                 <td>{rank_badge}</td>
@@ -50,16 +53,17 @@ def generate_html_report(
                     <div style="font-weight: 700; color: #F8FAFC;">{row['vessel_name']}</div>
                     <div style="font-size: 0.75rem; color: #94A3B8;">MMSI: {row['mmsi']}</div>
                 </td>
-                <td><span class="mono-stat">{row['frechet_km']:.2f} km</span></td>
+                <td><span class="mono-stat">{frechet_str}</span></td>
                 <td><span class="mono-stat">{row['dcpa_km']:.2f} km</span></td>
                 <td><span class="mono-stat">{row['tcpa_minutes']:+.1f} min</span></td>
+                <td><span class="mono-stat">{ff_str}</span></td>
                 <td>
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: {row['coverage_completeness']*100:.0f}%;"></div></div>
                         <span style="font-size: 0.8rem; font-weight: 600;">{row['coverage_completeness'] * 100:.1f}%</span>
                     </div>
                 </td>
-                <td><span class="badge badge-borda">{row['borda_score']} pts</span></td>
+                <td><span class="badge badge-borda">{int(row.get('borda_score', 0))} pts</span></td>
                 <td><span class="badge {badge_class}">{row['confidence_label']} ({row['confidence_score']:.3f})</span></td>
             </tr>
             """)
@@ -543,7 +547,7 @@ def generate_html_report(
                     {top_cand['vessel_name'] if top_cand else 'No Candidate'}
                 </div>
                 <div style="font-size: 0.75rem; color: var(--muted); margin-top: 4px;">
-                    {f"MMSI: {top_cand['mmsi']} | Parity: {top_cand['frechet_km']:.2f} km" if top_cand else 'No vessel correlated'}
+                    {f"MMSI: {top_cand['mmsi']} | Parity: {top_cand['frechet_km']:.2f} km" if (top_cand and pd.notna(top_cand.get('frechet_km'))) else (f"MMSI: {top_cand['mmsi']} | DCPA: {top_cand['dcpa_km']:.2f} km" if top_cand else 'No vessel correlated')}
                 </div>
             </div>
         </div>
@@ -573,7 +577,7 @@ def generate_html_report(
         <div class="card">
             <h2>
                 <span>📋 Ranked Candidate Vessel Attribution Matrix</span>
-                <span style="font-size: 0.8rem; font-weight: normal; color: var(--muted);">Borda Count Rank Aggregation</span>
+                <span style="font-size: 0.8rem; font-weight: normal; color: var(--muted);">Multi-Evidence Rank Aggregation</span>
             </h2>
 
             <div class="search-toolbar">
@@ -595,8 +599,9 @@ def generate_html_report(
                             <th>Fréchet Parity</th>
                             <th>DCPA (Distance)</th>
                             <th>TCPA (Time Offset)</th>
+                            <th>Forward-Fit</th>
                             <th>AIS Completeness</th>
-                            <th>Borda Score</th>
+                            <th>Borda / Score</th>
                             <th>Attribution Confidence</th>
                         </tr>
                     </thead>

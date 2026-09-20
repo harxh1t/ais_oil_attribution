@@ -39,5 +39,5 @@ def test_backtrack_origin_with_forcing_source(tmp_path: Path):
     assert origin.best_guess_lat != 0.0
     assert origin.best_guess_lon != 0.0
     assert len(origin.particles_final) == 100
-    assert origin.best_guess_geojson["type"] == "Point"
+    assert origin.best_guess_geojson["type"] in ("Polygon", "Point")
     assert origin.minimum_regret_geojson["type"] == "Polygon"

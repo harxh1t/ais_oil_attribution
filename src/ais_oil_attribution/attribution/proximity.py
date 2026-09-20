@@ -3,6 +3,7 @@
 import math
 from typing import Tuple
 import numpy as np
+import pandas as pd
 
 
 def compute_dcpa_tcpa(
@@ -67,7 +68,12 @@ def calculate_vessel_cpa_to_slick(
     min_idx = int(np.argmin(dists))
 
     closest_dist_km = float(dists[min_idx])
-    closest_time = vessel_track_df.iloc[min_idx]["timestamp"]
-    tcpa_min = (closest_time - obs_time).total_seconds() / 60.0
+    closest_time = pd.to_datetime(vessel_track_df.iloc[min_idx]["timestamp"], utc=True)
+    obs_time_dt = pd.to_datetime(obs_time, utc=True)
+    tcpa_min = (closest_time - obs_time_dt).total_seconds() / 60.0
 
     return (closest_dist_km, float(tcpa_min))
+
+
+# Backward/Forward compatible alias
+calculate_dcpa_tcpa = calculate_vessel_cpa_to_slick

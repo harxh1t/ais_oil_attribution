@@ -1,24 +1,58 @@
 """OpenDrift/OpenOil Lagrangian particle reverse-time backtracking."""
 
-from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Optional, Tuple
 import numpy as np
 from shapely.geometry import MultiPoint, Point, Polygon, mapping
 
 from ais_oil_attribution.data.environmental.readers import MissingForcingDataError
+from ais_oil_attribution.drift.base import DriftModel, OriginEstimate
 
 
-@dataclass
-class OriginEstimate:
-    """Estimated release origin region and uncertainty bounds."""
-    best_guess_lat: float
-    best_guess_lon: float
-    best_guess_geojson: Dict[str, Any]
-    minimum_regret_geojson: Dict[str, Any]
-    particles_final: np.ndarray  # (N, 2) array of (lat, lon)
-    duration_hours: float
-    note: str
+class OpenDriftModel(DriftModel):
+    """OpenDrift / OpenOil implementation of the DriftModel interface."""
+
+    def backtrack(
+        self,
+        lat: float,
+        lon: float,
+        observation_time: datetime,
+        spread_km: float,
+        duration_hours: float = 12.0,
+        config: Optional[Dict[str, Any]] = None,
+        forcing_source: Optional[str] = None,
+    ) -> OriginEstimate:
+        return backtrack_origin(
+            lat=lat,
+            lon=lon,
+            observation_time=observation_time,
+            spread_km=spread_km,
+            config=config or {},
+            forcing_source=forcing_source,
+            duration_hours=duration_hours,
+        )
+
+    def forward_track(
+        self,
+        release_points: np.ndarray,
+        start_time: datetime,
+        end_time: datetime,
+        config: Optional[Dict[str, Any]] = None,
+        ensemble_size: int = 20,
+        wind_perturbation: float = 0.0,
+        current_perturbation: float = 0.0,
+    ) -> np.ndarray:
+        # Fallback forward tracking
+        from ais_oil_attribution.drift.analytic import AnalyticDriftModel
+        return AnalyticDriftModel().forward_track(
+            release_points=release_points,
+            start_time=start_time,
+            end_time=end_time,
+            config=config,
+            ensemble_size=ensemble_size,
+            wind_perturbation=wind_perturbation,
+            current_perturbation=current_perturbation,
+        )
 
 
 def backtrack_origin(
@@ -104,35 +138,29 @@ def backtrack_origin(
             origin_center_lon + noise_lon,
         ])
 
-    # Compute Best Guess (Centroid)
-    best_lat = float(np.mean(particles[:, 0]))
-    best_lon = float(np.mean(particles[:, 1]))
-    best_point = Point(best_lon, best_lat)
+    # Calculate origin centroid
+    best_guess_lat = float(np.mean(particles[:, 0]))
+    best_guess_lon = float(np.mean(particles[:, 1]))
 
-    # Compute Minimum Regret (Convex Hull of particle dispersion cloud)
-    # Filter 95% central particles to exclude extreme outliers
-    dists = np.sqrt((particles[:, 0] - best_lat)**2 + (particles[:, 1] - best_lon)**2)
-    p95_mask = dists <= np.percentile(dists, 95)
-    filtered_pts = particles[p95_mask]
+    # Construct Best Guess convex hull Polygon
+    points_geom = [Point(p[1], p[0]) for p in particles]
+    mp = MultiPoint(points_geom)
+    best_guess_poly = mp.convex_hull
 
-    mp = MultiPoint([(p[1], p[0]) for p in filtered_pts])  # (lon, lat) for GeoJSON
-    hull = mp.convex_hull
-    if not isinstance(hull, Polygon):
-        hull = hull.buffer(spread_km / 111.0)
-
-    best_guess_geojson = mapping(best_point)
-    minimum_regret_geojson = mapping(hull)
+    # Construct Minimum Regret envelope (Best Guess buffered by 20% spatial uncertainty margin)
+    buffer_deg = (spread_km * 0.20) / 111.0
+    minimum_regret_poly = best_guess_poly.buffer(buffer_deg)
 
     note = (
-        f"Lagrangian backtrack ({duration_hours:.1f}h reverse simulation). "
-        "Best Guess represents particle ensemble centroid; Minimum Regret bounds 95% dispersion envelope."
+        f"Reverse advection backtrack simulated for {duration_hours:.1f} hours ({seed_number} particles). "
+        "Confidence is constrained by forcing dataset spatio-temporal resolution."
     )
 
     return OriginEstimate(
-        best_guess_lat=best_lat,
-        best_guess_lon=best_lon,
-        best_guess_geojson=best_guess_geojson,
-        minimum_regret_geojson=minimum_regret_geojson,
+        best_guess_lat=best_guess_lat,
+        best_guess_lon=best_guess_lon,
+        best_guess_geojson=mapping(best_guess_poly),
+        minimum_regret_geojson=mapping(minimum_regret_poly),
         particles_final=particles,
         duration_hours=duration_hours,
         note=note,

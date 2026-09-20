@@ -1016,11 +1016,13 @@ def generate_reconstruction_3d_v3_dashboard(
             v_name = str(row["vessel_name"])
             conf_label = str(row["confidence_label"])
             conf_score = float(row["confidence_score"])
-            frechet_km = float(row["frechet_km"])
+            frechet_val = float(row["frechet_km"]) if pd.notna(row.get("frechet_km")) else None
             dcpa_km = float(row["dcpa_km"])
             tcpa_min = float(row["tcpa_minutes"])
             coverage = float(row["coverage_completeness"])
-            borda_score = int(row["borda_score"])
+            borda_score = int(row.get("borda_score", 0))
+            ff_score = float(row["forward_fit_score"]) if pd.notna(row.get("forward_fit_score")) else None
+            post_score = float(row["evidence_posterior"]) if pd.notna(row.get("evidence_posterior")) else None
 
             track_points = pts_by_mmsi.get(mmsi, [])
             observed_count = sum(1 for p in track_points if not p.get("is_interp", False))
@@ -1042,9 +1044,11 @@ def generate_reconstruction_3d_v3_dashboard(
                 "name": v_name,
                 "conf_label": conf_label,
                 "conf_score": conf_score,
-                "frechet_km": frechet_km,
+                "frechet_km": frechet_val,
                 "dcpa_km": dcpa_km,
                 "tcpa_min": tcpa_min,
+                "forward_fit_score": ff_score,
+                "evidence_posterior": post_score,
                 "coverage": coverage,
                 "borda_score": borda_score,
                 "borda_ratio": float(borda_score / max_borda) if max_borda > 0 else 0.0,
@@ -1101,7 +1105,7 @@ def generate_reconstruction_3d_v3_dashboard(
     top_mmsi = str(top_vessel["mmsi"]) if top_vessel else "N/A"
     top_conf_label = top_vessel["conf_label"] if top_vessel else "NONE"
     top_conf_score = float(top_vessel["conf_score"]) if top_vessel else 0.0
-    top_frechet_val = float(top_vessel["frechet_km"]) if top_vessel else 0.0
+    top_frechet_str = f"{float(top_vessel['frechet_km']):.2f}" if (top_vessel and top_vessel.get("frechet_km") is not None) else "N/A"
     top_dcpa_val = float(top_vessel["dcpa_km"]) if top_vessel else 0.0
     top_tcpa_val = float(top_vessel["tcpa_min"]) if top_vessel else 0.0
     top_cov_val = float(top_vessel["coverage"] * 100) if top_vessel else 0.0
@@ -1116,7 +1120,7 @@ def generate_reconstruction_3d_v3_dashboard(
     html = html.replace("__TOP_CONF_PCT__", f"{top_conf_score*100:.1f}")
     html = html.replace("__TOP_DCPA__", f"{top_dcpa_val:.2f}")
     html = html.replace("__TOP_TCPA__", f"{top_tcpa_val:+.1f}")
-    html = html.replace("__TOP_FRECHET__", f"{top_frechet_val:.2f}")
+    html = html.replace("__TOP_FRECHET__", top_frechet_str)
     html = html.replace("__CLIENT_DATA_JSON__", client_data_json)
 
     output_html_path.write_text(html, encoding="utf-8")

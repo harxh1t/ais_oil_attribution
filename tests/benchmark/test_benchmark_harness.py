@@ -1,18 +1,24 @@
 """Benchmark and validation harness for vessel attribution."""
 
 import pytest
+from ais_oil_attribution.benchmark.runner import run_benchmark_suite
 
 
-def test_benchmark_harness_status():
-    """
-    Evaluates benchmark dataset availability (§22).
+def test_synthetic_offline_validation_benchmark_execution():
+    """Validates that the offline synthetic validation suite runs and produces valid multi-method metrics."""
+    res = run_benchmark_suite(n_cases=5, quick_mode=True, seed=42)
 
-    Literature review finding:
-    A systematic search did not surface a curated, public, ground-truth benchmark
-    of historical spills with legally confirmed responsible vessels and open AIS data.
-    """
-    benchmark_cases = []  # Explicitly 0 verified public ground-truth cases
+    assert "ranking_methods_comparison" in res
+    comp = res["ranking_methods_comparison"]
 
-    total_cases = len(benchmark_cases)
-    assert total_cases == 0, "No public ground-truth benchmark cases currently available"
-    print(f"\n[BENCHMARK STATUS] {total_cases} benchmark ground-truth cases available. Framework ready for future case ingestion.")
+    assert "borda" in comp
+    assert "topsis" in comp
+    assert "llr" in comp
+
+    assert 0.0 <= comp["borda"]["top1_accuracy"] <= 1.0
+    assert 0.0 <= comp["topsis"]["top1_accuracy"] <= 1.0
+    assert 0.0 <= comp["llr"]["top1_accuracy"] <= 1.0
+
+    assert "ranker_agreement_borda_vs_topsis" in res
+    assert "calibration_evaluation_llr" in res
+    assert "ais_reconstruction_validation" in res

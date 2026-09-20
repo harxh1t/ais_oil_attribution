@@ -92,36 +92,63 @@ def write_investigation_bundle(
 
     # 5. attribution.json (§4.5 schema)
     cand_list = []
+    ranking_method_used = config_dict.get("attribution", {}).get("ranking_method", "borda_count")
     if not scores_df.empty:
         for _, row in scores_df.iterrows():
-            cand_list.append({
+            frechet_val = float(row["frechet_km"]) if pd.notna(row.get("frechet_km")) else None
+            ff_val = float(row["forward_fit_score"]) if pd.notna(row.get("forward_fit_score")) else None
+            post_val = float(row["evidence_posterior"]) if pd.notna(row.get("evidence_posterior")) else None
+            top_val = float(row["topsis_score"]) if pd.notna(row.get("topsis_score")) else None
+
+            not_app = []
+            if frechet_val is None:
+                not_app.append("frechet_parity (amorphous or non-streak slick geometry)")
+
+            expl = []
+            if frechet_val is not None:
+                expl.append(f"Fréchet parity distance of {frechet_val:.2f} km against slick geometry")
+            else:
+                expl.append("Fréchet parity not applicable for this slick geometry")
+
+            expl.append(f"Closest kinematic approach (DCPA) of {row['dcpa_km']:.2f} km at {row['tcpa_minutes']:+.1f} min")
+            expl.append(f"{row['coverage_completeness']*100:.1f}% real AIS points (un-interpolated) in observation window")
+            if ff_val is not None:
+                expl.append(f"Forward-fit trajectory recreation score: {ff_val:.2f}")
+
+            cand_item: Dict[str, Any] = {
                 "rank": int(row["final_rank"]),
                 "mmsi": int(row["mmsi"]),
                 "vessel_name": str(row["vessel_name"]),
                 "evidence": {
-                    "frechet_km": float(row["frechet_km"]),
+                    "frechet_km": frechet_val,
                     "dcpa_km": float(row["dcpa_km"]),
                     "tcpa_minutes": float(row["tcpa_minutes"]),
                     "coverage_completeness": float(row["coverage_completeness"]),
+                    "forward_fit_score": ff_val,
+                    "evidence_posterior": post_val,
+                    "topsis_score": top_val,
                 },
-                "borda_score": int(row["borda_score"]),
-                "confidence_score": float(row["confidence_score"]),
-                "confidence_label": str(row["confidence_label"]),
-                "explanation": [
-                    f"Fréchet parity distance of {row['frechet_km']:.2f} km against slick geometry",
-                    f"Closest kinematic approach (DCPA) of {row['dcpa_km']:.2f} km at {row['tcpa_minutes']:+.1f} min",
-                    f"{row['coverage_completeness']*100:.1f}% real AIS points (un-interpolated) in observation window",
-                ],
-            })
+                "not_applicable_channels": not_app,
+                "borda_score": int(row.get("borda_score", 0)),
+                "confidence_score": float(row.get("confidence_score", 0.0)),
+                "confidence_label": str(row.get("confidence_label", "UNKNOWN")),
+                "explanation": expl,
+            }
+            if "provenance" in row and isinstance(row["provenance"], dict):
+                cand_item["provenance"] = row["provenance"]
+            cand_list.append(cand_item)
 
     attribution_json_data: Dict[str, Any] = {
         "investigation_id": investigation_id,
         "input": input_data,
+        "ranking_method": ranking_method_used,
+        "is_abstained": bool(regime_decision.get("is_abstained", False)),
+        "abstention_reason": regime_decision.get("abstention_reason"),
         "candidates": cand_list,
         "caveats": [
             "This is a candidate association based on available AIS data, not proof of responsibility.",
             "AIS coverage is incomplete; a non-broadcasting ('dark') vessel cannot be ruled out.",
-            "No peer-reviewed formula exists for combining these signals into a single probability; Borda rank aggregation was used instead of an arbitrary weighted sum.",
+            "Evidence posteriors (when LLR enabled) are calibrated on synthetic simulation cases for decision support.",
         ],
     }
 

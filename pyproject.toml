@@ -29,6 +29,7 @@ dependencies = [
 
 [project.scripts]
 ais-oil-investigate = "ais_oil_attribution.cli:main"
+ais-oil-benchmark = "ais_oil_attribution.benchmark.cli:main"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

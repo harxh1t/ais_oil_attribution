@@ -56,11 +56,13 @@ def generate_workstation_dashboard(
             v_name = str(row["vessel_name"])
             conf_label = str(row["confidence_label"])
             conf_score = float(row["confidence_score"])
-            frechet_km = float(row["frechet_km"])
+            frechet_km = float(row["frechet_km"]) if pd.notna(row.get("frechet_km")) else None
             dcpa_km = float(row["dcpa_km"])
             tcpa_min = float(row["tcpa_minutes"])
             coverage = float(row["coverage_completeness"])
-            borda_score = int(row["borda_score"])
+            borda_score = int(row.get("borda_score", 0))
+            ff_score = float(row["forward_fit_score"]) if pd.notna(row.get("forward_fit_score")) else None
+            post_score = float(row["evidence_posterior"]) if pd.notna(row.get("evidence_posterior")) else None
 
             track_points = pts_by_mmsi.get(mmsi, [])
 
@@ -83,6 +85,8 @@ def generate_workstation_dashboard(
                 "frechet_km": frechet_km,
                 "dcpa_km": dcpa_km,
                 "tcpa_min": tcpa_min,
+                "forward_fit_score": ff_score,
+                "evidence_posterior": post_score,
                 "coverage": coverage,
                 "borda_score": borda_score,
                 "borda_ratio": float(borda_score / max_borda) if max_borda > 0 else 0.0,

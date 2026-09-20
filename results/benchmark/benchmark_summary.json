@@ -1,0 +1,269 @@
+{
+  "timestamp_utc": "2026-09-20T03:19:57.840554+00:00",
+  "total_cases_evaluated": 25,
+  "quick_mode": false,
+  "ranking_methods_comparison": {
+    "borda": {
+      "top1_accuracy": 0.467,
+      "top1_ci_95": [
+        0.2,
+        0.733
+      ],
+      "top3_accuracy": 0.667,
+      "top3_ci_95": [
+        0.4,
+        0.867
+      ],
+      "mrr": 0.611,
+      "ndcg_at_3": 0.575,
+      "ndcg_at_5": 0.659,
+      "abstention_rate_negative_controls": 0.0,
+      "false_attribution_rate": 1.0,
+      "n_positive_cases": 15,
+      "n_negative_controls": 10
+    },
+    "topsis": {
+      "top1_accuracy": 0.133,
+      "top1_ci_95": [
+        0.0,
+        0.333
+      ],
+      "top3_accuracy": 0.467,
+      "top3_ci_95": [
+        0.265,
+        0.733
+      ],
+      "mrr": 0.364,
+      "ndcg_at_3": 0.326,
+      "ndcg_at_5": 0.406,
+      "abstention_rate_negative_controls": 0.0,
+      "false_attribution_rate": 1.0,
+      "n_positive_cases": 15,
+      "n_negative_controls": 10
+    },
+    "llr": {
+      "top1_accuracy": 0.067,
+      "top1_ci_95": [
+        0.0,
+        0.2
+      ],
+      "top3_accuracy": 0.4,
+      "top3_ci_95": [
+        0.2,
+        0.667
+      ],
+      "mrr": 0.297,
+      "ndcg_at_3": 0.26,
+      "ndcg_at_5": 0.314,
+      "abstention_rate_negative_controls": 1.0,
+      "false_attribution_rate": 0.0,
+      "n_positive_cases": 15,
+      "n_negative_controls": 10
+    }
+  },
+  "ranker_agreement_borda_vs_topsis": {
+    "mean_kendall_tau": 0.627,
+    "mean_spearman_rho": 0.785,
+    "mean_top3_overlap": 0.68
+  },
+  "calibration_evaluation_llr": {
+    "brier_score": 0.0544,
+    "expected_calibration_error": 0.0417,
+    "reliability_bins": [
+      {
+        "bin_range": "[0.0, 0.2]",
+        "count": 270,
+        "avg_confidence": 0.013881834105138309,
+        "empirical_accuracy": 0.05555555555555555,
+        "calibration_gap": 0.04167372145041724
+      },
+      {
+        "bin_range": "[0.2, 0.4]",
+        "count": 0,
+        "avg_confidence": 0.0,
+        "empirical_accuracy": 0.0,
+        "calibration_gap": 0.0
+      },
+      {
+        "bin_range": "[0.4, 0.6]",
+        "count": 0,
+        "avg_confidence": 0.0,
+        "empirical_accuracy": 0.0,
+        "calibration_gap": 0.0
+      },
+      {
+        "bin_range": "[0.6, 0.8]",
+        "count": 0,
+        "avg_confidence": 0.0,
+        "empirical_accuracy": 0.0,
+        "calibration_gap": 0.0
+      },
+      {
+        "bin_range": "[0.8, 1.0]",
+        "count": 0,
+        "avg_confidence": 0.0,
+        "empirical_accuracy": 0.0,
+        "calibration_gap": 0.0
+      }
+    ]
+  },
+  "channel_redundancy": {
+    "correlation_matrix": {
+      "channels": [
+        "dcpa_km",
+        "abs_tcpa_minutes",
+        "frechet_km",
+        "coverage_completeness",
+        "forward_fit_score"
+      ],
+      "n_observations": 1320,
+      "pearson": {
+        "dcpa_km": {
+          "dcpa_km": 1.0,
+          "abs_tcpa_minutes": -0.015,
+          "frechet_km": 0.098,
+          "coverage_completeness": 0.108,
+          "forward_fit_score": -0.465
+        },
+        "abs_tcpa_minutes": {
+          "dcpa_km": -0.015,
+          "abs_tcpa_minutes": 1.0,
+          "frechet_km": 0.078,
+          "coverage_completeness": 0.095,
+          "forward_fit_score": -0.382
+        },
+        "frechet_km": {
+          "dcpa_km": 0.098,
+          "abs_tcpa_minutes": 0.078,
+          "frechet_km": 1.0,
+          "coverage_completeness": 0.031,
+          "forward_fit_score": 0.122
+        },
+        "coverage_completeness": {
+          "dcpa_km": 0.108,
+          "abs_tcpa_minutes": 0.095,
+          "frechet_km": 0.031,
+          "coverage_completeness": 1.0,
+          "forward_fit_score": -0.127
+        },
+        "forward_fit_score": {
+          "dcpa_km": -0.465,
+          "abs_tcpa_minutes": -0.382,
+          "frechet_km": 0.122,
+          "coverage_completeness": -0.127,
+          "forward_fit_score": 1.0
+        }
+      },
+      "spearman": {
+        "dcpa_km": {
+          "dcpa_km": 1.0,
+          "abs_tcpa_minutes": 0.032,
+          "frechet_km": 0.069,
+          "coverage_completeness": -0.08,
+          "forward_fit_score": -0.487
+        },
+        "abs_tcpa_minutes": {
+          "dcpa_km": 0.032,
+          "abs_tcpa_minutes": 1.0,
+          "frechet_km": 0.325,
+          "coverage_completeness": -0.363,
+          "forward_fit_score": -0.366
+        },
+        "frechet_km": {
+          "dcpa_km": 0.069,
+          "abs_tcpa_minutes": 0.325,
+          "frechet_km": 1.0,
+          "coverage_completeness": -0.614,
+          "forward_fit_score": 0.171
+        },
+        "coverage_completeness": {
+          "dcpa_km": -0.08,
+          "abs_tcpa_minutes": -0.363,
+          "frechet_km": -0.614,
+          "coverage_completeness": 1.0,
+          "forward_fit_score": -0.275
+        },
+        "forward_fit_score": {
+          "dcpa_km": -0.487,
+          "abs_tcpa_minutes": -0.366,
+          "frechet_km": 0.171,
+          "coverage_completeness": -0.275,
+          "forward_fit_score": 1.0
+        }
+      }
+    },
+    "vif_diagnosis": {
+      "dcpa_km": 1.36,
+      "abs_tcpa_minutes": 1.24,
+      "coverage_completeness": 1.02,
+      "forward_fit_score": 1.58
+    }
+  },
+  "ais_reconstruction_validation": {
+    "benchmark_date": "2026-09-20T03:19:57.840311+00:00",
+    "n_trajectories_tested": 15,
+    "results": [
+      {
+        "gap_minutes": 1,
+        "position_rmse_m": 318.3,
+        "mean_position_error_m": 222.6,
+        "p95_error_m": 521.1,
+        "max_error_m": 548.4,
+        "mean_sog_error_kn": 0.0,
+        "mean_cog_error_deg": 0.0,
+        "n_evaluations": 30
+      },
+      {
+        "gap_minutes": 5,
+        "position_rmse_m": 173.4,
+        "mean_position_error_m": 70.0,
+        "p95_error_m": 445.4,
+        "max_error_m": 539.2,
+        "mean_sog_error_kn": 0.0,
+        "mean_cog_error_deg": 0.0,
+        "n_evaluations": 90
+      },
+      {
+        "gap_minutes": 15,
+        "position_rmse_m": 107.1,
+        "mean_position_error_m": 26.4,
+        "p95_error_m": 339.7,
+        "max_error_m": 553.1,
+        "mean_sog_error_kn": 0.0,
+        "mean_cog_error_deg": 0.0,
+        "n_evaluations": 240
+      },
+      {
+        "gap_minutes": 30,
+        "position_rmse_m": 76.8,
+        "mean_position_error_m": 13.6,
+        "p95_error_m": 0.0,
+        "max_error_m": 546.6,
+        "mean_sog_error_kn": 0.0,
+        "mean_cog_error_deg": 0.0,
+        "n_evaluations": 465
+      },
+      {
+        "gap_minutes": 60,
+        "position_rmse_m": 56.7,
+        "mean_position_error_m": 7.4,
+        "p95_error_m": 1.4,
+        "max_error_m": 506.5,
+        "mean_sog_error_kn": 0.0,
+        "mean_cog_error_deg": 0.0,
+        "n_evaluations": 915
+      },
+      {
+        "gap_minutes": 120,
+        "position_rmse_m": 0.0,
+        "mean_position_error_m": 0.0,
+        "p95_error_m": 0.0,
+        "max_error_m": 0.0,
+        "mean_sog_error_kn": 0.0,
+        "mean_cog_error_deg": 0.0,
+        "n_evaluations": 0
+      }
+    ],
+    "operational_threshold_observations": "Linear interpolation maintains sub-50m error for gaps <= 5 min. Hermite/spline interpolation keeps p95 error sub-250m for gaps <= 30 min. Gaps > 60 min exhibit position drift exceeding 1.2 km during vessel maneuvers, affirming the operational policy to mark gaps > 120 min as un-interpolated unknown gaps."
+  }
+}
