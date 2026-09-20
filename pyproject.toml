@@ -27,6 +27,12 @@ dependencies = [
     "python-dateutil>=2.8",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+]
+
 [project.scripts]
 ais-oil-investigate = "ais_oil_attribution.cli:main"
 ais-oil-benchmark = "ais_oil_attribution.benchmark.cli:main"
