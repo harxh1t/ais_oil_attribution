@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WAKE Case Experience // #investigation_20260921_122430</title>
+  <link rel="stylesheet" href="./styles.css">
+  <!-- Offline-safe direct data script loading -->
+  <script src="./case-data.js"></script>
+</head>
+<body>
+
+  <!-- Top Application Command & Stage Navigation -->
+  <header class="app-header">
+    <div class="header-brand">
+      <div class="logo-mark">W</div>
+      <div class="brand-text">
+        <span class="brand-title">WAKE</span>
+        <span class="brand-sub">Attribution Engine</span>
+      </div>
+    </div>
+
+    <!-- Stage Navigation Tabs -->
+    <nav class="nav-tabs" id="stage-nav">
+      <a href="#/intro" class="nav-tab active" data-stage="intro" id="nav-intro">01 Introduction</a>
+      <a href="#/input" class="nav-tab" data-stage="input" id="nav-input">02 Parameters</a>
+      <a href="#/report" class="nav-tab" data-stage="report" id="nav-report">03 Case Report</a>
+      <a href="#/reconstruction" class="nav-tab" data-stage="reconstruction" id="nav-reconstruction">04 3D Workspace</a>
+    </nav>
+
+    <div class="header-status">
+      <div class="status-pill" style="color: #10B981;">
+        <span class="status-dot"></span>
+        <span>CONFIRMED ATTRIBUTION</span>
+      </div>
+      <a href="#/reconstruction" class="btn-primary btn-compact">
+        <span>Launch 3D</span>
+        <span>⤢</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- ========================================================
+       STAGE 01: INTRODUCTION NARRATIVE & SEMANTIC PIPELINE
+       ======================================================== -->
+  <section id="stage-intro" class="stage-section">
+    <div class="intro-hero">
+      <div class="constellation-strip">
+        <span style="color: var(--geospatial-cyan); font-weight: 800;">●</span>
+        <span>Sentinel-1 Copernicus Constellation &bull; Hydrodynamic Drift Engine &bull; Reproducible Forensic Proof</span>
+      </div>
+
+      <h1 class="hero-title">
+        When an oil spill appears at sea, the real question is not only where it is — <span class="highlight">but where it came from.</span>
+      </h1>
+
+      <p class="hero-subtitle">
+        WAKE is a maritime forensic intelligence system detecting, analysing, and attributing offshore discharges by fusing Sentinel-1 SAR imagery, multi-temporal AIS telemetry, and hydrodynamic backwards-drift modelling.
+      </p>
+
+      <div class="hero-cta-dock">
+        <a href="#/report" class="btn-primary">
+          <span>ENTER CASE</span>
+          <span>→</span>
+        </a>
+        <a href="#pipeline-workflow" class="btn-secondary" onclick="document.getElementById('pipeline-workflow').scrollIntoView({behavior: 'smooth'});">
+          <span>HOW IT WORKS</span>
+          <span>↓</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- 6 Semantic Pipeline Processing Stages -->
+    <div class="pipeline-section" id="pipeline-workflow">
+      <div class="pipeline-header">
+        <div>
+          <span style="font-size: 11px; font-weight: 700; color: var(--geospatial-cyan); text-transform: uppercase; font-family: var(--font-family-mono);">
+            Evidentiary Architecture
+          </span>
+          <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--on-surface); margin-top: 4px;">
+            Attribution Pipeline Workflow
+          </h2>
+        </div>
+        <span class="mono" style="font-size: 11px; color: var(--outline);">6 Interlocking Processing Nodes</span>
+      </div>
+
+      <div class="pipeline-grid">
+        <!-- Node 1: SAR Detection (Observed + Anomaly) -->
+        <div class="pipeline-node node-observed">
+          <div class="node-graphic">
+            <svg width="180" height="48" viewBox="0 0 180 48" fill="none">
+              <!-- Sentinel radar sweep -->
+              <circle cx="90" cy="24" r="20" stroke="rgba(16, 185, 129, 0.3)" stroke-width="1" stroke-dasharray="3 3"/>
+              <circle cx="90" cy="24" r="10" stroke="var(--verified-emerald)" stroke-width="1.5"/>
+              <!-- Damping Anomaly -->
+              <path d="M 40 28 Q 70 14 110 24 T 150 20" stroke="var(--anomaly-rose)" stroke-width="3" stroke-linecap="round"/>
+              <circle cx="90" cy="24" r="3" fill="var(--verified-emerald)"/>
+            </svg>
+          </div>
+          <span class="node-phase-tag">Phase 01 // Observed</span>
+          <h3 class="node-title">SAR Satellite Detection</h3>
+          <p class="node-desc">Copernicus Sentinel-1 C-band synthetic aperture radar (SAR) scans capture surface capillary damping and backscatter suppression.</p>
+          <div class="node-footer">
+            <span style="color: var(--verified-emerald);">VV + VH Dual-Pol</span>
+            <span style="color: var(--outline);">Sensor: C-SAR</span>
+          </div>
+        </div>
+
+        <!-- Node 2: Segmentation (Derived) -->
+        <div class="pipeline-node node-derived">
+          <div class="node-graphic">
+            <svg width="180" height="48" viewBox="0 0 180 48" fill="none">
+              <!-- Polygon Boundary -->
+              <path d="M 30 26 Q 60 12 100 18 T 160 28 Q 120 40 70 36 Z" fill="rgba(244, 63, 94, 0.15)" stroke="var(--anomaly-rose)" stroke-width="1.2"/>
+              <!-- Medial Axis Centerline -->
+              <path d="M 38 25 Q 70 18 105 22 T 152 28" stroke="var(--geospatial-cyan)" stroke-width="2" stroke-dasharray="4 2"/>
+            </svg>
+          </div>
+          <span class="node-phase-tag">Phase 02 // Derived</span>
+          <h3 class="node-title">Neural Segmentation</h3>
+          <p class="node-desc">Isolates true petroleum damping from biogenic lookalikes; extracts skeleton medial axes, geometry, and spread footprint.</p>
+          <div class="node-footer">
+            <span style="color: var(--geospatial-cyan);">Medial Axis Voronoi</span>
+            <span style="color: var(--outline);">Damping: >8 dB</span>
+          </div>
+        </div>
+
+        <!-- Node 3: Lagrangian Drift (Derived) -->
+        <div class="pipeline-node node-derived">
+          <div class="node-graphic">
+            <svg width="180" height="48" viewBox="0 0 180 48" fill="none">
+              <!-- Current & Wind Advection Vectors -->
+              <path d="M 150 20 L 110 24 M 110 24 L 70 22 M 70 22 L 30 26" stroke="var(--geospatial-cyan)" stroke-width="2" stroke-linecap="round"/>
+              <polygon points="26,26 34,22 34,30" fill="var(--geospatial-cyan)"/>
+              <!-- Uncertainty Origin Cone -->
+              <ellipse cx="32" cy="26" rx="14" ry="8" fill="rgba(244, 63, 94, 0.2)" stroke="var(--anomaly-rose)" stroke-width="1"/>
+            </svg>
+          </div>
+          <span class="node-phase-tag">Phase 03 // Derived</span>
+          <h3 class="node-title">Reverse Lagrangian Drift</h3>
+          <p class="node-desc">Backward advection rewinds physical slick drift using ECMWF hydrodynamic currents and GFS surface windage back to discharge epoch.</p>
+          <div class="node-footer">
+            <span style="color: var(--anomaly-rose);">OpenDrift / OpenOil</span>
+            <span style="color: var(--outline);">T-48h Advection</span>
+          </div>
+        </div>
+
+        <!-- Node 4: AIS Ingestion (Observed + Derived) -->
+        <div class="pipeline-node node-observed">
+          <div class="node-graphic">
+            <svg width="180" height="48" viewBox="0 0 180 48" fill="none">
+              <!-- Spline Trajectory with Genuine Pings -->
+              <path d="M 20 38 Q 60 16 110 28 T 165 14" stroke="var(--geospatial-cyan)" stroke-width="1.5" stroke-dasharray="3 3"/>
+              <!-- Observed Genuine Points -->
+              <circle cx="20" cy="38" r="3.5" fill="var(--verified-emerald)"/>
+              <circle cx="55" cy="23" r="3.5" fill="var(--verified-emerald)"/>
+              <circle cx="110" cy="28" r="3.5" fill="var(--verified-emerald)"/>
+              <circle cx="165" cy="14" r="3.5" fill="var(--verified-emerald)"/>
+            </svg>
+          </div>
+          <span class="node-phase-tag">Phase 04 // Observed & Derived</span>
+          <h3 class="node-title">AIS Ingestion & Kinematics</h3>
+          <p class="node-desc">Ingests high-density vessel broadcasts; filters spatial corridors and constructs hermite spline kinematics across telemetry gaps.</p>
+          <div class="node-footer">
+            <span style="color: var(--verified-emerald);">Solid: Genuine</span>
+            <span style="color: var(--geospatial-cyan);">Dashed: Spline</span>
+          </div>
+        </div>
+
+        <!-- Node 5: Evidence Channels (Derived) -->
+        <div class="pipeline-node node-derived">
+          <div class="node-graphic">
+            <svg width="180" height="48" viewBox="0 0 180 48" fill="none">
+              <!-- Closest Point of Approach Line -->
+              <line x1="40" y1="14" x2="140" y2="34" stroke="var(--geospatial-cyan)" stroke-width="2"/>
+              <!-- CPA Distance Vector -->
+              <line x1="90" y1="24" x2="90" y2="38" stroke="var(--primary-violet-core)" stroke-width="2" stroke-dasharray="2 2"/>
+              <circle cx="90" cy="38" r="4" fill="var(--anomaly-rose)"/>
+              <circle cx="90" cy="24" r="3.5" fill="var(--geospatial-cyan)"/>
+            </svg>
+          </div>
+          <span class="node-phase-tag">Phase 05 // Derived</span>
+          <h3 class="node-title">Multi-Channel Evidence</h3>
+          <p class="node-desc">Computes discrete Fréchet curve similarity, DCPA distance, TCPA time offset, and Longépé-style forward-fit plume simulation.</p>
+          <div class="node-footer">
+            <span style="color: var(--geospatial-cyan);">DCPA + Fréchet + FF</span>
+            <span style="color: var(--outline);">Provenanced</span>
+          </div>
+        </div>
+
+        <!-- Node 6: Consensus Ranking (Inference) -->
+        <div class="pipeline-node node-inference">
+          <div class="node-graphic">
+            <svg width="180" height="48" viewBox="0 0 180 48" fill="none">
+              <!-- Borda Consensus Bars -->
+              <rect x="35" y="10" width="110" height="7" rx="3" fill="var(--primary-violet-core)"/>
+              <rect x="35" y="21" width="65" height="7" rx="3" fill="rgba(124, 58, 237, 0.4)"/>
+              <rect x="35" y="32" width="30" height="7" rx="3" fill="rgba(124, 58, 237, 0.2)"/>
+              <!-- Crown / Rank #1 -->
+              <circle cx="155" cy="13.5" r="4" fill="var(--primary)"/>
+            </svg>
+          </div>
+          <span class="node-phase-tag">Phase 06 // Inference</span>
+          <h3 class="node-title">Consensus Ranking</h3>
+          <p class="node-desc">Fuses multi-channel metrics via Borda Count, TOPSIS, and calibrated Bayesian LLR with completeness discounts and ambiguity detection.</p>
+          <div class="node-footer">
+            <span style="color: var(--primary);">Borda Consensus</span>
+            <span style="color: var(--outline);">Calibrated Vector</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================
+       STAGE 02: INVESTIGATION PARAMETERS OF RECORD
+       ======================================================== -->
+  <section id="stage-input" class="stage-section" style="display: none;">
+    <div class="params-container">
+      <div class="params-hero">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: var(--space-sm);">
+          <div>
+            <span style="font-size: 11px; font-weight: 700; color: var(--geospatial-cyan); text-transform: uppercase; font-family: var(--font-family-mono);">
+              Telemetry Dossier
+            </span>
+            <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--on-surface); margin-top: 2px;">
+              Parameters of Record
+            </h2>
+          </div>
+          <span class="mono" style="font-size: 11px; color: var(--outline); background: var(--surface-foundation); padding: 4px 10px; border-radius: var(--rounded-default); border: 1px solid var(--structural-hairline);">
+            ID: #investigation_20260921_122430
+          </span>
+        </div>
+        <p style="font-size: 12px; color: var(--on-surface-variant); line-height: 1.6;">
+          This record documents the exact observation coordinates and environmental criteria executed for this completed forensic attribution run.
+        </p>
+
+        <!-- 5 Core Parameters -->
+        <div class="params-grid">
+          <div class="param-card">
+            <span class="param-label">Observed Latitude</span>
+            <span class="param-value tabular-nums">34.0169&deg; N</span>
+            <span class="param-note">WGS-84 Coordinate</span>
+          </div>
+
+          <div class="param-card">
+            <span class="param-label">Observed Longitude</span>
+            <span class="param-value tabular-nums">-118.6631&deg; W</span>
+            <span class="param-note">WGS-84 Coordinate</span>
+          </div>
+
+          <div class="param-card">
+            <span class="param-label">Observation Epoch</span>
+            <span class="param-value tabular-nums" style="font-size: 1.1rem;">2024-08-06 01:50:00 UTC</span>
+            <span class="param-note">Satellite Pass UTC</span>
+          </div>
+
+          <div class="param-card">
+            <span class="param-label">Spread Radius</span>
+            <span class="param-value tabular-nums">12.00 km</span>
+            <span class="param-note">Tightest Estimate</span>
+          </div>
+
+          <div class="param-card">
+            <span class="param-label">Analysis Regime</span>
+            <span class="param-value" style="text-transform: capitalize; color: var(--primary);">delayed</span>
+            <span class="param-note">User explicitly specified 'delayed' regime via CLI argument.</span>
+          </div>
+        </div>
+
+        <!-- Collapsed Advanced Parameters -->
+        <details class="advanced-disclosure">
+          <summary>
+            <span>Advanced Configuration & Environmental Criteria</span>
+            <span class="mono" style="font-size: 11px; color: var(--geospatial-cyan);">[ + Expand Details ]</span>
+          </summary>
+          <div class="advanced-content">
+            <div>
+              <span class="param-label">Spatial Search Radius</span>
+              <div class="mono" style="font-weight: 700; color: var(--on-surface);">50.00 km Outer Envelope</div>
+            </div>
+            <div>
+              <span class="param-label">Temporal Window Span</span>
+              <div class="mono" style="font-weight: 700; color: var(--on-surface);">-8.0h before / +6.0h after</div>
+            </div>
+            <div>
+              <span class="param-label">Telemetry Ingestion Backend</span>
+              <div class="mono" style="font-weight: 700; color: var(--on-surface);">NOAA MarineCadastre GeoParquet</div>
+            </div>
+            <div>
+              <span class="param-label">Trajectory Spline Max Gap</span>
+              <div class="mono" style="font-weight: 700; color: var(--on-surface);">120 minutes max interpolation</div>
+            </div>
+            <div>
+              <span class="param-label">Primary Candidate Ranker</span>
+              <div class="mono" style="font-weight: 700; color: var(--on-surface);">Non-Parametric Borda Consensus</div>
+            </div>
+            <div>
+              <span class="param-label">Coordinate Frame</span>
+              <div class="mono" style="font-weight: 700; color: var(--on-surface);">EPSG:4326 / Local Metric Space</div>
+            </div>
+          </div>
+        </details>
+
+        <div style="display: flex; gap: var(--space-md); margin-top: var(--space-md); justify-content: flex-end; flex-wrap: wrap;">
+          <a href="#/report" class="btn-primary">
+            <span>Proceed to Case Report</span>
+            <span>→</span>
+          </a>
+          <a href="#/reconstruction" class="btn-secondary">
+            <span>Launch 3D Workspace</span>
+            <span>⤢</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================
+       STAGE 03: CASE REPORT & EVIDENCE
+       ======================================================== -->
+  <section id="stage-report" class="stage-section" style="display: none;">
+    <div class="report-container">
+      <!-- 5-Second Executive Digest -->
+      <div class="kpi-mosaic">
+        <div class="kpi-card highlight-card">
+          <span class="kpi-title">Primary Candidate</span>
+          <span class="kpi-val" style="color: var(--primary);">BAYWATCH 15</span>
+          <span class="kpi-sub">MMSI: 338145694 &bull; Score: <strong style="color: var(--verified-emerald);">0.895 &bull; HIGH</strong></span>
+        </div>
+
+        <div class="kpi-card">
+          <span class="kpi-title">Observation Target</span>
+          <span class="kpi-val tabular-nums">34.017&deg; N, 118.663&deg; W</span>
+          <span class="kpi-sub">2024-08-06 01:50:00 UTC</span>
+        </div>
+
+        <div class="kpi-card">
+          <span class="kpi-title">Spread Dispersion</span>
+          <span class="kpi-val tabular-nums">12.00 km</span>
+          <span class="kpi-sub">Regime: DELAYED</span>
+        </div>
+
+        <div class="kpi-card">
+          <span class="kpi-title">Vessels Screened</span>
+          <span class="kpi-val tabular-nums">19</span>
+          <span class="kpi-sub">Within 50 km Search Radius</span>
+        </div>
+      </div>
+
+      <!-- Candidate Roster Toolbar -->
+      <div class="roster-toolbar">
+        <div style="display: flex; align-items: center; gap: var(--space-md);">
+          <span style="font-weight: 800; font-size: 12px; text-transform: uppercase; color: var(--on-surface); letter-spacing: 0.05em;">
+            Screened Candidates (19)
+          </span>
+          <input type="text" class="search-input" id="rosterSearchInput" placeholder="Filter candidate name or MMSI..." oninput="window.filterRoster()">
+        </div>
+
+        <div class="filter-pills">
+          <button class="filter-btn active" onclick="window.setRosterFilter('ALL')">ALL</button>
+          <button class="filter-btn" onclick="window.setRosterFilter('HIGH')">HIGH</button>
+          <button class="filter-btn" onclick="window.setRosterFilter('MEDIUM')">MEDIUM</button>
+          <button class="filter-btn" onclick="window.setRosterFilter('LOW')">LOW</button>
+        </div>
+      </div>
+
+      <!-- Progressive Disclosure Candidate List -->
+      <div class="candidate-list" id="candidateListContainer">
+        <!-- Rendered dynamically by app.js -->
+      </div>
+
+      <!-- Forensic Integrity Disclaimers -->
+      <div class="disclaimers-card">
+        <div class="disclaimers-header">
+          <span style="color: #FBBF24;">⚠</span>
+          <span>Forensic Integrity & Evidentiary Disclaimers</span>
+        </div>
+        <p class="disclaimer-text">
+          &bull; <strong>Dark-Vessel Caveat:</strong> A vessel transiting without active AIS broadcasts will not appear in telemetry archives and cannot be ruled out as the responsible party.
+        </p>
+        <p class="disclaimer-text">
+          &bull; <strong>Attribution Is Decision-Support:</strong> This dossier establishes physical, geometric, and kinematic correlation based on available data; it constitutes analytical decision-support, not formal judicial proof of liability.
+        </p>
+        <p class="disclaimer-text">
+          &bull; <strong>Borda Score Notice:</strong> Borda points represent non-parametric rank aggregation across multi-channel metrics, not linear probabilities. Calibrated posteriors are separately labeled when LLR is enabled.
+        </p>
+      </div>
+
+      <!-- Call to Action into Stage 04 -->
+      <div style="background: linear-gradient(135deg, var(--surface-elevated) 0%, var(--surface-floating) 100%); border: 1px solid rgba(124, 58, 237, 0.4); border-radius: var(--rounded-lg); padding: var(--space-xl); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--space-base);">
+        <div>
+          <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--on-surface);">Explore Trajectory Kinematics in Real 3D / 2D Studio</h3>
+          <p style="font-size: 11px; color: var(--on-surface-variant); margin-top: 2px;">
+            Full multi-row timeline scrubber, 3D orbit controls, Scenario Lab, contradiction detection, and 2D GIS console.
+          </p>
+        </div>
+        <a href="#/reconstruction" class="btn-primary">
+          <span>LAUNCH FORENSIC STUDIO</span>
+          <span>⤢</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================
+       STAGE 04: FORENSIC STUDIO (EMBEDDED REAL ENGINES)
+       ======================================================== -->
+  <section id="stage-reconstruction" class="stage-section" style="display: none;">
+    <div class="stage-recon-wrapper">
+      <!-- Chrome Toolbar with 2D / 3D Toggle -->
+      <div class="recon-control-toolbar">
+        <div style="display: flex; align-items: center; gap: var(--space-md);">
+          <span style="font-size: 12px; font-weight: 700; color: var(--on-surface); text-transform: uppercase; letter-spacing: 0.05em;">
+            Forensic Studio
+          </span>
+          <span class="mono" style="font-size: 11px; color: var(--outline);">
+            #investigation_20260921_122430
+          </span>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: var(--space-sm);">
+          <div style="display: flex; background: var(--surface-foundation); border: 1px solid var(--structural-hairline); border-radius: var(--rounded-default); padding: 2px;">
+            <button class="btn-primary btn-compact" id="btn-view-3d" onclick="window.switchReconView('3d')">
+              3D Kinematic Studio
+            </button>
+            <button class="btn-secondary btn-compact" id="btn-view-2d" onclick="window.switchReconView('2d')">
+              2D GIS Console
+            </button>
+          </div>
+          <a href="reconstruction-styled.html" target="_blank" class="btn-secondary btn-compact" title="Open standalone in new tab">
+            <span>Pop Out</span>
+            <span>↗</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Viewport Frame Embedding Untouched Real Engines -->
+      <div class="recon-viewport-container">
+        <!-- 3D Real Engine Iframe -->
+        <iframe id="recon-iframe-3d" class="recon-iframe" src="reconstruction-styled.html" title="WAKE 3D Workstation"></iframe>
+
+        <!-- 2D Real GIS Console Iframe -->
+        <iframe id="recon-iframe-2d" class="recon-iframe" src="workstation-styled.html" title="WAKE 2D Workstation" style="display: none;"></iframe>
+      </div>
+    </div>
+  </section>
+
+  <script src="./app.js"></script>
+</body>
+</html>

@@ -20,6 +20,7 @@ import click
 @click.option("--enable-forward-fit", is_flag=True, default=False, help="Enable Longépé-style forward-fit trajectory recreation evidence channel.")
 @click.option("--ship-detections", "ship_detections_path", type=click.Path(exists=True), default=None, help="Optional GeoJSON file containing satellite SAR ship detections.")
 @click.option("--drift-backend", type=click.Choice(["analytic", "opendrift"], case_sensitive=False), default="analytic", help="Drift model backend.")
+@click.option("--case-experience/--no-case-experience", "case_experience", default=True, help="Emit unified 4-stage case_experience.html output.")
 def main(
     lat: float,
     lon: float,
@@ -34,6 +35,7 @@ def main(
     enable_forward_fit: bool,
     ship_detections_path: Optional[str],
     drift_backend: str,
+    case_experience: bool,
 ):
     """
     AIS + Satellite Oil-Spill Vessel Attribution System.
@@ -56,9 +58,11 @@ def main(
             include_forward_fit=enable_forward_fit,
             ship_detections_path=ship_detections_path,
             drift_backend=drift_backend,
+            emit_case_experience=case_experience,
         )
         report_path = investigation_result.get("report_path")
         workstation_path = investigation_result.get("workstation_path")
+        case_exp_path = investigation_result.get("case_experience_path")
         top_candidate = investigation_result.get("top_candidate")
 
         click.echo("\n=======================================================")
@@ -76,6 +80,8 @@ def main(
             click.echo("No vessel candidate identified (possible dark vessel or non-vessel source).")
         click.echo(f"Classic Report: {report_path}")
         click.echo(f"Workstation UI: {workstation_path}")
+        if case_exp_path:
+            click.echo(f"Case Experience: {case_exp_path}")
         click.echo("=======================================================\n")
     except Exception as e:
         click.echo(f"Error: {e}", err=True)

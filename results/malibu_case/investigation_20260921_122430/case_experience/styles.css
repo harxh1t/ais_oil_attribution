@@ -1,0 +1,1036 @@
+/* WAKE Forensic Intelligence Platform - DESIGN.md Verbatim Token System */
+:root {
+  /* Colors from DESIGN.md frontmatter */
+  --surface: #14121b;
+  --surface-dim: #14121b;
+  --surface-bright: #3b3842;
+  --surface-container-lowest: #0f0d16;
+  --surface-container-low: #1c1a24;
+  --surface-container: #211e28;
+  --surface-container-high: #2b2933;
+  --surface-container-highest: #36333e;
+  --on-surface: #e6e0ee;
+  --on-surface-variant: #ccc3d8;
+  --inverse-surface: #e6e0ee;
+  --inverse-on-surface: #322f39;
+  --outline: #958da1;
+  --outline-variant: #4a4455;
+  --surface-tint: #d2bbff;
+  --primary: #d2bbff;
+  --on-primary: #3f008e;
+  --primary-container: #7c3aed;
+  --on-primary-container: #ede0ff;
+  --inverse-primary: #732ee4;
+  --secondary: #7bd0ff;
+  --on-secondary: #00354a;
+  --secondary-container: #00a6e0;
+  --on-secondary-container: #00374d;
+  --tertiary: #ffb2b7;
+  --on-tertiary: #67001b;
+  --tertiary-container: #c81a42;
+  --on-tertiary-container: #ffdedf;
+  --error: #ffb4ab;
+  --on-error: #690005;
+  --error-container: #93000a;
+  --on-error-container: #ffdad6;
+  --primary-fixed: #eaddff;
+  --primary-fixed-dim: #d2bbff;
+  --on-primary-fixed: #25005a;
+  --on-primary-fixed-variant: #5a00c6;
+  --secondary-fixed: #c4e7ff;
+  --secondary-fixed-dim: #7bd0ff;
+  --on-secondary-fixed: #001e2c;
+  --on-secondary-fixed-variant: #004c69;
+  --tertiary-fixed: #ffdadb;
+  --tertiary-fixed-dim: #ffb2b7;
+  --on-tertiary-fixed: #40000d;
+  --on-tertiary-fixed-variant: #92002a;
+  --background: #14121b;
+  --on-background: #e6e0ee;
+  --surface-variant: #36333e;
+
+  /* Tactical Role Allocations (DESIGN.md line 183-207) */
+  --base-deep-space: #09080E;
+  --surface-foundation: #0D0B14;
+  --surface-elevated: #131020;
+  --surface-floating: #1A152E;
+  --surface-focus: #231C3D;
+  --primary-violet-core: #7C3AED;
+  --primary-violet-hover: #8B5CF6;
+  --primary-violet-active: #6D28D9;
+  --geospatial-cyan: #38BDF8;
+  --anomaly-rose: #F43F5E;
+  --anomaly-rose-text: #FB7185;
+  --verified-emerald: #10B981;
+  --structural-hairline: rgba(148, 163, 184, 0.12);
+
+  /* Typography from DESIGN.md frontmatter */
+  --font-family-display: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-family-mono: ui-monospace, "SF Mono", "Cascadia Code", "Segoe UI Mono", monospace;
+
+  /* Rounded from DESIGN.md frontmatter */
+  --rounded-sm: 0.125rem;
+  --rounded-default: 0.25rem;
+  --rounded-md: 0.375rem;
+  --rounded-lg: 0.5rem;
+  --rounded-xl: 0.75rem;
+  --rounded-full: 9999px;
+
+  /* Spacing from DESIGN.md frontmatter */
+  --gutter: 1rem;
+  --gutter-desktop: 1.5rem;
+  --margin: 1rem;
+  --margin-tablet: 1.5rem;
+  --margin-desktop: 2rem;
+  --space-2xs: 0.125rem;
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 0.75rem;
+  --space-base: 1rem;
+  --space-lg: 1.25rem;
+  --space-xl: 1.5rem;
+  --space-2xl: 2rem;
+  --space-3xl: 3rem;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  scroll-behavior: smooth;
+  background-color: var(--base-deep-space);
+  color: var(--on-surface);
+  font-family: var(--font-family-display);
+  font-size: 13px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background-color: var(--base-deep-space);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.mono, .tabular-nums {
+  font-family: var(--font-family-mono);
+  font-feature-settings: "tnum" 1, "zero" 1, "cv02" 1;
+}
+
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
+  outline: 2px solid var(--primary-violet-core);
+  outline-offset: 2px;
+}
+
+/* ========================================================
+   COMPONENTS -> BUTTONS (DESIGN.md section 262-266)
+   ======================================================== */
+.btn-primary {
+  background-color: var(--primary-violet-core);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--rounded-default);
+  height: 40px;
+  padding: 0 var(--space-base);
+  font-family: var(--font-family-display);
+  font-size: 0.875rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+.btn-primary:hover {
+  background-color: var(--primary-violet-hover);
+}
+.btn-primary:active {
+  background-color: var(--primary-violet-active);
+}
+.btn-primary.btn-compact {
+  height: 32px;
+  padding: 0 var(--space-sm);
+  font-size: 0.75rem;
+}
+
+.btn-secondary {
+  background-color: var(--surface-floating);
+  color: #F8FAFC;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: var(--rounded-default);
+  height: 40px;
+  padding: 0 var(--space-base);
+  font-family: var(--font-family-display);
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+.btn-secondary:hover {
+  border-color: rgba(124, 58, 237, 0.5);
+  background-color: var(--surface-focus);
+}
+.btn-secondary:active {
+  background-color: var(--surface-foundation);
+}
+.btn-secondary.btn-compact {
+  height: 32px;
+  padding: 0 var(--space-sm);
+  font-size: 0.75rem;
+}
+
+.btn-destructive {
+  background-color: rgba(244, 63, 94, 0.1);
+  color: var(--anomaly-rose-text);
+  border: 1px solid rgba(244, 63, 94, 0.4);
+  border-radius: var(--rounded-default);
+  height: 40px;
+  padding: 0 var(--space-base);
+  font-family: var(--font-family-display);
+  font-size: 0.875rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.15s ease;
+}
+.btn-destructive:hover {
+  background-color: rgba(244, 63, 94, 0.2);
+}
+.btn-destructive.btn-compact {
+  height: 32px;
+  padding: 0 var(--space-sm);
+  font-size: 0.75rem;
+}
+
+/* App Header & Navigation */
+.app-header {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 56px;
+  background: rgba(13, 11, 20, 0.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--structural-hairline);
+  z-index: 500;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 var(--gutter-desktop);
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.logo-mark {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--rounded-default);
+  background: linear-gradient(135deg, var(--geospatial-cyan) 0%, var(--primary-violet-core) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 15px;
+  color: #000000;
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-title {
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 0.05em;
+  color: var(--on-surface);
+  text-transform: uppercase;
+}
+
+.brand-sub {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--geospatial-cyan);
+  text-transform: uppercase;
+  font-family: var(--font-family-mono);
+}
+
+.nav-tabs {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  background: var(--surface-foundation);
+  border: 1px solid var(--structural-hairline);
+  padding: 3px;
+  border-radius: var(--rounded-lg);
+}
+
+.nav-tab {
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--outline);
+  border-radius: var(--rounded-default);
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  text-decoration: none;
+}
+
+.nav-tab:hover {
+  color: var(--on-surface);
+  background: var(--surface-container-low);
+}
+
+.nav-tab.active {
+  background: var(--primary-container);
+  color: #FFFFFF;
+  box-shadow: 0 0 12px rgba(124, 58, 237, 0.4);
+}
+
+.header-status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.status-pill {
+  padding: 4px 10px;
+  border-radius: var(--rounded-full);
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-family-mono);
+  background: var(--surface-container-low);
+  border: 1px solid var(--structural-hairline);
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--rounded-full);
+  background: currentColor;
+}
+
+/* Stage Sections */
+.stage-section {
+  width: 100%;
+  min-height: calc(100vh - 56px);
+  position: relative;
+}
+
+/* ========================================================
+   STAGE 01: INTRODUCTION & SEMANTIC PIPELINE VISUALS
+   ======================================================== */
+.intro-hero {
+  padding: var(--space-3xl) var(--gutter-desktop) var(--space-xl) var(--gutter-desktop);
+  max-width: 1120px;
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-lg);
+}
+
+.constellation-strip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 6px 14px;
+  border-radius: var(--rounded-full);
+  background: var(--surface-elevated);
+  border: 1px solid var(--structural-hairline);
+  font-size: 11px;
+  font-family: var(--font-family-mono);
+  color: var(--on-surface-variant);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.hero-title {
+  font-size: 2.75rem;
+  font-weight: 800;
+  line-height: 1.18;
+  letter-spacing: -0.03em;
+  color: var(--on-surface);
+  max-width: 920px;
+}
+
+.hero-title .highlight {
+  color: var(--primary);
+}
+
+.hero-subtitle {
+  font-size: 1.125rem;
+  color: var(--on-surface-variant);
+  max-width: 760px;
+  line-height: 1.6;
+}
+
+.hero-cta-dock {
+  display: flex;
+  gap: var(--space-md);
+  margin-top: var(--space-md);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.pipeline-section {
+  max-width: 1200px;
+  margin: var(--space-2xl) auto var(--space-3xl) auto;
+  padding: 0 var(--gutter-desktop);
+}
+
+.pipeline-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  border-bottom: 1px solid var(--structural-hairline);
+  padding-bottom: var(--space-base);
+  margin-bottom: var(--space-xl);
+}
+
+.pipeline-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: var(--space-lg);
+}
+
+/* Pipeline Phase Card with Semantic Color Accents */
+.pipeline-node {
+  background: var(--surface-elevated);
+  border: 1px solid var(--structural-hairline);
+  border-radius: var(--rounded-lg);
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.pipeline-node:hover {
+  transform: translateY(-2px);
+  background: var(--surface-floating);
+  box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.65);
+}
+
+.pipeline-node.node-observed {
+  border-left: 3px solid var(--verified-emerald);
+}
+.pipeline-node.node-derived {
+  border-left: 3px solid var(--geospatial-cyan);
+}
+.pipeline-node.node-inference {
+  border-left: 3px solid var(--primary-violet-core);
+}
+
+.node-graphic {
+  width: 100%;
+  height: 64px;
+  border-radius: var(--rounded-default);
+  background: var(--surface-foundation);
+  border: 1px solid var(--structural-hairline);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-xs);
+  overflow: hidden;
+}
+
+.node-phase-tag {
+  font-size: 11px;
+  font-family: var(--font-family-mono);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.node-observed .node-phase-tag { color: var(--verified-emerald); }
+.node-derived .node-phase-tag { color: var(--geospatial-cyan); }
+.node-inference .node-phase-tag { color: var(--primary); }
+
+.node-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--on-surface);
+}
+
+.node-desc {
+  font-size: 12px;
+  color: var(--on-surface-variant);
+  line-height: 1.5;
+}
+
+.node-footer {
+  margin-top: auto;
+  padding-top: var(--space-sm);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--structural-hairline);
+  font-size: 11px;
+  font-family: var(--font-family-mono);
+}
+
+/* ========================================================
+   STAGE 02: INVESTIGATION PARAMETERS
+   ======================================================== */
+.params-container {
+  max-width: 1040px;
+  margin: var(--space-2xl) auto;
+  padding: 0 var(--gutter-desktop);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.params-hero {
+  background: var(--surface-elevated);
+  border: 1px solid var(--structural-hairline);
+  border-radius: var(--rounded-lg);
+  padding: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.params-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-base);
+  margin-top: var(--space-xs);
+}
+
+.param-card {
+  background: var(--surface-foundation);
+  border: 1px solid var(--structural-hairline);
+  border-radius: var(--rounded-default);
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+}
+
+.param-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--outline);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.param-value {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--on-surface);
+}
+
+.param-note {
+  font-size: 11px;
+  color: var(--geospatial-cyan);
+  font-family: var(--font-family-mono);
+}
+
+.advanced-disclosure {
+  background: var(--surface-elevated);
+  border: 1px solid var(--structural-hairline);
+  border-radius: var(--rounded-lg);
+  padding: var(--space-md) var(--space-lg);
+}
+
+.advanced-disclosure summary {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--on-surface-variant);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+}
+
+.advanced-content {
+  margin-top: var(--space-md);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--structural-hairline);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-base);
+  font-size: 12px;
+}
+
+/* ========================================================
+   STAGE 03: CASE REPORT & PROGRESSIVE DISCLOSURE
+   ======================================================== */
+.report-container {
+  max-width: 1240px;
+  margin: var(--space-xl) auto var(--space-3xl) auto;
+  padding: 0 var(--gutter-desktop);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.kpi-mosaic {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--space-base);
+}
+
+.kpi-card {
+  background: var(--surface-elevated);
+  border: 1px solid var(--structural-hairline);
+  border-radius: var(--rounded-lg);
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--space-xs);
+}
+
+.kpi-card.highlight-card {
+  border-color: rgba(124, 58, 237, 0.4);
+  background: linear-gradient(135deg, var(--surface-elevated) 0%, rgba(124, 58, 237, 0.1) 100%);
+}
+
+.kpi-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--outline);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.kpi-val {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--on-surface);
+}
+
+.kpi-sub {
+  font-size: 11px;
+  color: var(--on-surface-variant);
+  font-family: var(--font-family-mono);
+}
+
+.roster-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-base);
+  flex-wrap: wrap;
+  background: var(--surface-elevated);
+  border: 1px solid var(--structural-hairline);
+  border-radius: var(--rounded-lg);
+  padding: var(--space-md) var(--space-lg);
+}
+
+.search-input {
+  background: var(--surface-foundation);
+  border: 1px solid var(--structural-hairline);
+  color: var(--on-surface);
+  padding: 6px 12px;
+  border-radius: var(--rounded-default);
+  font-size: 12px;
+  min-width: 280px;
+  outline: none;
+}
+.search-input:focus {
+  border-color: var(--primary-violet-core);
+}
+
+.filter-pills {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.filter-btn {
+  background: var(--surface-foundation);
+  border: 1px solid var(--structural-hairline);
+  color: var(--outline);
+  padding: 4px 12px;
+  border-radius: var(--rounded-default);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.filter-btn:hover {
+  color: var(--on-surface);
+  border-color: var(--outline-variant);
+}
+.filter-btn.active {
+  background: var(--primary-container);
+  color: #FFFFFF;
+  border-color: var(--primary-container);
+}
+
+/* Candidate Progressive Disclosure Rows */
+.candidate-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.candidate-row-card {
+  background: var(--surface-elevated);
+  border: 1px solid var(--structural-hairline);
+  border-radius: var(--rounded-lg);
+  overflow: hidden;
+  transition: border-color 0.15s ease;
+}
+
+.candidate-row-card:hover {
+  border-color: rgba(148, 163, 184, 0.28);
+}
+
+.candidate-row-card.expanded {
+  border-color: rgba(124, 58, 237, 0.6);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.candidate-compact-header {
+  padding: var(--space-md) var(--space-lg);
+  display: grid;
+  grid-template-columns: 48px 2fr 1.5fr 1fr 100px 32px;
+  align-items: center;
+  gap: var(--space-md);
+  cursor: pointer;
+  user-select: none;
+}
+
+.rank-pill {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--rounded-default);
+  background: var(--surface-foundation);
+  border: 1px solid var(--structural-hairline);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 12px;
+  font-family: var(--font-family-mono);
+  color: var(--on-surface);
+}
+
+.candidate-compact-header.rank-1 .rank-pill {
+  background: var(--primary-violet-core);
+  color: #FFFFFF;
+  border-color: var(--primary-violet-core);
+}
+
+.vessel-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--on-surface);
+}
+
+.vessel-mmsi {
+  font-size: 11px;
+  color: var(--outline);
+  font-family: var(--font-family-mono);
+}
+
+.confidence-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: var(--rounded-default);
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--font-family-mono);
+  width: fit-content;
+}
+.confidence-badge.high {
+  background: rgba(16, 185, 129, 0.12);
+  color: var(--verified-emerald);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+.confidence-badge.medium {
+  background: rgba(251, 191, 36, 0.12);
+  color: #FBBF24;
+  border: 1px solid rgba(251, 191, 36, 0.3);
+}
+.confidence-badge.low, .confidence-badge.abstained {
+  background: var(--surface-foundation);
+  color: var(--outline);
+  border: 1px solid var(--structural-hairline);
+}
+
+.sparkline-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.spark-bar-bg {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.spark-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+}
+
+.chevron-icon {
+  font-size: 12px;
+  color: var(--outline);
+  transition: transform 0.2s ease;
+  display: flex;
+  justify-content: center;
+}
+
+.candidate-row-card.expanded .chevron-icon {
+  transform: rotate(180deg);
+  color: var(--primary);
+}
+
+.candidate-expanded-drawer {
+  display: none;
+  padding: var(--space-lg);
+  background: var(--surface-foundation);
+  border-top: 1px solid var(--structural-hairline);
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.candidate-row-card.expanded .candidate-expanded-drawer {
+  display: flex;
+}
+
+.provenance-tiers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-base);
+}
+
+.provenance-card {
+  border-radius: var(--rounded-default);
+  padding: var(--space-base);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  background: var(--surface-elevated);
+  border: 1px solid var(--structural-hairline);
+}
+
+.provenance-card.tier-observed {
+  border-left: 3px solid var(--verified-emerald);
+}
+.provenance-card.tier-derived {
+  border-left: 3px solid var(--geospatial-cyan);
+}
+.provenance-card.tier-inference {
+  border-left: 3px solid var(--primary-violet-core);
+}
+
+.tier-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tier-pill {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  padding: 2px 6px;
+  border-radius: var(--rounded-default);
+  font-family: var(--font-family-mono);
+  text-transform: uppercase;
+}
+
+.tier-observed .tier-pill {
+  background: rgba(16, 185, 129, 0.12);
+  color: var(--verified-emerald);
+}
+.tier-derived .tier-pill {
+  background: rgba(56, 189, 248, 0.12);
+  color: var(--geospatial-cyan);
+}
+.tier-inference .tier-pill {
+  background: rgba(124, 58, 237, 0.16);
+  color: var(--primary);
+}
+
+.metric-table {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-sm);
+  font-size: 11px;
+}
+
+.metric-cell {
+  background: var(--surface-foundation);
+  border: 1px solid var(--structural-hairline);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--rounded-default);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.metric-cell-label {
+  font-size: 10px;
+  color: var(--outline);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.metric-cell-val {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--on-surface);
+  font-family: var(--font-family-mono);
+}
+
+.ais-provenance-bar-container {
+  background: var(--surface-foundation);
+  border: 1px solid var(--structural-hairline);
+  border-radius: var(--rounded-default);
+  padding: var(--space-sm) var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.ais-provenance-bar {
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.ais-bar-observed {
+  background: var(--verified-emerald);
+  height: 100%;
+}
+
+.ais-bar-interpolated {
+  background: var(--geospatial-cyan);
+  height: 100%;
+  opacity: 0.8;
+}
+
+.ais-legend {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  font-family: var(--font-family-mono);
+  color: var(--on-surface-variant);
+}
+
+.disclaimers-card {
+  background: var(--surface-elevated);
+  border: 1px solid var(--structural-hairline);
+  border-radius: var(--rounded-lg);
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.disclaimers-header {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--on-surface-variant);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.disclaimer-text {
+  font-size: 11px;
+  color: var(--outline);
+  line-height: 1.5;
+}
+
+/* ========================================================
+   STAGE 04: EMBEDDED 3D / 2D FORENSIC STUDIO
+   ======================================================== */
+.stage-recon-wrapper {
+  width: 100%;
+  height: calc(100vh - 56px);
+  display: flex;
+  flex-direction: column;
+  background: var(--base-deep-space);
+}
+
+.recon-control-toolbar {
+  height: 48px;
+  background: var(--surface-foundation);
+  border-bottom: 1px solid var(--structural-hairline);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 var(--gutter-desktop);
+  z-index: 10;
+}
+
+.recon-viewport-container {
+  flex: 1;
+  width: 100%;
+  height: calc(100% - 48px);
+  position: relative;
+  background: #000000;
+}
+
+.recon-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .hero-title { font-size: 1.85rem; }
+  .candidate-compact-header {
+    grid-template-columns: 36px 1fr 90px 24px;
+  }
+  .candidate-compact-header .sparkline-preview,
+  .candidate-compact-header .vessel-identity span:last-child {
+    display: none;
+  }
+}

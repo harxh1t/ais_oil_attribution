@@ -3,17 +3,26 @@
 import json
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
+
 import numpy as np
 import pandas as pd
 import yaml
 
 from ais_oil_attribution.reporting.html_report import generate_html_report
 from ais_oil_attribution.reporting.maps import generate_attribution_map
-from ais_oil_attribution.reporting.reconstruction_3d_dashboard import generate_reconstruction_3d_dashboard
-from ais_oil_attribution.reporting.reconstruction_3d_v2_dashboard import generate_reconstruction_3d_v2_dashboard
-from ais_oil_attribution.reporting.reconstruction_3d_v3_dashboard import generate_reconstruction_3d_v3_dashboard
-from ais_oil_attribution.reporting.workstation_dashboard import generate_workstation_dashboard
+from ais_oil_attribution.reporting.reconstruction_3d_dashboard import (
+    generate_reconstruction_3d_dashboard,
+)
+from ais_oil_attribution.reporting.reconstruction_3d_v2_dashboard import (
+    generate_reconstruction_3d_v2_dashboard,
+)
+from ais_oil_attribution.reporting.reconstruction_3d_v3_dashboard import (
+    generate_reconstruction_3d_v3_dashboard,
+)
+from ais_oil_attribution.reporting.workstation_dashboard import (
+    generate_workstation_dashboard,
+)
 
 SOURCES_MD_CONTENT = """# References & Methodological Sources
 
@@ -44,14 +53,14 @@ Every method used in this investigation is either traced to a specific published
 
 def write_investigation_bundle(
     investigation_id: str,
-    input_data: Dict[str, Any],
-    config_dict: Dict[str, Any],
-    regime_decision: Dict[str, Any],
+    input_data: dict[str, Any],
+    config_dict: dict[str, Any],
+    regime_decision: dict[str, Any],
     reconstructed_df: pd.DataFrame,
     candidates_df: pd.DataFrame,
     scores_df: pd.DataFrame,
-    slick_coords: Optional[np.ndarray],
-    origin_estimate: Optional[Any],
+    slick_coords: np.ndarray | None,
+    origin_estimate: Any | None,
     output_base_dir: Path,
 ) -> Path:
     """
@@ -115,7 +124,7 @@ def write_investigation_bundle(
             if ff_val is not None:
                 expl.append(f"Forward-fit trajectory recreation score: {ff_val:.2f}")
 
-            cand_item: Dict[str, Any] = {
+            cand_item: dict[str, Any] = {
                 "rank": int(row["final_rank"]),
                 "mmsi": int(row["mmsi"]),
                 "vessel_name": str(row["vessel_name"]),
@@ -138,7 +147,7 @@ def write_investigation_bundle(
                 cand_item["provenance"] = row["provenance"]
             cand_list.append(cand_item)
 
-    attribution_json_data: Dict[str, Any] = {
+    attribution_json_data: dict[str, Any] = {
         "investigation_id": investigation_id,
         "input": input_data,
         "ranking_method": ranking_method_used,
@@ -265,5 +274,30 @@ Metrics:
         origin_estimate=origin_estimate,
         output_html_path=recon_3d_v3_path,
     )
+
+    # 14. Unified 4-Stage Forensic Case Experience (Additive)
+    reporting_cfg = config_dict.get("reporting", {})
+    if reporting_cfg.get("emit_case_experience", True):
+        try:
+            from ais_oil_attribution.reporting.case_experience import (
+                generate_case_experience,
+            )
+
+            case_exp_path = bundle_dir / "case_experience.html"
+            generate_case_experience(
+                investigation_id=investigation_id,
+                input_data=input_data,
+                regime_decision=regime_decision,
+                scores_df=scores_df,
+                reconstructed_df=reconstructed_df,
+                slick_coords=slick_coords,
+                origin_estimate=origin_estimate,
+                output_html_path=case_exp_path,
+                config=config_dict,
+            )
+        except Exception as e:  # noqa: BLE001
+            import logging
+
+            logging.getLogger(__name__).warning("Failed to generate case_experience.html: %s", e)
 
     return bundle_dir

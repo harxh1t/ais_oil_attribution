@@ -1,4 +1,4 @@
-﻿# All thresholds below are labeled with their status. Do not add new thresholds
+# All thresholds below are labeled with their status. Do not add new thresholds
 # without the same labeling discipline.
 
 ais_backend:
@@ -55,3 +55,7 @@ cerulean_api:
   base_url: "https://api.cerulean.skytruth.org"
   coverage_start_date: "2023-01-01"  # documented fact: Cerulean detections begin Jan 2023;
                                        # earlier events require a manual polygon/time fallback
+
+reporting:
+  emit_case_experience: true           # Generates unified 4-stage case_experience.html
+

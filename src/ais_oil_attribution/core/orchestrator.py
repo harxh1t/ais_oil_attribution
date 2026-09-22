@@ -41,6 +41,7 @@ def run_investigation(
     include_forward_fit: bool = False,
     ship_detections_path: Optional[str] = None,
     drift_backend: str = "analytic",
+    emit_case_experience: Optional[bool] = None,
 ) -> Dict[str, Any]:
     """
     Executes the full 12-step investigation pipeline (§12).
@@ -51,6 +52,11 @@ def run_investigation(
         if "drift_backtracking" not in config:
             config["drift_backtracking"] = {}
         config["drift_backtracking"]["oil_type"] = oil_type
+
+    if emit_case_experience is not None:
+        if "reporting" not in config:
+            config["reporting"] = {}
+        config["reporting"]["emit_case_experience"] = emit_case_experience
 
     active_ranking_method = ranking_method or config.get("attribution", {}).get("ranking_method", "borda")
     if "attribution" not in config:
@@ -311,12 +317,15 @@ def run_investigation(
     )
 
     top_candidate = scores_df.iloc[0].to_dict() if not scores_df.empty else None
+    case_exp_index = bundle_path / "case_experience" / "index.html"
+    case_exp_file = case_exp_index if case_exp_index.exists() else (bundle_path / "case_experience.html")
 
     return {
         "investigation_id": inv_id,
         "bundle_path": str(bundle_path),
         "report_path": str(bundle_path / "final_report.html"),
         "workstation_path": str(bundle_path / "workstation.html"),
+        "case_experience_path": str(case_exp_file) if case_exp_file.exists() else None,
         "top_candidate": top_candidate,
         "regime_decision": regime_dict,
         "candidates_count": len(scores_df),
