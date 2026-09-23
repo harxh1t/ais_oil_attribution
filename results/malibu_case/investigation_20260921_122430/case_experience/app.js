@@ -24,11 +24,20 @@
 
   function setStage(stageId) {
     AppState.currentStage = stageId;
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+
     const stages = ['intro', 'input', 'report', 'reconstruction'];
     stages.forEach(s => {
       const el = document.getElementById('stage-' + s);
       if (el) el.style.display = (s === stageId) ? 'block' : 'none';
     });
+
+    // Hide outer footer on Stage 04 so 3D/2D workstations get full viewport height
+    const footer = document.querySelector('footer');
+    if (footer) {
+      footer.style.display = (stageId === 'reconstruction') ? 'none' : 'block';
+    }
+    document.body.style.overflow = (stageId === 'reconstruction') ? 'hidden' : '';
 
     document.querySelectorAll('[data-stage]').forEach(t => {
       const isActive = t.getAttribute('data-stage') === stageId;

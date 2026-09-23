@@ -53,6 +53,13 @@ THEME_STYLE_PATCH = """
   --accent-amber: #FBBF24 !important;
   --font-sans: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
 }
+html, body {
+  width: 100% !important;
+  height: 100% !important;
+  overflow: hidden !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
 .app-header {
   background: rgba(13, 11, 20, 0.95) !important;
   border-bottom: 1px solid rgba(148, 163, 184, 0.12) !important;
@@ -423,6 +430,12 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   width: 100%;
   min-height: calc(100vh - 56px);
   position: relative;
+}
+
+#stage-intro,
+#stage-input,
+#stage-report {
+  zoom: 1.25;
 }
 
 /* ========================================================
@@ -1067,31 +1080,44 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 /* ========================================================
    STAGE 04: EMBEDDED 3D / 2D FORENSIC STUDIO
    ======================================================== */
+#stage-reconstruction {
+  width: 100%;
+  height: calc(100vh - 64px);
+  min-height: calc(100vh - 64px);
+  max-height: calc(100vh - 64px);
+  overflow: hidden;
+  position: relative;
+}
+
 .stage-recon-wrapper {
   width: 100%;
-  height: calc(100vh - 56px);
+  height: 100%;
   display: flex;
   flex-direction: column;
   background: var(--base-deep-space);
+  overflow: hidden;
 }
 
 .recon-control-toolbar {
-  height: 48px;
-  background: var(--surface-foundation);
-  border-bottom: 1px solid var(--structural-hairline);
+  height: 40px;
+  min-height: 40px;
+  background: var(--surface-container-low);
+  border-bottom: 1px solid var(--outline-variant);
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0 var(--gutter-desktop);
-  z-index: 10;
+  z-index: 20;
+  flex-shrink: 0;
 }
 
 .recon-viewport-container {
-  flex: 1;
+  flex: 1 1 auto;
   width: 100%;
-  height: calc(100% - 48px);
+  height: calc(100% - 40px);
   position: relative;
   background: #000000;
+  overflow: hidden;
 }
 
 .recon-iframe {
@@ -1143,11 +1169,20 @@ def _get_app_js() -> str:
 
   function setStage(stageId) {
     AppState.currentStage = stageId;
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+
     const stages = ['intro', 'input', 'report', 'reconstruction'];
     stages.forEach(s => {
       const el = document.getElementById('stage-' + s);
       if (el) el.style.display = (s === stageId) ? 'block' : 'none';
     });
+
+    // Hide outer footer on Stage 04 so 3D/2D workstations get full viewport height
+    const footer = document.querySelector('footer');
+    if (footer) {
+      footer.style.display = (stageId === 'reconstruction') ? 'none' : 'block';
+    }
+    document.body.style.overflow = (stageId === 'reconstruction') ? 'hidden' : '';
 
     document.querySelectorAll('[data-stage]').forEach(t => {
       const isActive = t.getAttribute('data-stage') === stageId;
@@ -1470,6 +1505,11 @@ def _get_index_html(
       main > :last-child {{ margin-bottom: 0 !important; }}
     }}
     ::-webkit-scrollbar {{ display: none; }}
+    #stage-intro,
+    #stage-input,
+    #stage-report {{
+      zoom: 1.25;
+    }}
   </style>
   <script src="https://cdn.tailwindcss.com"></script>
   <script id="tailwind-config">tailwind.config = {{
