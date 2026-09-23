@@ -1,6 +1,6 @@
 {
-  "investigation_id": "investigation_20260921_122430",
-  "generated_at": "2026-09-22T13:20:34.053751+00:00",
+  "investigation_id": "20260921_122430",
+  "generated_at": "2026-09-23T13:43:45.779467+00:00",
   "metadata": {
     "coordinate_system": "WGS-84 (EPSG:4326)",
     "time_window_start": "2024-08-05T17:50:00+00:00",
@@ -16,10 +16,8 @@
     "regime_confirmed_by_user": true
   },
   "regime_decision": {
-    "regime": "delayed",
-    "rationale": "User explicitly specified 'delayed' regime via CLI argument.",
-    "warning": null,
-    "is_platform_blowout_suspect": false,
+    "regime": "contemporaneous",
+    "rationale": "Direct observation",
     "is_abstained": false,
     "abstention_reason": null
   },
@@ -28,8 +26,8 @@
     "lon": -118.663056,
     "spread_km": 12.0,
     "time_utc": "2024-08-06 01:50:00 UTC",
-    "regime": "delayed",
-    "rationale": "User explicitly specified 'delayed' regime via CLI argument.",
+    "regime": "contemporaneous",
+    "rationale": "Direct observation",
     "slick_coords": [],
     "origin": null
   },

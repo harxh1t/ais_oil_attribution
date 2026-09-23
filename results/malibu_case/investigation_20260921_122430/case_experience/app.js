@@ -15,9 +15,10 @@
   // 2. Hash Routing
   function getStageFromHash() {
     const h = window.location.hash || '#/intro';
-    if (h.includes('input') || h.includes('02-input')) return 'input';
-    if (h.includes('report') || h.includes('demo-case') || h.includes('03-case-report')) return 'report';
-    if (h.includes('reconstruction') || h.includes('workspace') || h.includes('04-workspace')) return 'reconstruction';
+    if (h.includes('pipeline') || h.includes('demo-case')) return 'intro';
+    if (h.includes('input') || h.includes('02-input') || h.includes('02-investigation-input')) return 'input';
+    if (h.includes('report') || h.includes('03-case-report')) return 'report';
+    if (h.includes('reconstruction') || h.includes('workspace') || h.includes('04-3d-workspace') || h.includes('04-workspace')) return 'reconstruction';
     return 'intro';
   }
 
@@ -29,8 +30,16 @@
       if (el) el.style.display = (s === stageId) ? 'block' : 'none';
     });
 
-    document.querySelectorAll('.nav-tab').forEach(t => {
-      t.classList.toggle('active', t.getAttribute('data-stage') === stageId);
+    document.querySelectorAll('[data-stage]').forEach(t => {
+      const isActive = t.getAttribute('data-stage') === stageId;
+      t.classList.toggle('active', isActive);
+      if (isActive) {
+        t.classList.add('bg-primary-container', 'text-on-primary-container');
+        t.classList.remove('text-on-surface-variant', 'hover:bg-surface-container-high', 'hover:text-on-surface');
+      } else {
+        t.classList.remove('bg-primary-container', 'text-on-primary-container');
+        t.classList.add('text-on-surface-variant', 'hover:bg-surface-container-high', 'hover:text-on-surface');
+      }
     });
 
     if (stageId === 'reconstruction') {
@@ -39,6 +48,14 @@
       const f2d = document.getElementById('recon-iframe-2d');
       if (f3d && f3d.contentWindow) f3d.contentWindow.dispatchEvent(new Event('resize'));
       if (f2d && f2d.contentWindow) f2d.contentWindow.dispatchEvent(new Event('resize'));
+    }
+
+    const h = window.location.hash || '';
+    if (stageId === 'intro' && (h === '#pipeline' || h === '#demo-case')) {
+      setTimeout(() => {
+        const target = document.querySelector(h);
+        if (target) target.scrollIntoView({ behavior: 'smooth' });
+      }, 50);
     }
   }
 

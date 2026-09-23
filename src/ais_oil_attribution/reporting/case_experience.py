@@ -1134,9 +1134,10 @@ def _get_app_js() -> str:
   // 2. Hash Routing
   function getStageFromHash() {
     const h = window.location.hash || '#/intro';
-    if (h.includes('input') || h.includes('02-input')) return 'input';
-    if (h.includes('report') || h.includes('demo-case') || h.includes('03-case-report')) return 'report';
-    if (h.includes('reconstruction') || h.includes('workspace') || h.includes('04-workspace')) return 'reconstruction';
+    if (h.includes('pipeline') || h.includes('demo-case')) return 'intro';
+    if (h.includes('input') || h.includes('02-input') || h.includes('02-investigation-input')) return 'input';
+    if (h.includes('report') || h.includes('03-case-report')) return 'report';
+    if (h.includes('reconstruction') || h.includes('workspace') || h.includes('04-3d-workspace') || h.includes('04-workspace')) return 'reconstruction';
     return 'intro';
   }
 
@@ -1148,8 +1149,16 @@ def _get_app_js() -> str:
       if (el) el.style.display = (s === stageId) ? 'block' : 'none';
     });
 
-    document.querySelectorAll('.nav-tab').forEach(t => {
-      t.classList.toggle('active', t.getAttribute('data-stage') === stageId);
+    document.querySelectorAll('[data-stage]').forEach(t => {
+      const isActive = t.getAttribute('data-stage') === stageId;
+      t.classList.toggle('active', isActive);
+      if (isActive) {
+        t.classList.add('bg-primary-container', 'text-on-primary-container');
+        t.classList.remove('text-on-surface-variant', 'hover:bg-surface-container-high', 'hover:text-on-surface');
+      } else {
+        t.classList.remove('bg-primary-container', 'text-on-primary-container');
+        t.classList.add('text-on-surface-variant', 'hover:bg-surface-container-high', 'hover:text-on-surface');
+      }
     });
 
     if (stageId === 'reconstruction') {
@@ -1158,6 +1167,14 @@ def _get_app_js() -> str:
       const f2d = document.getElementById('recon-iframe-2d');
       if (f3d && f3d.contentWindow) f3d.contentWindow.dispatchEvent(new Event('resize'));
       if (f2d && f2d.contentWindow) f2d.contentWindow.dispatchEvent(new Event('resize'));
+    }
+
+    const h = window.location.hash || '';
+    if (stageId === 'intro' && (h === '#pipeline' || h === '#demo-case')) {
+      setTimeout(() => {
+        const target = document.querySelector(h);
+        if (target) target.scrollIntoView({ behavior: 'smooth' });
+      }, 50);
     }
   }
 
@@ -1436,218 +1453,634 @@ def _get_index_html(
 ) -> str:
     """Returns the shell index.html referencing styles.css, case-data.js, and app.js."""
     return f"""<!DOCTYPE html>
-<html lang="en">
+<html class="dark" lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <meta content="web_standard" name="shell-type"/>
   <title>WAKE Case Experience // #{investigation_id}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet"/>
+  <style>
+    @layer base {{
+      html, body {{ margin: 0; padding: 0; }}
+      body {{ overscroll-behavior: none; }}
+      main > :first-child {{ margin-top: 0 !important; }}
+      main > :last-child {{ margin-bottom: 0 !important; }}
+    }}
+    ::-webkit-scrollbar {{ display: none; }}
+  </style>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script id="tailwind-config">tailwind.config = {{
+    darkMode: "class",
+    theme: {{
+      extend: {{
+        "colors": {{
+          "on-surface-variant": "#ccc3d8",
+          "tertiary": "#ffb2b7",
+          "secondary-fixed": "#c4e7ff",
+          "on-secondary-fixed-variant": "#004c69",
+          "primary-fixed-dim": "#d2bbff",
+          "tertiary-container": "#c81a42",
+          "primary-fixed": "#eaddff",
+          "on-tertiary-fixed-variant": "#92002a",
+          "surface-tint": "#d2bbff",
+          "on-tertiary-container": "#ffdedf",
+          "on-surface": "#e6e0ee",
+          "surface": "#14121b",
+          "surface-container-low": "#1c1a24",
+          "outline": "#958da1",
+          "secondary-fixed-dim": "#7bd0ff",
+          "outline-variant": "#4a4455",
+          "surface-container-highest": "#36333e",
+          "inverse-primary": "#732ee4",
+          "surface-dim": "#14121b",
+          "error-container": "#93000a",
+          "primary": "#d2bbff",
+          "on-error": "#690005",
+          "error": "#ffb4ab",
+          "primary-container": "#7c3aed",
+          "background": "#14121b",
+          "surface-bright": "#3b3842",
+          "on-primary-fixed": "#25005a",
+          "on-primary": "#3f008e",
+          "on-tertiary-fixed": "#40000d",
+          "on-secondary": "#00354a",
+          "on-secondary-container": "#00374d",
+          "on-background": "#e6e0ee",
+          "secondary": "#7bd0ff",
+          "on-error-container": "#ffdad6",
+          "surface-container-lowest": "#0f0d16",
+          "on-tertiary": "#67001b",
+          "tertiary-fixed": "#ffdadb",
+          "on-primary-container": "#ede0ff",
+          "surface-variant": "#36333e",
+          "surface-container": "#211e28",
+          "on-secondary-fixed": "#001e2c",
+          "secondary-container": "#00a6e0",
+          "inverse-surface": "#e6e0ee",
+          "tertiary-fixed-dim": "#ffb2b7",
+          "on-primary-fixed-variant": "#5a00c6",
+          "surface-container-high": "#2b2933",
+          "inverse-on-surface": "#322f39"
+        }},
+        "borderRadius": {{
+          "DEFAULT": "0.125rem",
+          "lg": "0.25rem",
+          "xl": "0.5rem",
+          "full": "0.75rem"
+        }},
+        "spacing": {{
+          "space-2xl": "2rem",
+          "space-3xl": "3rem",
+          "space-md": "0.75rem",
+          "space-2xs": "0.125rem",
+          "gutter-desktop": "1.5rem",
+          "space-lg": "1.25rem",
+          "space-xl": "1.5rem",
+          "margin-desktop": "2rem",
+          "space-base": "1rem",
+          "gutter": "1rem",
+          "margin": "1rem",
+          "space-sm": "0.5rem",
+          "margin-tablet": "1.5rem",
+          "space-xs": "0.25rem"
+        }},
+        "fontFamily": {{
+          "body-md": ["Inter"],
+          "display-lg-mobile": ["Inter"],
+          "headline-xl": ["Inter"],
+          "headline-lg": ["Inter"],
+          "body-sm": ["Inter"],
+          "headline-sm": ["Inter"],
+          "label-lg": ["Inter"],
+          "data-mono-md": ["Inter"],
+          "data-mono-sm": ["Inter"],
+          "label-md": ["Inter"],
+          "headline-md": ["Inter"],
+          "label-sm": ["Inter"],
+          "display-lg": ["Inter"],
+          "headline-xl-mobile": ["Inter"],
+          "body-lg": ["Inter"]
+        }},
+        "fontSize": {{
+          "body-md": ["0.875rem", {{"lineHeight": "1.5", "letterSpacing": "0em", "fontWeight": "400"}}],
+          "display-lg-mobile": ["2rem", {{"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}}],
+          "headline-xl": ["2rem", {{"lineHeight": "1.25", "letterSpacing": "-0.02em", "fontWeight": "600"}}],
+          "headline-lg": ["1.5rem", {{"lineHeight": "1.3", "letterSpacing": "-0.015em", "fontWeight": "600"}}],
+          "body-sm": ["0.75rem", {{"lineHeight": "1.45", "letterSpacing": "0.01em", "fontWeight": "400"}}],
+          "headline-sm": ["1rem", {{"lineHeight": "1.4", "letterSpacing": "0em", "fontWeight": "600"}}],
+          "label-lg": ["0.875rem", {{"lineHeight": "1.2", "letterSpacing": "0.01em", "fontWeight": "500"}}],
+          "data-mono-md": ["0.8125rem", {{"lineHeight": "1.35", "letterSpacing": "0.02em", "fontWeight": "500"}}],
+          "data-mono-sm": ["0.6875rem", {{"lineHeight": "1.3", "letterSpacing": "0.03em", "fontWeight": "500"}}],
+          "label-md": ["0.75rem", {{"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}}],
+          "headline-md": ["1.25rem", {{"lineHeight": "1.4", "letterSpacing": "-0.01em", "fontWeight": "600"}}],
+          "label-sm": ["0.6875rem", {{"lineHeight": "1.15", "letterSpacing": "0.04em", "fontWeight": "600"}}],
+          "display-lg": ["3rem", {{"lineHeight": "1.15", "letterSpacing": "-0.03em", "fontWeight": "700"}}],
+          "headline-xl-mobile": ["1.5rem", {{"lineHeight": "1.3", "letterSpacing": "-0.015em", "fontWeight": "600"}}],
+          "body-lg": ["1rem", {{"lineHeight": "1.5", "letterSpacing": "0em", "fontWeight": "400"}}]
+        }}
+      }}
+    }}
+  }}</script>
   <link rel="stylesheet" href="./styles.css">
-  <!-- Offline-safe direct data script loading -->
   <script src="./case-data.js"></script>
 </head>
-<body>
+<body class="bg-surface font-body-md text-body-md text-on-surface antialiased">
 
   <!-- Top Application Command & Stage Navigation -->
-  <header class="app-header">
-    <div class="header-brand">
-      <div class="logo-mark">W</div>
-      <div class="brand-text">
-        <span class="brand-title">WAKE</span>
-        <span class="brand-sub">Attribution Engine</span>
+  <header class="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.4)]">
+    <div class="h-16 w-full px-gutter-desktop flex items-center justify-between gap-space-md">
+      <div class="flex items-center gap-space-md shrink-0">
+        <img alt="WAKE Maritime Forensics Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1W8O7yRxCmTA06OeEq3hHo79pe5eBofJTJyPaxTgmRV6oSlijLyBrZhecF_8imuMQQBaS9kw3ggtTkTBn0DeX38HcgldDaJeWv0IqMPC1UyM0B5lEgRfeMFqzSyMjG0T-hZeXHGWQb4tM9LszQPaM9vQOG_dmsQoexgWSsuRJBlN1etIK9SelWP41vl0sMSxlCjdWGW9NrJqXwjnI3FjeL8F1u1nP7IlLWmb6UW2nV8NFtGHAYaziINiw"/>
+        <div class="flex flex-col">
+          <span class="font-headline-sm text-headline-sm tracking-tight text-on-surface uppercase">WAKE</span>
+          <span class="font-data-mono-sm text-data-mono-sm text-outline tracking-wider uppercase">Attribution Engine</span>
+        </div>
       </div>
-    </div>
 
-    <!-- Stage Navigation Tabs -->
-    <nav class="nav-tabs" id="stage-nav">
-      <a href="#/intro" class="nav-tab active" data-stage="intro" id="nav-intro">01 Introduction</a>
-      <a href="#/input" class="nav-tab" data-stage="input" id="nav-input">02 Parameters</a>
-      <a href="#/report" class="nav-tab" data-stage="report" id="nav-report">03 Case Report</a>
-      <a href="#/reconstruction" class="nav-tab" data-stage="reconstruction" id="nav-reconstruction">04 3D Workspace</a>
-    </nav>
+      <!-- Stage Navigation Tabs -->
+      <nav class="hidden xl:flex items-center gap-space-xs bg-surface-container-low/70 p-space-xs rounded-lg" id="stage-nav">
+        <a aria-current="page" class="nav-tab px-space-md py-space-xs rounded transition-colors duration-150 bg-primary-container text-on-primary-container font-label-md active" data-stage="intro" id="nav-intro" href="#/intro">01 Introduction</a>
+        <a class="nav-tab px-space-md py-space-xs rounded font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150" data-stage="input" id="nav-input" href="#/input">02 Investigation Input</a>
+        <a class="nav-tab px-space-md py-space-xs rounded font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150" data-stage="report" id="nav-report" href="#/report">03 Case Report</a>
+        <a class="nav-tab px-space-md py-space-xs rounded font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150" data-stage="reconstruction" id="nav-reconstruction" href="#/reconstruction">04 3D Workspace</a>
+      </nav>
 
-    <div class="header-status">
-      <div class="status-pill" style="color: {status_badge_color};">
-        <span class="status-dot"></span>
-        <span>{status_badge_text}</span>
+      <div class="flex items-center gap-space-md shrink-0">
+        <div class="hidden md:flex items-center gap-space-xs px-space-sm py-space-2xs rounded bg-surface-container-high/60" style="color: {status_badge_color};">
+          <span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background-color: {status_badge_color};"></span>
+          <span class="font-data-mono-sm text-data-mono-sm uppercase">{status_badge_text} // EPSG:4326</span>
+        </div>
+        <div class="flex items-center gap-space-xs px-space-sm py-space-xs rounded bg-surface-container-low">
+          <span class="font-data-mono-sm text-data-mono-sm text-primary">#{investigation_id}</span>
+        </div>
+        <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-on-primary text-[18px]">person</span>
+        </div>
       </div>
-      <a href="#/reconstruction" class="btn-primary btn-compact">
-        <span>Launch 3D</span>
-        <span>⤢</span>
-      </a>
     </div>
   </header>
 
-  <!-- ========================================================
-       STAGE 01: INTRODUCTION NARRATIVE & SEMANTIC PIPELINE
-       ======================================================== -->
-  <section id="stage-intro" class="stage-section">
-    <div class="intro-hero">
-      <div class="constellation-strip">
-        <span style="color: var(--geospatial-cyan); font-weight: 800;">●</span>
-        <span>Sentinel-1 Copernicus Constellation &bull; Hydrodynamic Drift Engine &bull; Reproducible Forensic Proof</span>
-      </div>
+  <main class="w-full pt-16 bg-surface min-h-[calc(100vh-4rem)]">
+    <div class="flex flex-col w-full">
 
-      <h1 class="hero-title">
-        When an oil spill appears at sea, the real question is not only where it is — <span class="highlight">but where it came from.</span>
-      </h1>
+      <!-- ========================================================
+           STAGE 01: INTRODUCTION NARRATIVE & SEMANTIC PIPELINE
+           ======================================================== -->
+      <section id="stage-intro" class="stage-section">
+        <!-- Top Ambient Orbital Mesh (Contained Relative Canvas) -->
+        <div class="relative w-full overflow-hidden bg-surface-container-lowest">
+          <!-- Spatial Glow Nodes -->
+          <div class="absolute -top-32 left-1/4 w-96 h-96 bg-primary-container/20 rounded-full blur-[120px] pointer-events-none"></div>
+          <div class="absolute top-1/2 -right-24 w-[30rem] h-[30rem] bg-secondary-container/15 rounded-full blur-[140px] pointer-events-none"></div>
+          <div class="absolute bottom-10 left-10 w-72 h-72 bg-tertiary-container/15 rounded-full blur-[100px] pointer-events-none"></div>
 
-      <p class="hero-subtitle">
-        WAKE is a maritime forensic intelligence system detecting, analysing, and attributing offshore discharges by fusing Sentinel-1 SAR imagery, multi-temporal AIS telemetry, and hydrodynamic backwards-drift modelling.
-      </p>
+          <!-- HERO SECTION -->
+          <section class="relative w-full px-gutter-desktop pt-space-3xl pb-space-3xl flex flex-col items-center">
+            <!-- Live Constellation Ticker Strip -->
+            <div class="inline-flex items-center gap-space-sm px-space-md py-space-xs rounded-full bg-surface-container-high/80 backdrop-blur-md shadow-md mb-space-2xl">
+              <span class="relative flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
+              </span>
+              <span class="font-data-mono-sm text-data-mono-sm tracking-wider uppercase text-on-surface">
+                SENTINEL-1 COPERNICUS CONSTELLATION &bull; HYDRODYNAMIC DRIFT ENGINE &bull; REPRODUCIBLE FORENSIC PROOF
+              </span>
+            </div>
 
-      <div class="hero-cta-dock">
-        <a href="#/report" class="btn-primary">
-          <span>ENTER CASE</span>
-          <span>→</span>
-        </a>
-        <a href="#pipeline-workflow" class="btn-secondary" onclick="document.getElementById('pipeline-workflow').scrollIntoView({{behavior: 'smooth'}});">
-          <span>HOW IT WORKS</span>
-          <span>↓</span>
-        </a>
-      </div>
-    </div>
+            <!-- Main Headline Typography Overdrive -->
+            <div class="max-w-5xl text-center space-y-space-lg">
+              <h1 class="font-display-lg text-display-lg tracking-tight text-on-surface">
+                When an oil spill appears at sea, the real question is not only where it is — <span class="text-primary font-bold">but where it came from.</span>
+              </h1>
+              <p class="font-body-lg text-body-lg text-on-surface-variant max-w-3xl mx-auto leading-relaxed">
+                WAKE is a maritime forensic intelligence system detecting, analysing, and attributing offshore discharges by fusing Sentinel-1 SAR imagery, multi-temporal AIS telemetry, and hydrodynamic backwards-drift modelling.
+              </p>
+            </div>
 
-    <!-- 6 Semantic Pipeline Processing Stages -->
-    <div class="pipeline-section" id="pipeline-workflow">
-      <div class="pipeline-header">
-        <div>
-          <span style="font-size: 11px; font-weight: 700; color: var(--geospatial-cyan); text-transform: uppercase; font-family: var(--font-family-mono);">
-            Evidentiary Architecture
-          </span>
-          <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--on-surface); margin-top: 4px;">
-            Attribution Pipeline Workflow
-          </h2>
-        </div>
-        <span class="mono" style="font-size: 11px; color: var(--outline);">6 Interlocking Processing Nodes</span>
-      </div>
+            <!-- Tactical CTA Dock -->
+            <div class="flex flex-wrap items-center justify-center gap-space-md mt-space-2xl z-20">
+              <a class="inline-flex items-center gap-space-sm px-space-xl py-space-md rounded bg-primary-container text-on-primary-container font-label-lg text-label-lg shadow-xl hover:brightness-110 transition-all duration-150 group" href="#demo-case">
+                <span>LAUNCH WAKE</span>
+                <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+              </a>
+              <a class="inline-flex items-center gap-space-sm px-space-xl py-space-md rounded bg-surface-container-high/90 text-on-surface font-label-lg text-label-lg hover:bg-surface-bright transition-colors shadow-md" href="#pipeline">
+                <span>HOW IT WORKS</span>
+                <span class="material-symbols-outlined text-[18px]">arrow_downward</span>
+              </a>
+            </div>
 
-      <div class="pipeline-grid">
-        <!-- Node 1: SAR Detection (Observed + Anomaly) -->
-        <div class="pipeline-node node-observed">
-          <div class="node-graphic">
-            <svg width="180" height="48" viewBox="0 0 180 48" fill="none">
-              <!-- Sentinel radar sweep -->
-              <circle cx="90" cy="24" r="20" stroke="rgba(16, 185, 129, 0.3)" stroke-width="1" stroke-dasharray="3 3"/>
-              <circle cx="90" cy="24" r="10" stroke="var(--verified-emerald)" stroke-width="1.5"/>
-              <!-- Damping Anomaly -->
-              <path d="M 40 28 Q 70 14 110 24 T 150 20" stroke="var(--anomaly-rose)" stroke-width="3" stroke-linecap="round"/>
-              <circle cx="90" cy="24" r="3" fill="var(--verified-emerald)"/>
-            </svg>
-          </div>
-          <span class="node-phase-tag">Phase 01 // Observed</span>
-          <h3 class="node-title">SAR Satellite Detection</h3>
-          <p class="node-desc">Copernicus Sentinel-1 C-band synthetic aperture radar (SAR) scans capture surface capillary damping and backscatter suppression.</p>
-          <div class="node-footer">
-            <span style="color: var(--verified-emerald);">VV + VH Dual-Pol</span>
-            <span style="color: var(--outline);">Sensor: C-SAR</span>
-          </div>
-        </div>
+            <!-- Cinematic Overhead Spatial Canvas (Synthetic Radar HUD) -->
+            <div class="relative w-full max-w-6xl mt-space-3xl rounded-xl overflow-hidden bg-surface-container shadow-[0_24px_50px_-12px_rgba(0,0,0,0.8)]">
+              <!-- Technical HUD Framing Overlays -->
+              <div class="absolute top-4 left-4 z-20 flex items-center gap-space-sm px-space-sm py-space-2xs rounded bg-surface-container-lowest/80 backdrop-blur-md">
+                <span class="w-1.5 h-1.5 rounded-full bg-tertiary animate-pulse"></span>
+                <span class="font-data-mono-sm text-data-mono-sm text-tertiary">SAR ANOMALY DETECTED: {spread_km:.1f} KM SLICK</span>
+              </div>
+              <div class="absolute top-4 right-4 z-20 font-data-mono-sm text-data-mono-sm text-outline flex items-center gap-space-md">
+                <span>S1-B // IW_GRDH_1SDV</span>
+                <span>LAT: {lat:.3f}&deg;N LON: {abs(lon):.3f}&deg;{'W' if lon < 0 else 'E'}</span>
+              </div>
 
-        <!-- Node 2: Segmentation (Derived) -->
-        <div class="pipeline-node node-derived">
-          <div class="node-graphic">
-            <svg width="180" height="48" viewBox="0 0 180 48" fill="none">
-              <!-- Polygon Boundary -->
-              <path d="M 30 26 Q 60 12 100 18 T 160 28 Q 120 40 70 36 Z" fill="rgba(244, 63, 94, 0.15)" stroke="var(--anomaly-rose)" stroke-width="1.2"/>
-              <!-- Medial Axis Centerline -->
-              <path d="M 38 25 Q 70 18 105 22 T 152 28" stroke="var(--geospatial-cyan)" stroke-width="2" stroke-dasharray="4 2"/>
-            </svg>
-          </div>
-          <span class="node-phase-tag">Phase 02 // Derived</span>
-          <h3 class="node-title">Neural Segmentation</h3>
-          <p class="node-desc">Isolates true petroleum damping from biogenic lookalikes; extracts skeleton medial axes, geometry, and spread footprint.</p>
-          <div class="node-footer">
-            <span style="color: var(--geospatial-cyan);">Medial Axis Voronoi</span>
-            <span style="color: var(--outline);">Damping: >8 dB</span>
-          </div>
-        </div>
+              <!-- Layer Container with Synthetic Radar & Ocean Imagery -->
+              <div class="relative h-[440px] w-full bg-surface-container-lowest overflow-hidden">
+                <div class="bg-cover bg-center absolute inset-0 opacity-40 mix-blend-luminosity" data-alt="Overhead satellite synthetic aperture radar view of deep dark ocean waters at night with fluorescent violet and cyan vessel tracks, thin iridescent oil slick surface film geometry, and geospatial HUD grid coordinate markers." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDINVF0q53Jw3V2fd0KlJTGE_ItnE_HyRF9QSvPzgbwg_K_5DCGstMB7gSbskTwGXjxarq4WdUXNZfwlP8Jl1ebyjrSz_TtO_kG7Brq4fB2oqq9mxy_QY2ekil3Ziw6ZbrVl-GPjhte-Mvv18IaL3jj7rDE0FGHl7WYflZcYVyVu5iTPBDRvRML1rDMAdw1q_gz5j7_JP5P8BeBI1MU68DGl7UWFFjj3KIPrklxL-aTn66tXgNbBFla')"></div>
 
-        <!-- Node 3: Lagrangian Drift (Derived) -->
-        <div class="pipeline-node node-derived">
-          <div class="node-graphic">
-            <svg width="180" height="48" viewBox="0 0 180 48" fill="none">
-              <!-- Current & Wind Advection Vectors -->
-              <path d="M 150 20 L 110 24 M 110 24 L 70 22 M 70 22 L 30 26" stroke="var(--geospatial-cyan)" stroke-width="2" stroke-linecap="round"/>
-              <polygon points="26,26 34,22 34,30" fill="var(--geospatial-cyan)"/>
-              <!-- Uncertainty Origin Cone -->
-              <ellipse cx="32" cy="26" rx="14" ry="8" fill="rgba(244, 63, 94, 0.2)" stroke="var(--anomaly-rose)" stroke-width="1"/>
-            </svg>
-          </div>
-          <span class="node-phase-tag">Phase 03 // Derived</span>
-          <h3 class="node-title">Reverse Lagrangian Drift</h3>
-          <p class="node-desc">Backward advection rewinds physical slick drift using ECMWF hydrodynamic currents and GFS surface windage back to discharge epoch.</p>
-          <div class="node-footer">
-            <span style="color: var(--anomaly-rose);">OpenDrift / OpenOil</span>
-            <span style="color: var(--outline);">T-48h Advection</span>
-          </div>
-        </div>
+                <!-- Radar Sweep & Vector Trajectory Overlays (SVG) -->
+                <svg class="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <radialGradient cx="50%" cy="50%" id="radar-glow" r="50%">
+                      <stop offset="0%" stop-color="#7c3aed" stop-opacity="0.3"></stop>
+                      <stop offset="70%" stop-color="#00a6e0" stop-opacity="0.08"></stop>
+                      <stop offset="100%" stop-color="#000" stop-opacity="0"></stop>
+                    </radialGradient>
+                    <linearGradient id="slick-fill" x1="0%" x2="100%" y1="0%" y2="100%">
+                      <stop offset="0%" stop-color="#ffb2b7" stop-opacity="0.85"></stop>
+                      <stop offset="100%" stop-color="#c81a42" stop-opacity="0.2"></stop>
+                    </linearGradient>
+                  </defs>
+                  <!-- Bathymetric Iso-contours -->
+                  <path d="M-50,180 Q300,120 700,240 T1400,160" fill="none" opacity="0.4" stroke="#4a4455" stroke-dasharray="3 5" stroke-width="1"></path>
+                  <path d="M-50,260 Q340,210 740,320 T1400,230" fill="none" opacity="0.3" stroke="#4a4455" stroke-dasharray="3 5" stroke-width="1"></path>
+                  <!-- Radar Sensor Swath Footprint -->
+                  <polygon fill="url(#radar-glow)" points="120,40 1080,20 1000,410 40,390" stroke="#7bd0ff" stroke-opacity="0.35" stroke-width="0.75"></polygon>
+                  <!-- Simulated Oil Slick Geometry -->
+                  <path d="M 420,270 C 490,260 540,220 620,205 C 710,190 770,165 830,135 C 790,148 720,175 640,195 C 560,215 500,250 420,270 Z" fill="url(#slick-fill)" filter="drop-shadow(0 0 10px rgba(200, 26, 66, 0.7))"></path>
+                  <!-- Historical Drift Vectors (Lagrangian Particles) -->
+                  <g opacity="0.8" stroke="#ffb2b7" stroke-dasharray="2 3">
+                    <line x1="830" x2="890" y1="135" y2="100"></line>
+                    <line x1="720" x2="775" y1="175" y2="140"></line>
+                    <line x1="620" x2="680" y1="205" y2="170"></line>
+                    <line x1="490" x2="550" y1="260" y2="225"></line>
+                  </g>
+                  <!-- Candidate Vessel AIS Track Intercept -->
+                  <polyline fill="none" points="200,380 340,320 480,265 630,210 760,150 920,80" stroke="#7bd0ff" stroke-dasharray="6 4" stroke-width="2"></polyline>
+                  <!-- Suspect Intercept Node -->
+                  <circle cx="630" cy="210" fill="#7c3aed" r="6" stroke="#d2bbff" stroke-width="2"></circle>
+                  <circle class="animate-spin" cx="630" cy="210" fill="none" r="16" stroke="#d2bbff" stroke-dasharray="2 2" stroke-width="1"></circle>
+                </svg>
 
-        <!-- Node 4: AIS Ingestion (Observed + Derived) -->
-        <div class="pipeline-node node-observed">
-          <div class="node-graphic">
-            <svg width="180" height="48" viewBox="0 0 180 48" fill="none">
-              <!-- Spline Trajectory with Genuine Pings -->
-              <path d="M 20 38 Q 60 16 110 28 T 165 14" stroke="var(--geospatial-cyan)" stroke-width="1.5" stroke-dasharray="3 3"/>
-              <!-- Observed Genuine Points -->
-              <circle cx="20" cy="38" r="3.5" fill="var(--verified-emerald)"/>
-              <circle cx="55" cy="23" r="3.5" fill="var(--verified-emerald)"/>
-              <circle cx="110" cy="28" r="3.5" fill="var(--verified-emerald)"/>
-              <circle cx="165" cy="14" r="3.5" fill="var(--verified-emerald)"/>
-            </svg>
-          </div>
-          <span class="node-phase-tag">Phase 04 // Observed & Derived</span>
-          <h3 class="node-title">AIS Ingestion & Kinematics</h3>
-          <p class="node-desc">Ingests high-density vessel broadcasts; filters spatial corridors and constructs hermite spline kinematics across telemetry gaps.</p>
-          <div class="node-footer">
-            <span style="color: var(--verified-emerald);">Solid: Genuine</span>
-            <span style="color: var(--geospatial-cyan);">Dashed: Spline</span>
-          </div>
+                <!-- Floating Micro Telemetry Node -->
+                <div class="absolute bottom-6 left-6 z-20 flex flex-col gap-space-2xs p-space-md rounded bg-surface-container-high/90 backdrop-blur-md max-w-sm shadow-lg">
+                  <div class="flex items-center justify-between gap-space-base">
+                    <span class="font-data-mono-sm text-data-mono-sm text-secondary font-semibold">T-0 INTERCEPT MATCH</span>
+                    <span class="font-data-mono-sm text-data-mono-sm px-space-xs py-space-2xs bg-tertiary-container text-on-tertiary-container rounded">{top_conf_score * 100:.1f}% BAYESIAN CONF</span>
+                  </div>
+                  <p class="font-body-sm text-body-sm text-on-surface-variant mt-space-2xs">
+                    Vessel MMSI {top_mmsi} ({top_name}) intersects computed Lagrangian back-projection locus at Celtic Sea Sector 04.
+                  </p>
+                </div>
+                <div class="absolute bottom-6 right-6 z-20 hidden md:flex items-center gap-space-md p-space-sm rounded bg-surface-container-high/90 backdrop-blur-md">
+                  <span class="font-data-mono-sm text-data-mono-sm text-outline">CURRENT: 1.42 kts @ 214&deg; SW</span>
+                  <span class="font-data-mono-sm text-data-mono-sm text-outline">WIND: 18 kts ECMWF</span>
+                </div>
+              </div>
+            </div>
+          </section>
         </div>
 
-        <!-- Node 5: Evidence Channels (Derived) -->
-        <div class="pipeline-node node-derived">
-          <div class="node-graphic">
-            <svg width="180" height="48" viewBox="0 0 180 48" fill="none">
-              <!-- Closest Point of Approach Line -->
-              <line x1="40" y1="14" x2="140" y2="34" stroke="var(--geospatial-cyan)" stroke-width="2"/>
-              <!-- CPA Distance Vector -->
-              <line x1="90" y1="24" x2="90" y2="38" stroke="var(--primary-violet-core)" stroke-width="2" stroke-dasharray="2 2"/>
-              <circle cx="90" cy="38" r="4" fill="var(--anomaly-rose)"/>
-              <circle cx="90" cy="24" r="3.5" fill="var(--geospatial-cyan)"/>
-            </svg>
-          </div>
-          <span class="node-phase-tag">Phase 05 // Derived</span>
-          <h3 class="node-title">Multi-Channel Evidence</h3>
-          <p class="node-desc">Computes discrete Fréchet curve similarity, DCPA distance, TCPA time offset, and Longépé-style forward-fit plume simulation.</p>
-          <div class="node-footer">
-            <span style="color: var(--geospatial-cyan);">DCPA + Fréchet + FF</span>
-            <span style="color: var(--outline);">Provenanced</span>
-          </div>
-        </div>
+        <!-- SECTION 1: HOW IT WORKS (Visual Spatial Stream) -->
+        <section class="relative w-full px-gutter-desktop py-space-3xl bg-surface-container-lowest" id="pipeline">
+          <div class="max-w-6xl mx-auto space-y-space-3xl">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-space-base">
+              <div>
+                <span class="font-data-mono-sm text-data-mono-sm tracking-widest text-primary uppercase">FORENSIC ATTRIBUTION WORKFLOW</span>
+                <h2 class="font-headline-xl text-headline-xl text-on-surface mt-space-xs">From Orbital Damping to Maritime Culpability</h2>
+              </div>
+              <p class="font-body-md text-body-md text-on-surface-variant max-w-md">
+                A continuous deterministic-statistical pipeline linking high-resolution sensor observations to legally admissible evidence.
+              </p>
+            </div>
 
-        <!-- Node 6: Consensus Ranking (Inference) -->
-        <div class="pipeline-node node-inference">
-          <div class="node-graphic">
-            <svg width="180" height="48" viewBox="0 0 180 48" fill="none">
-              <!-- Borda Consensus Bars -->
-              <rect x="35" y="10" width="110" height="7" rx="3" fill="var(--primary-violet-core)"/>
-              <rect x="35" y="21" width="65" height="7" rx="3" fill="rgba(124, 58, 237, 0.4)"/>
-              <rect x="35" y="32" width="30" height="7" rx="3" fill="rgba(124, 58, 237, 0.2)"/>
-              <!-- Crown / Rank #1 -->
-              <circle cx="155" cy="13.5" r="4" fill="var(--primary)"/>
-            </svg>
+            <!-- Connected Spatial Stream Nodes -->
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-space-base relative">
+              <!-- Node 1 -->
+              <div class="relative flex flex-col p-space-lg rounded-xl bg-surface-container-low hover:bg-surface-container transition-all group shadow-md">
+                <div class="w-10 h-10 rounded bg-surface-container-high flex items-center justify-center text-secondary mb-space-base group-hover:scale-110 transition-transform">
+                  <span class="material-symbols-outlined">satellite_alt</span>
+                </div>
+                <span class="font-data-mono-sm text-data-mono-sm text-outline mb-space-xs">PHASE 01 // ORBITAL</span>
+                <h3 class="font-headline-sm text-headline-sm text-on-surface mb-space-sm">Satellite SAR</h3>
+                <p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                  Sentinel-1 C-band SAR captures low-backscatter signatures where capillary waves are suppressed by floating hydrocarbon slicks.
+                </p>
+                <div class="mt-space-base pt-space-base flex items-center justify-between">
+                  <span class="font-data-mono-sm text-data-mono-sm text-secondary">C-SAR 5.405 GHz</span>
+                  <span class="material-symbols-outlined text-outline text-[16px]">chevron_right</span>
+                </div>
+              </div>
+
+              <!-- Node 2 -->
+              <div class="relative flex flex-col p-space-lg rounded-xl bg-surface-container-low hover:bg-surface-container transition-all group shadow-md">
+                <div class="w-10 h-10 rounded bg-surface-container-high flex items-center justify-center text-tertiary mb-space-base group-hover:scale-110 transition-transform">
+                  <span class="material-symbols-outlined">polyline</span>
+                </div>
+                <span class="font-data-mono-sm text-data-mono-sm text-outline mb-space-xs">PHASE 02 // VISION</span>
+                <h3 class="font-headline-sm text-headline-sm text-on-surface mb-space-sm">Segmentation</h3>
+                <p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                  Neural segmentation differentiates true petroleum damping from natural biogenic lookalikes, extracting precise geometry &amp; volume.
+                </p>
+                <div class="mt-space-base pt-space-base flex items-center justify-between">
+                  <span class="font-data-mono-sm text-data-mono-sm text-tertiary">CONF: &gt;99.1%</span>
+                  <span class="material-symbols-outlined text-outline text-[16px]">chevron_right</span>
+                </div>
+              </div>
+
+              <!-- Node 3 -->
+              <div class="relative flex flex-col p-space-lg rounded-xl bg-surface-container-low hover:bg-surface-container transition-all group shadow-md">
+                <div class="w-10 h-10 rounded bg-surface-container-high flex items-center justify-center text-primary mb-space-base group-hover:scale-110 transition-transform">
+                  <span class="material-symbols-outlined">waves</span>
+                </div>
+                <span class="font-data-mono-sm text-data-mono-sm text-outline mb-space-xs">PHASE 03 // DYNAMICS</span>
+                <h3 class="font-headline-sm text-headline-sm text-on-surface mb-space-sm">Lagrangian Drift</h3>
+                <p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                  Backward particulate advection rewinds physical slick movement using hourly ECMWF hydrodynamic currents and GFS surface windage.
+                </p>
+                <div class="mt-space-base pt-space-base flex items-center justify-between">
+                  <span class="font-data-mono-sm text-data-mono-sm text-primary">T-48h Advection</span>
+                  <span class="material-symbols-outlined text-outline text-[16px]">chevron_right</span>
+                </div>
+              </div>
+
+              <!-- Node 4 -->
+              <div class="relative flex flex-col p-space-lg rounded-xl bg-surface-container-low hover:bg-surface-container transition-all group shadow-md">
+                <div class="w-10 h-10 rounded bg-surface-container-high flex items-center justify-center text-secondary mb-space-base group-hover:scale-110 transition-transform">
+                  <span class="material-symbols-outlined">directions_boat</span>
+                </div>
+                <span class="font-data-mono-sm text-data-mono-sm text-outline mb-space-xs">PHASE 04 // TELEMETRY</span>
+                <h3 class="font-headline-sm text-headline-sm text-on-surface mb-space-sm">AIS Reconstruction</h3>
+                <p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                  Synthesizes terrestrial and satellite transponders, interpolating gaps and identifying intentional dark-vessel transmitter cuts.
+                </p>
+                <div class="mt-space-base pt-space-base flex items-center justify-between">
+                  <span class="font-data-mono-sm text-data-mono-sm text-secondary">Spatial Correl.</span>
+                  <span class="material-symbols-outlined text-outline text-[16px]">chevron_right</span>
+                </div>
+              </div>
+
+              <!-- Node 5 -->
+              <div class="relative flex flex-col p-space-lg rounded-xl bg-surface-container-low hover:bg-surface-container transition-all group shadow-md">
+                <div class="w-10 h-10 rounded bg-surface-container-high flex items-center justify-center text-primary-fixed mb-space-base group-hover:scale-110 transition-transform">
+                  <span class="material-symbols-outlined">gavel</span>
+                </div>
+                <span class="font-data-mono-sm text-data-mono-sm text-outline mb-space-xs">PHASE 05 // ATTRIBUTION</span>
+                <h3 class="font-headline-sm text-headline-sm text-on-surface mb-space-sm">Bayesian Match</h3>
+                <p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                  Ranks candidates via kinematic likelihood functions, producing mathematically robust, court-ready attribution packages.
+                </p>
+                <div class="mt-space-base pt-space-base flex items-center justify-between">
+                  <span class="font-data-mono-sm text-data-mono-sm text-primary-fixed">P(V | Slick, T)</span>
+                  <span class="material-symbols-outlined text-outline text-[16px]">verified</span>
+                </div>
+              </div>
+            </div>
           </div>
-          <span class="node-phase-tag">Phase 06 // Inference</span>
-          <h3 class="node-title">Consensus Ranking</h3>
-          <p class="node-desc">Fuses multi-channel metrics via Borda Count, TOPSIS, and calibrated Bayesian LLR with completeness discounts and ambiguity detection.</p>
-          <div class="node-footer">
-            <span style="color: var(--primary);">Borda Consensus</span>
-            <span style="color: var(--outline);">Calibrated Vector</span>
+        </section>
+
+        <!-- SECTION 2: WHY WAKE (The Spatial & Temporal Problem) -->
+        <section class="relative w-full px-gutter-desktop py-space-3xl bg-surface">
+          <div class="max-w-6xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-2xl items-center">
+              <!-- Text Explanation -->
+              <div class="lg:col-span-5 space-y-space-lg">
+                <div class="inline-flex items-center gap-space-xs px-space-sm py-space-2xs rounded bg-surface-container-high">
+                  <span class="material-symbols-outlined text-tertiary text-[16px]">schedule</span>
+                  <span class="font-data-mono-sm text-data-mono-sm text-on-surface uppercase">The Temporal Gap Dilemma</span>
+                </div>
+                <h2 class="font-headline-xl text-headline-xl text-on-surface">
+                  The culprit is never where the slick was photographed.
+                </h2>
+                <p class="font-body-lg text-body-lg text-on-surface-variant leading-relaxed">
+                  Oil spills at sea are elusive because by the time satellites capture the slick, the discharging vessel is already hours away over the horizon. Natural currents and winds distort the spill shape, making naive line-of-sight matching useless.
+                </p>
+                <div class="space-y-space-md pt-space-md">
+                  <div class="flex items-start gap-space-md p-space-md rounded-lg bg-surface-container-low">
+                    <span class="material-symbols-outlined text-tertiary mt-0.5">warning</span>
+                    <div>
+                      <span class="font-label-md text-label-md text-on-surface block">The Naive Error</span>
+                      <p class="font-body-sm text-body-sm text-on-surface-variant">Looking directly at the satellite coordinates at acquisition time yields false accusations or zero suspects.</p>
+                    </div>
+                  </div>
+                  <div class="flex items-start gap-space-md p-space-md rounded-lg bg-surface-container-low">
+                    <span class="material-symbols-outlined text-secondary mt-0.5">sync_alt</span>
+                    <div>
+                      <span class="font-label-md text-label-md text-on-surface block">The WAKE Tripartite Bridge</span>
+                      <p class="font-body-sm text-body-sm text-on-surface-variant">Synthesizes what the satellite saw, where vessels traveled, and precisely how hydrodynamic currents displaced the slick back to origin.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Comparative Visual Diagram -->
+              <div class="lg:col-span-7 flex flex-col gap-space-base">
+                <div class="p-space-xl rounded-xl bg-surface-container-low shadow-xl">
+                  <div class="flex items-center justify-between pb-space-md">
+                    <span class="font-data-mono-sm text-data-mono-sm text-outline uppercase">SPATIAL ATTRIBUTION MATRIX</span>
+                    <span class="font-data-mono-sm text-data-mono-sm text-secondary">SIMULATION STEP: T-14h</span>
+                  </div>
+                  <!-- Visual Graphic Representation -->
+                  <div class="relative h-64 w-full rounded-lg bg-surface-container-lowest overflow-hidden flex items-center justify-center">
+                    <div class="absolute inset-0 bg-cover bg-center opacity-30 mix-blend-screen" data-alt="Dark nautical chart visualization depicting oceanic grid coordinates with purple historical vessel breadcrumb paths and dynamic backwards particle drift simulation in glowing cyan and crimson." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAfqG1vHDCrJg8eHMDnJasCQWOVWMK1uf_vScfrqQeAD1zA7F-M2ElbQvq8Vri0P87AWsQfRGraQ0YplEG7Wm0ovoaZPBLpsplk3Ryj2IBJPAO73XJJbDKTxF7JzKtWnJiTNZbG-dGluGYD9Z60qiW1g9devrDKef3MxlozMd6kJIQ5WxJoLKdP01_k5YD-9bInkqkcsQvlqeuCiKahe0jAu9y7qgYl6sOmbOrK3pS2stxGfKLIgUQC')"></div>
+                    <!-- Graphic overlay lines -->
+                    <svg class="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                      <!-- Drift vector arrows -->
+                      <path d="M120,80 Q240,120 420,180" fill="none" stroke="#7bd0ff" stroke-dasharray="4 4" stroke-width="1.5"></path>
+                      <path d="M420,180 Q480,200 560,220" fill="none" stroke="#ffb2b7" stroke-width="2"></path>
+                      <circle cx="120" cy="80" fill="#7bd0ff" r="5"></circle>
+                      <circle cx="560" cy="220" fill="#c81a42" r="6"></circle>
+                    </svg>
+                    <!-- Annotation overlays -->
+                    <div class="absolute top-4 left-6 bg-surface-container-high/90 px-space-sm py-space-xs rounded shadow">
+                      <span class="font-data-mono-sm text-data-mono-sm text-secondary block font-semibold">POINT A: T-14h (ORIGIN)</span>
+                      <span class="font-body-sm text-body-sm text-on-surface-variant">Vessel Discharge Event</span>
+                    </div>
+                    <div class="absolute bottom-6 right-6 bg-surface-container-high/90 px-space-sm py-space-xs rounded shadow">
+                      <span class="font-data-mono-sm text-data-mono-sm text-tertiary block font-semibold">POINT B: T-0 (OBSERVED)</span>
+                      <span class="font-body-sm text-body-sm text-on-surface-variant">Sentinel-1 Detection 48km away</span>
+                    </div>
+                  </div>
+                  <!-- Metrics bar -->
+                  <div class="grid grid-cols-3 gap-space-sm mt-space-md pt-space-md text-center">
+                    <div>
+                      <span class="font-data-mono-sm text-data-mono-sm text-outline block">TEMPORAL OFFSET</span>
+                      <span class="font-headline-sm text-headline-sm text-on-surface font-mono">14.2 hrs</span>
+                    </div>
+                    <div>
+                      <span class="font-data-mono-sm text-data-mono-sm text-outline block">CURRENT DISPLACEMENT</span>
+                      <span class="font-headline-sm text-headline-sm text-secondary font-mono">48.6 km</span>
+                    </div>
+                    <div>
+                      <span class="font-data-mono-sm text-data-mono-sm text-outline block">INTERCEPT DCPA</span>
+                      <span class="font-headline-sm text-headline-sm text-primary font-mono">0.14 nm</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-    </div>
-  </section>
+        </section>
+
+        <!-- SECTION 3: THE EVIDENCE MODEL (Scientific Transparency & Legal Admissibility) -->
+        <section class="relative w-full px-gutter-desktop py-space-3xl bg-surface-container-lowest">
+          <div class="max-w-6xl mx-auto space-y-space-2xl">
+            <div class="text-center max-w-2xl mx-auto space-y-space-sm">
+              <span class="font-data-mono-sm text-data-mono-sm tracking-widest text-primary uppercase">EPISTEMOLOGICAL PROVENANCE</span>
+              <h2 class="font-headline-xl text-headline-xl text-on-surface">Structured for Courtroom Admissibility</h2>
+              <p class="font-body-md text-body-md text-on-surface-variant">
+                Maritime enforcement requires unequivocal clarity. WAKE explicitly separates raw empirical records from dynamic models and mathematical inference.
+              </p>
+            </div>
+
+            <!-- Three Pillars Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-space-lg">
+              <!-- Observed Column -->
+              <div class="node-observed flex flex-col p-space-xl rounded-xl bg-surface-container-low shadow-lg">
+                <div class="flex items-center justify-between mb-space-lg">
+                  <span class="w-3 h-3 rounded-full bg-[#10b981] shadow-[0_0_10px_#10b981]"></span>
+                  <span class="font-data-mono-sm text-data-mono-sm text-outline uppercase tracking-wider">TIER 1</span>
+                </div>
+                <h3 class="font-headline-md text-headline-md text-[#10b981] mb-space-xs">OBSERVED</h3>
+                <span class="font-data-mono-sm text-data-mono-sm text-outline mb-space-base">Ground-Truth Deterministic Data</span>
+                <p class="font-body-sm text-body-sm text-on-surface-variant mb-space-lg leading-relaxed">
+                  Direct, tamper-evident physical records logged by orbital SAR satellites, coastal AIS receivers, and coastal radar networks.
+                </p>
+                <div class="space-y-space-sm mt-auto pt-space-md">
+                  <div class="flex items-center gap-space-sm text-on-surface font-body-sm text-body-sm">
+                    <span class="material-symbols-outlined text-[18px] text-[#10b981]">check_circle</span>
+                    <span>Copernicus S1 SAR RAW Backscatter</span>
+                  </div>
+                  <div class="flex items-center gap-space-sm text-on-surface font-body-sm text-body-sm">
+                    <span class="material-symbols-outlined text-[18px] text-[#10b981]">check_circle</span>
+                    <span>Raw NMEA AIS Transponder Bursts</span>
+                  </div>
+                  <div class="flex items-center gap-space-sm text-on-surface font-body-sm text-body-sm">
+                    <span class="material-symbols-outlined text-[18px] text-[#10b981]">check_circle</span>
+                    <span>Coast Guard Surveillance Logs</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Derived Column -->
+              <div class="node-derived flex flex-col p-space-xl rounded-xl bg-surface-container-low shadow-lg">
+                <div class="flex items-center justify-between mb-space-lg">
+                  <span class="w-3 h-3 rounded-full bg-secondary shadow-[0_0_10px_#7bd0ff]"></span>
+                  <span class="font-data-mono-sm text-data-mono-sm text-outline uppercase tracking-wider">TIER 2</span>
+                </div>
+                <h3 class="font-headline-md text-headline-md text-secondary mb-space-xs">DERIVED</h3>
+                <span class="font-data-mono-sm text-data-mono-sm text-outline mb-space-base">Hydrodynamic Physics Models</span>
+                <p class="font-body-sm text-body-sm text-on-surface-variant mb-space-lg leading-relaxed">
+                  Physical equations computed from empirical oceanographic fields, current vectors, speed-over-ground drops, and closest approaches.
+                </p>
+                <div class="space-y-space-sm mt-auto pt-space-md">
+                  <div class="flex items-center gap-space-sm text-on-surface font-body-sm text-body-sm">
+                    <span class="material-symbols-outlined text-[18px] text-secondary">check_circle</span>
+                    <span>DCPA &amp; TCPA Distance Computations</span>
+                  </div>
+                  <div class="flex items-center gap-space-sm text-on-surface font-body-sm text-body-sm">
+                    <span class="material-symbols-outlined text-[18px] text-secondary">check_circle</span>
+                    <span>ECMWF Current Vector Fields</span>
+                  </div>
+                  <div class="flex items-center gap-space-sm text-on-surface font-body-sm text-body-sm">
+                    <span class="material-symbols-outlined text-[18px] text-secondary">check_circle</span>
+                    <span>Kinematic Speed Deceleration Analysis</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Inference Column -->
+              <div class="node-inference flex flex-col p-space-xl rounded-xl bg-surface-container-low shadow-lg">
+                <div class="flex items-center justify-between mb-space-lg">
+                  <span class="w-3 h-3 rounded-full bg-primary shadow-[0_0_10px_#d2bbff]"></span>
+                  <span class="font-data-mono-sm text-data-mono-sm text-outline uppercase tracking-wider">TIER 3</span>
+                </div>
+                <h3 class="font-headline-md text-headline-md text-primary mb-space-xs">INFERENCE</h3>
+                <span class="font-data-mono-sm text-data-mono-sm text-outline mb-space-base">Bayesian Posterior Reasoning</span>
+                <p class="font-body-sm text-body-sm text-on-surface-variant mb-space-lg leading-relaxed">
+                  Statistical probabilistic ranking synthesizing thousands of Monte Carlo advection runs with vessel trajectories.
+                </p>
+                <div class="space-y-space-sm mt-auto pt-space-md">
+                  <div class="flex items-center gap-space-sm text-on-surface font-body-sm text-body-sm">
+                    <span class="material-symbols-outlined text-[18px] text-primary">check_circle</span>
+                    <span>Bayesian Likelihood Distribution</span>
+                  </div>
+                  <div class="flex items-center gap-space-sm text-on-surface font-body-sm text-body-sm">
+                    <span class="material-symbols-outlined text-[18px] text-primary">check_circle</span>
+                    <span>10,000-Particle Monte Carlo Cones</span>
+                  </div>
+                  <div class="flex items-center gap-space-sm text-on-surface font-body-sm text-body-sm">
+                    <span class="material-symbols-outlined text-[18px] text-primary">check_circle</span>
+                    <span>Prior / Posterior Culpability Ranking</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 4: DEMONSTRATION CASE BRIDGE -->
+        <section class="relative w-full px-gutter-desktop py-space-3xl bg-surface" id="demo-case">
+          <div class="max-w-6xl mx-auto">
+            <div class="relative rounded-2xl overflow-hidden bg-surface-container-low shadow-2xl p-space-2xl md:p-space-3xl">
+              <!-- Subtle Background Glow -->
+              <div class="absolute -bottom-20 -right-20 w-80 h-80 bg-primary-container/20 rounded-full blur-[100px] pointer-events-none"></div>
+              <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-2xl items-center relative z-10">
+                <div class="lg:col-span-7 space-y-space-lg">
+                  <div class="flex items-center gap-space-sm">
+                    <span class="px-space-sm py-space-2xs bg-tertiary-container text-on-tertiary-container font-data-mono-sm text-data-mono-sm rounded uppercase">
+                      ACTIVE CASE FILE
+                    </span>
+                    <span class="font-data-mono-sm text-data-mono-sm text-outline">MARPOL ANNEX I INVESTIGATION</span>
+                  </div>
+                  <h2 class="font-headline-xl text-headline-xl text-on-surface">
+                    CASE #{investigation_id} // CELTIC SEA DISCHARGE
+                  </h2>
+                  <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                    Explore how WAKE identified the rogue bulk carrier responsible for an unannounced {spread_km:.1f} km discharge in the St George's Channel. Reconstruct the backwards drift trajectory and inspect the corroborating AIS telemetry records.
+                  </p>
+                  <div class="grid grid-cols-2 sm:grid-cols-3 gap-space-base pt-space-md">
+                    <div class="p-space-md rounded bg-surface-container">
+                      <span class="font-data-mono-sm text-data-mono-sm text-outline block">TARGET SLICK</span>
+                      <span class="font-label-lg text-label-lg text-on-surface mt-space-2xs block font-semibold">{spread_km:.1f} km Length</span>
+                    </div>
+                    <div class="p-space-md rounded bg-surface-container">
+                      <span class="font-data-mono-sm text-data-mono-sm text-outline block">INTERCEPT TIME</span>
+                      <span class="font-label-lg text-label-lg text-secondary mt-space-2xs block font-semibold">{time_str}</span>
+                    </div>
+                    <div class="p-space-md rounded bg-surface-container">
+                      <span class="font-data-mono-sm text-data-mono-sm text-outline block">PRIMARY CANDIDATE</span>
+                      <span class="font-label-lg text-label-lg text-tertiary mt-space-2xs block font-semibold">MMSI {top_mmsi}</span>
+                    </div>
+                  </div>
+                  <div class="pt-space-lg flex flex-wrap items-center gap-space-md">
+                    <a class="inline-flex items-center gap-space-sm px-space-xl py-space-md rounded bg-primary text-on-primary font-label-lg text-label-lg shadow-xl hover:brightness-105 transition-all" href="#/report">
+                      <span>EXPLORE EXAMPLE CASE (START INVESTIGATION)</span>
+                      <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                    </a>
+                    <span class="font-data-mono-sm text-data-mono-sm text-outline">DATA PRE-LOADED &bull; NO CREDENTIALS REQUIRED</span>
+                  </div>
+                </div>
+                <!-- Preview Inspector Visual -->
+                <div class="lg:col-span-5">
+                  <div class="relative rounded-xl bg-surface-container-lowest overflow-hidden shadow-xl">
+                    <div class="w-full h-72 bg-cover bg-center opacity-85" data-alt="Close-up forensic dashboard display showing SAR grayscale radar slick texture, vector displacement lines, and a verified AIS telemetry vessel card." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCHqMibFKxUTpMgJsoBy6tWRTeWpbTeZA5zBRZq9Me_nTTZr4Ng-pcrX-ZuVciATuoucaYJfwNMjkagC8ENU6pnDgcWxcaEVGaP7TPww-e8Xp0n-4XhbD14n5cLYr6wIyAQi3iUSRNXpOSOLYA4o2MrwMda85Mrc3DZzS8ZveO2Zv8AxDLJ-cogn1O9j52xzYpyDGSigqsI867o572oohceuWwz72W8zW0NxPXkdbuUgLe4PUqvA-ML')"></div>
+                    <div class="p-space-md bg-surface-container-high/95 backdrop-blur-md flex items-center justify-between">
+                      <div>
+                        <span class="font-label-md text-label-md text-on-surface block">Celtic Sea Sector 04</span>
+                        <span class="font-data-mono-sm text-data-mono-sm text-outline">Sensor: Sentinel-1B IW</span>
+                      </div>
+                      <a href="#/report" class="flex items-center gap-space-xs text-primary font-data-mono-sm text-data-mono-sm hover:underline">
+                        <span class="material-symbols-outlined text-[16px]">visibility</span>
+                        <span>VIEW DOSSIER</span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </section>
 
   <!-- ========================================================
        STAGE 02: INVESTIGATION PARAMETERS OF RECORD
@@ -1882,6 +2315,23 @@ def _get_index_html(
       </div>
     </div>
   </section>
+    </div>
+  </main>
+
+  <!-- WAKE Platform Footer -->
+  <footer class="w-full bg-surface-container-lowest py-space-xl shadow-[0_-1px_8px_rgba(0,0,0,0.4)]">
+    <div class="w-full px-gutter-desktop flex flex-col md:flex-row items-center justify-between gap-space-base">
+      <div class="flex items-center gap-space-base">
+        <span class="font-data-mono-sm text-data-mono-sm text-outline uppercase tracking-wider">WAKE FORENSIC KERNEL v4.2.1-PROD</span>
+        <span class="hidden md:inline font-data-mono-sm text-data-mono-sm text-outline-variant">&bull;</span>
+        <span class="font-body-sm text-body-sm text-on-surface-variant">European Maritime Safety &amp; Copernicus SAR Sensor Provenance Compliant</span>
+      </div>
+      <div class="flex items-center gap-space-lg">
+        <span class="font-data-mono-sm text-data-mono-sm text-on-surface-variant">LAT/LON GRID: WGS84</span>
+        <span class="font-data-mono-sm text-data-mono-sm text-secondary">AIS TELEMETRY: ACTIVE</span>
+      </div>
+    </div>
+  </footer>
 
   <script src="./app.js"></script>
 </body>
