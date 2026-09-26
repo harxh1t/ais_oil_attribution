@@ -1,0 +1,6 @@
+{
+  "name": "WAKE — Maritime Oil-Spill Vessel Attribution System",
+  "description": "Forensic maritime intelligence workstation for attributing illegal oil discharges by fusing Sentinel-1 SAR imagery, multi-temporal AIS kinematics, and hydrodynamic drift modeling.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

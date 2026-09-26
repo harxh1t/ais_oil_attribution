@@ -1,0 +1,46 @@
+:root {
+  /* Black canvas */
+  --bg-void: #000000;
+  --bg-base: #050507;
+  --surface-1: #0A0A10;
+  --surface-2: #101018;
+  --surface-3: #171724;
+  --surface-4: #21212F;
+
+  --border-subtle: rgba(255, 255, 255, 0.07);
+  --border-default: rgba(255, 255, 255, 0.13);
+  --border-strong: rgba(255, 255, 255, 0.24);
+
+  /* Electric indigo-violet (brand). 500/600/700 are for FILLS; 300/400 are for TEXT on black (≥6:1) */
+  --violet-300: #B7ADFF;
+  --violet-400: #8E7BFF;
+  --violet-500: #6A4DFF;
+  --violet-600: #4F2CFF;
+  --violet-700: #3D1FE0;
+  --indigo-600: #4F2CFF;
+
+  --gradient-primary: linear-gradient(135deg, #5A36FF 0%, #4F2CFF 50%, #3D1FE0 100%);
+  --glow-violet: rgba(79, 44, 255, 0.32);
+  --glow-wine: rgba(160, 32, 96, 0.20);
+  --glow: var(--glow-violet);
+
+  /* Text on black */
+  --text-1: #F5F5FA;
+  --text-2: #B9B9C9;
+  --text-3: #8F8FA5;
+  --text-disabled: #5C5C70;
+
+  /* Evidence (DATA ONLY) */
+  --observed: #2DD4BF;
+  --derived: #FBBF24;
+  --inferred: #F472B6;
+
+  --success: #34D399;
+  --warning: #FB923C;
+  --danger: #FB7185;
+  --info: #60A5FA;
+
+  --header-h: 64px;
+  --page-max: 1440px;
+  --page-pad: 24px;
+}

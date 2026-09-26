@@ -1,6 +1,6 @@
 window.WAKE_CASE_DATA = {
   "investigation_id": "20260921_122430",
-  "generated_at": "2026-09-23T14:20:13.283044+00:00",
+  "generated_at": "2026-09-23T16:43:05.026521+00:00",
   "metadata": {
     "coordinate_system": "WGS-84 (EPSG:4326)",
     "time_window_start": "2024-08-05T17:50:00+00:00",

@@ -347,10 +347,13 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   position: relative;
 }
 
-#stage-intro,
+#stage-intro {
+  zoom: 1.25;
+}
+
 #stage-input,
 #stage-report {
-  zoom: 1.25;
+  zoom: 1;
 }
 
 /* ========================================================

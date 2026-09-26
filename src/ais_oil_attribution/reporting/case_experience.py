@@ -432,10 +432,13 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   position: relative;
 }
 
-#stage-intro,
+#stage-intro {
+  zoom: 1.25;
+}
+
 #stage-input,
 #stage-report {
-  zoom: 1.25;
+  zoom: 1;
 }
 
 /* ========================================================
@@ -1505,10 +1508,12 @@ def _get_index_html(
       main > :last-child {{ margin-bottom: 0 !important; }}
     }}
     ::-webkit-scrollbar {{ display: none; }}
-    #stage-intro,
+    #stage-intro {{
+      zoom: 1.25;
+    }}
     #stage-input,
     #stage-report {{
-      zoom: 1.25;
+      zoom: 1;
     }}
   </style>
   <script src="https://cdn.tailwindcss.com"></script>
