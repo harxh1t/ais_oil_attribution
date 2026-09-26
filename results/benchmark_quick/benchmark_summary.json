@@ -1,5 +1,5 @@
 {
-  "timestamp_utc": "2026-09-20T05:01:35.430359+00:00",
+  "timestamp_utc": "2026-09-26T16:46:02.800826+00:00",
   "total_cases_evaluated": 10,
   "quick_mode": true,
   "ranking_methods_comparison": {
@@ -200,7 +200,7 @@
     }
   },
   "ais_reconstruction_validation": {
-    "benchmark_date": "2026-09-20T05:01:35.430226+00:00",
+    "benchmark_date": "2026-09-26T16:46:02.800703+00:00",
     "n_trajectories_tested": 5,
     "results": [
       {

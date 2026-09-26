@@ -50,3 +50,8 @@ test_tmp.parquet
 
 legacy/
 legacy_baseline/
+results_refactor_backup/
+results/*_case/
+results/opendrift_demo/
+results/test_defender_case/
+results/test_gulf_maggie_a/

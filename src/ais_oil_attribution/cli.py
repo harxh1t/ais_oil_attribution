@@ -20,7 +20,10 @@ import click
 @click.option("--enable-forward-fit", is_flag=True, default=False, help="Enable Longépé-style forward-fit trajectory recreation evidence channel.")
 @click.option("--ship-detections", "ship_detections_path", type=click.Path(exists=True), default=None, help="Optional GeoJSON file containing satellite SAR ship detections.")
 @click.option("--drift-backend", type=click.Choice(["analytic", "opendrift"], case_sensitive=False), default="analytic", help="Drift model backend.")
+@click.option("--spill-geojson", "spill_geojson_path", type=click.Path(exists=True), default=None, help="Optional GeoJSON file containing observed oil spill polygon/footprint.")
 @click.option("--case-experience/--no-case-experience", "case_experience", default=True, help="Emit unified 4-stage case_experience.html output.")
+@click.option("--target-lat", type=float, default=None, help="Optional known/suspected origin latitude for Method 1 closest approach.")
+@click.option("--target-lon", type=float, default=None, help="Optional known/suspected origin longitude for Method 1 closest approach.")
 def main(
     lat: float,
     lon: float,
@@ -35,7 +38,10 @@ def main(
     enable_forward_fit: bool,
     ship_detections_path: Optional[str],
     drift_backend: str,
+    spill_geojson_path: Optional[str],
     case_experience: bool,
+    target_lat: Optional[float] = None,
+    target_lon: Optional[float] = None,
 ):
     """
     AIS + Satellite Oil-Spill Vessel Attribution System.
@@ -58,7 +64,10 @@ def main(
             include_forward_fit=enable_forward_fit,
             ship_detections_path=ship_detections_path,
             drift_backend=drift_backend,
+            spill_geojson=spill_geojson_path,
             emit_case_experience=case_experience,
+            target_lat=target_lat,
+            target_lon=target_lon,
         )
         report_path = investigation_result.get("report_path")
         workstation_path = investigation_result.get("workstation_path")
@@ -82,6 +91,25 @@ def main(
         click.echo(f"Workstation UI: {workstation_path}")
         if case_exp_path:
             click.echo(f"Case Experience: {case_exp_path}")
+
+        bundle_path_str = investigation_result.get("bundle_path")
+        if bundle_path_str:
+            figures_dir = Path(bundle_path_str) / "figures"
+            if figures_dir.exists():
+                click.echo("\n--- OpenDrift Hydrodynamic Visualizations (Light Mode) ---")
+                for fig_name, label in [
+                    ("backward_drift_map.png", "Backward Drift Map (PNG)"),
+                    ("backward_drift_animation.gif", "Backward Animation (GIF)"),
+                    ("backward_drift_animation.html", "Backward Animation Player (HTML)"),
+                    ("forward_drift_map.png", "Forward Prediction Map (PNG)"),
+                    ("forward_drift_animation.gif", "Forward Animation (GIF)"),
+                    ("forward_drift_animation.html", "Forward Animation Player (HTML)"),
+                    ("best_origin_diagnostic_graph.png", "Origin Diagnostics Graph (PNG)"),
+                ]:
+                    f_file = figures_dir / fig_name
+                    if f_file.exists():
+                        click.echo(f"  • {label}: {f_file}")
+
         click.echo("=======================================================\n")
     except Exception as e:
         click.echo(f"Error: {e}", err=True)

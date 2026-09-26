@@ -2,7 +2,7 @@
 
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional, Tuple
 import numpy as np
 import pandas as pd
 
@@ -16,7 +16,6 @@ from ais_oil_attribution.core.config_loader import load_config
 from ais_oil_attribution.core.input_validator import validate_input
 from ais_oil_attribution.core.regime_classifier import classify_regime
 from ais_oil_attribution.data.ais_backend.marinecadastre import MarineCadastreBackend
-from ais_oil_attribution.data.satellite.cerulean_client import CeruleanClient
 from ais_oil_attribution.drift.opendrift_backtrack import backtrack_origin
 from ais_oil_attribution.processing.ais_cleaning import clean_ais_data
 from ais_oil_attribution.processing.candidate_filtering import filter_candidate_vessels
@@ -42,6 +41,10 @@ def run_investigation(
     ship_detections_path: Optional[str] = None,
     drift_backend: str = "analytic",
     emit_case_experience: Optional[bool] = None,
+    spill_polygon: Optional[List[Tuple[float, float]]] = None,
+    spill_geojson: Optional[str] = None,
+    target_lat: Optional[float] = None,
+    target_lon: Optional[float] = None,
 ) -> Dict[str, Any]:
     """
     Executes the full 12-step investigation pipeline (§12).
@@ -118,18 +121,11 @@ def run_investigation(
     start_time = validated_input.time_utc - timedelta(hours=window_before_hours)
     end_time = validated_input.time_utc + timedelta(hours=window_after_hours)
 
-    # 5. Step 4: Fetch or Construct Slick Geometry
+    # 5. Step 4: Construct or Load Slick Footprint Geometry
     slick_coords = slick_coords_override
     if slick_coords is None:
-        cerulean_client = CeruleanClient()
-        detection = cerulean_client.fetch_slick_near(
-            lat=validated_input.lat,
-            lon=validated_input.lon,
-            time=validated_input.time_utc,
-            radius_km=spatial_radius_km,
-        )
-        if detection is not None and len(detection.centerline) > 0:
-            slick_coords = detection.centerline
+        if spill_polygon and len(spill_polygon) >= 3:
+            slick_coords = np.array([[float(p[0]), float(p[1])] for p in spill_polygon])
         else:
             # Fallback: construct synthetic centerline through the observation point along orientation
             delta_deg = (validated_input.spread_km / 111.0) * 0.5
@@ -143,18 +139,28 @@ def run_investigation(
     origin_estimate = None
     if regime_decision.regime == "delayed":
         try:
+            target_xy = (float(target_lat), float(target_lon)) if target_lat is not None and target_lon is not None else None
             origin_estimate = backtrack_origin(
                 lat=validated_input.lat,
                 lon=validated_input.lon,
                 observation_time=validated_input.time_utc,
                 spread_km=validated_input.spread_km,
                 config=config,
-                forcing_source=forcing_source,
+                forcing_source=forcing_source or config.get("drift_backtracking", {}).get("forcing_source") or "SYNTHETIC_OFFLINE",
                 duration_hours=window_before_hours,
+                spill_polygon=spill_polygon,
+                spill_geojson=spill_geojson,
+                target_coords=target_xy,
             )
+            # If origin_estimate found a converged origin_time earlier than start_time, adjust start_time
+            if origin_estimate and origin_estimate.origin_time:
+                origin_epoch = origin_estimate.origin_time
+                if origin_epoch < start_time:
+                    start_time = origin_epoch - timedelta(hours=2.0)
         except Exception as e:
             # If forcing data is missing and in non-interactive / offline mode, record note
             origin_estimate = None
+
 
     # 7. Step 7: Query AIS Backend
     if ais_data_override is not None:

@@ -17,6 +17,12 @@ class OriginEstimate:
     particles_final: np.ndarray  # (N, 2) array of (lat, lon)
     duration_hours: float
     note: str
+    origin_time: Optional[datetime] = None
+    convergence_details: Optional[Dict[str, Any]] = None
+    closest_approach_details: Optional[Dict[str, Any]] = None
+    ensemble_details: Optional[Dict[str, Any]] = None
+    coords_history: Optional[Tuple[np.ndarray, np.ndarray]] = None
+    times_history: Optional[Any] = None
 
 
 class DriftModel(ABC):
