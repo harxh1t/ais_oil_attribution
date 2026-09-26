@@ -128,6 +128,37 @@ def mask_to_geojson_wgs84(
     return feature_collection
 
 
+WEIGHTS_DOWNLOAD_URL = (
+    "https://raw.githubusercontent.com/hemanth3112007-boop/Oil-Spill-Detection-using-DeepLabv3-/main/best_deeplabv3plus_mobilenet.zip"
+)
+
+
+def ensure_model_weights(weights_path: Optional[Union[str, Path]] = None) -> Path:
+    """Finds or auto-downloads the DeepLabv3+ weights."""
+    if weights_path is not None and Path(weights_path).exists():
+        return Path(weights_path)
+
+    candidate_paths = [
+        Path("models/best_deeplabv3plus_mobilenet.pth"),
+        Path("models/best_deeplabv3plus_mobilenet.zip"),
+        Path("weights/best_deeplabv3plus_mobilenet.pth"),
+        Path.home() / ".cache" / "ais_oil_attribution" / "best_deeplabv3plus_mobilenet.pth",
+    ]
+    for cp in candidate_paths:
+        if cp.exists():
+            return cp
+
+    # Auto-download if not found
+    target_path = Path("models/best_deeplabv3plus_mobilenet.pth")
+    target_path.parent.mkdir(parents=True, exist_ok=True)
+    import urllib.request
+
+    print(f"[PERCEPTION] Downloading pre-trained DeepLabv3+ weights (~17MB) from GitHub...")
+    urllib.request.urlretrieve(WEIGHTS_DOWNLOAD_URL, str(target_path))
+    print(f"[PERCEPTION] Saved weights to: {target_path}")
+    return target_path
+
+
 def detect_oil_slick_from_sar(
     tiff_path: Union[str, Path],
     weights_path: Optional[Union[str, Path]] = None,
@@ -193,23 +224,8 @@ def detect_oil_slick_from_sar(
     ).to(device)
 
     # Load checkpoint weights
-    if weights_path is not None and Path(weights_path).exists():
-        model.load_state_dict(torch.load(str(weights_path), map_location=device))
-    else:
-        # Check standard locations (e.g. models/ or cache)
-        candidate_paths = [
-            Path("models/best_deeplabv3plus_mobilenet.pth"),
-            Path("weights/best_deeplabv3plus_mobilenet.pth"),
-            Path.home() / ".cache" / "ais_oil_attribution" / "best_deeplabv3plus_mobilenet.pth",
-        ]
-        found = False
-        for cp in candidate_paths:
-            if cp.exists():
-                model.load_state_dict(torch.load(str(cp), map_location=device))
-                found = True
-                break
-        if not found and weights_path is not None:
-            raise FileNotFoundError(f"Model weights file not found: {weights_path}")
+    final_weights_path = ensure_model_weights(weights_path)
+    model.load_state_dict(torch.load(str(final_weights_path), map_location=device, weights_only=False))
 
     model.eval()
     with torch.no_grad():

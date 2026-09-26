@@ -55,3 +55,5 @@ results/*_case/
 results/opendrift_demo/
 results/test_defender_case/
 results/test_gulf_maggie_a/
+models/
+
