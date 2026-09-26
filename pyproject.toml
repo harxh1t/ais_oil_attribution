@@ -8,6 +8,7 @@ version = "0.1.0"
 description = "AIS + Satellite Oil-Spill Vessel Attribution System"
 authors = [{ name = "Antigravity Research Team" }]
 readme = "README.md"
+license = { text = "Proprietary" }
 requires-python = ">=3.10"
 dependencies = [
     "duckdb>=0.10",
