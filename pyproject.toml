@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "ais-oil-attribution"
 version = "0.1.0"
 description = "AIS + Satellite Oil-Spill Vessel Attribution System"
-authors = [{ name = "Antigravity Research Team" }]
+authors = [{ name = "Team VAYUU" }]
 readme = "README.md"
 license = { text = "Proprietary" }
 requires-python = ">=3.10"

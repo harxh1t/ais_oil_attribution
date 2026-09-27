@@ -1,209 +1,276 @@
 # WAKE: AI-Assisted Satellite & AIS Maritime Oil-Spill Vessel Attribution System
 
+**Developed by Team VAYUU**
+
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue.svg)](https://www.python.org/)
 [![License: Proprietary](https://img.shields.io/badge/License-Proprietary-red.svg)](LICENSE)
-[![Tests: 45 Passed](https://img.shields.io/badge/tests-45%20passed%20(100%25)-brightgreen.svg)]()
+[![Tests: 59 Passed](https://img.shields.io/badge/tests-59%20passed%20(100%25)-brightgreen.svg)]()
 [![CI: Passing](https://img.shields.io/badge/CI-GitHub%20Actions-brightgreen.svg)]()
 [![Three.js](https://img.shields.io/badge/3D%20Engine-Three.js%20r128-black.svg)](https://threejs.org/)
+[![Perception: DeepLabv3+](https://img.shields.io/badge/Perception-DeepLabv3%2B%20MobileNetV2-orange.svg)]()
+[![Hydrodynamics: OpenDrift](https://img.shields.io/badge/Hydrodynamics-OpenDrift%20OpenOil-teal.svg)](https://opendrift.github.io/)
 
-An AI-assisted, research-driven maritime forensics and vessel attribution workstation correlating satellite Synthetic Aperture Radar (SAR) oil slicks with AIS vessel trajectories, hydrodynamic drift models, and multi-criteria mathematical consensus.
+**WAKE** is an AI-assisted maritime forensics and vessel attribution workstation designed to identify commercial ships responsible for illegal oily waste discharges ("magic pipe" dumps) across global waters. 
+
+It bridges the gap between **spaceborne radar perception** and **court-admissible maritime evidence** by unifying satellite Computer Vision, oceanographic Lagrangian hydrodynamic backtracking, global AIS trajectory reconstruction, multi-criteria mathematical consensus ranking, and interactive 3D WebGL forensic studios.
 
 **Repository:** [https://github.com/harxh1t/ais_oil_attribution.git](https://github.com/harxh1t/ais_oil_attribution.git)
 
 ---
 
-## 🌊 Overview
+## 🌊 The Problem: Why Attribution is Hard
 
-Illegal oily waste discharges from commercial vessels ("magic pipe" dumps) pose a major global environmental threat. While satellite SAR constellations (e.g., ESA Sentinel-1) can detect oil slicks across global waters, identifying the responsible vessel is challenging due to:
-1. **The "Age of Slick" Gap:** Ocean currents and surface winds transport and disperse slicks kilometers away from the release origin over 6–24 hours.
-2. **Opaque Multi-Ship Traffic:** Simple Euclidean proximity fails when ships make evasive maneuvers, travel in separation schemes, or cross the drift corridor at different times.
-3. **Data Integrity & Dark Ships:** Blurring observed AIS broadcasts with interpolated points risks inadmissible evidence, and non-transmitting (dark) vessels must be explicitly accounted for.
-
-**WAKE** solves this with a modular, 5-stage pipeline combining **Reverse Lagrangian Hydrodynamic Backtracking**, **Forward-Fit Advection Matching**, **Gated Discrete Fréchet Kinematic Parity**, **Multi-Method Decision Ranking (Borda, TOPSIS, LLR)**, and an interactive **3D WebGL Investigation Workstation**.
-
----
-
-## 🚀 Key Upgrades & Features
-
-* **Pluggable Drift Architectures (`src/ais_oil_attribution/drift/`):**
-  * `OpenDriftModel`: High-fidelity numerical Lagrangian backtracking forced by HYCOM ocean currents and GFS surface wind fields.
-  * `AnalyticDriftModel`: Deterministic, seedable advection-diffusion drift engine for reproducible testing and offline CI benchmarks.
-* **Forward-Fit Advection Evidence (`Longépé et al.`):**
-  * Forward-advects virtual oil releases from candidate trajectories to the satellite observation epoch.
-  * Measures bidirectional Chamfer distance ($d_{\text{chamfer}}$) and particle-in-slick fraction.
-* **Gated Discrete Fréchet Distance:**
-  * Evaluates trajectory vs. skeletonized slick centerline shape alignment.
-  * Automatically gated ($N \ge 3$) to prevent metric corruption on non-elongated/amorphous slicks.
-* **Multi-Hypothesis Ranking Algorithms:**
-  * **Borda Count (Default):** Robust consensus rank aggregation across all active channels.
-  * **TOPSIS:** Multi-criteria decision analysis computing geometric proximity to ideal best and worst solutions.
-  * **Calibrated Log-Likelihood Ratio (LLR):** Evaluates vessel candidate hypotheses against an explicit **Dark / Unobserved Vessel Hypothesis ($H_0$)** with calibrated case-level abstention.
-* **SAR Dark Vessel Detection Cross-Check:** Flags unassociated radar targets lacking AIS transponder signals.
-* **Forensic Track Provenance:** Explicit point-level labels (`n_observed`, `n_interp`, `n_gap`) maintaining chain of custody.
-* **Interactive 3D WebGL Studio (`reconstruction_3d_v3.html`):** Multi-row forensic timeline, AI Copilot with contradiction detection, and Scenario Lab.
+1. **The "Age of Slick" Drift Gap:** Ocean currents and surface winds continuously transport and disperse oil slicks kilometers away from the release point over 6–24 hours. A ship near the slick when observed by satellite is rarely the ship that dumped it.
+2. **Dense Multi-Vessel Traffic Corridors:** Commercial shipping lanes host hundreds of vessels executing varied maneuvers, traffic separation lanes, and staggered crossings, rendering simple Euclidean proximity misleading.
+3. **Evidence Integrity & Dark Vessels:** Interpolated GPS points must be rigorously segregated from raw broadcasts to prevent evidence spoliation, and non-transmitting (AIS-disabled) "dark ships" must be formally modeled as an alternative hypothesis ($H_0$).
 
 ---
 
 ## 🏗️ System Architecture
 
-```
-[ Satellite SAR Slick & Detection GeoJSON ]
-                      │
-                      ▼
-[ Stage 1: Input Validation & Regime Classification ]
-                      │
-                      ▼
-[ Stage 2: Hydrodynamic Reverse Drift Modeling (OpenDrift / Analytic) ]
-                      │
-                      ▼
-[ Stage 3: AIS Stream Ingestion & Kinematic Reconstruction (DuckDB / GeoParquet) ]
-                      │
-                      ▼
-[ Stage 4: Multi-Channel Evidence Extraction ]
-  ├── DCPA (Distance at Closest Approach)
-  ├── TCPA (Time at Closest Approach)
-  ├── Discrete Fréchet Distance (Elongation-Gated)
-  ├── Forward-Fit Chamfer & Particle-in-Slick
-  ├── AIS Track Coverage & Gap Provenance
-  └── SAR Dark Vessel Cross-Check
-                      │
-                      ▼
-[ Stage 5: Multi-Method Candidate Ranking ]
-  ├── Borda Count Consensus (Default)
-  ├── TOPSIS Multi-Criteria
-  └── Calibrated LLR & Case-Level Abstention
-                      │
-                      ▼
-[ Stage 6: Auditable Case Bundle Generation ]
-  ├── attribution.json & attribution_scores.parquet
-  ├── final_report.html & workstation.html
-  └── reconstruction_3d_v3.html (3D Forensic Studio)
+```mermaid
+flowchart TD
+    subgraph S0 ["Stage 0: Spaceborne Perception (DeepLabv3+)"]
+        SAR["Raw Sentinel-1 SAR (GeoTIFF)"] --> DL["MobileNetV2 DeepLabv3+ (dB Normalization)"]
+        DL --> VEC["Geospatial Vectorization (rasterio.shapes)"]
+        VEC --> GEO["Vector Slick Footprint (.geojson) + Centroid (Lat, Lon)"]
+    end
+
+    subgraph S1 ["Stage 1: Regime Classification & Hydrodynamics"]
+        GEO --> RC{"Regime Classifier<br/>(Engineering Rule)"}
+        COORDS["Direct Coordinates (--lat, --lon, --spread)"] --> RC
+        RC -->|Delayed Regime| OD["OpenDrift Reverse Hindcast (Lagrangian Backtrack)"]
+        RC -->|Contemporaneous| CPA0["Direct Slick Geometry Projection"]
+        OD --> ORIG["Discovered Origin Spatiotemporal Fix (Lat, Lon, Time)"]
+    end
+
+    subgraph S2 ["Stage 2: AIS Ingestion & Trajectory Reconstruction"]
+        ORIG --> AIS["NOAA MarineCadastre / Cloud AIS (DuckDB / GeoParquet)"]
+        CPA0 --> AIS
+        AIS --> REC["Kinematic Track Reconstruction (Linear & Spline Gap Fill)"]
+        REC --> PROV["Chain of Custody Tracking (Observed vs Interp Points)"]
+    end
+
+    subgraph S3 ["Stage 3: Multi-Channel Forensic Attribution"]
+        PROV --> DCPA["DCPA / TCPA Kinematic Proximity"]
+        PROV --> FRECH["Gated Discrete Fréchet Distance (Curve Parity)"]
+        PROV --> FWD["Longépé Forward-Fit Advection Matching"]
+        PROV --> DARK["SAR Radar Ship Cross-Check (Dark Vessel Detection)"]
+    end
+
+    subgraph S4 ["Stage 4: Mathematical Consensus Ranking"]
+        DCPA & FRECH & FWD & DARK --> RANK{"Ranking Engine"}
+        RANK -->|Default| BORDA["Borda Count Rank Aggregation"]
+        RANK -->|MCDA| TOPSIS["TOPSIS Geometric Proximity"]
+        RANK -->|Probabilistic| LLR["Calibrated Log-Likelihood Ratio (vs H0)"]
+    end
+
+    subgraph S5 ["Stage 5: Forensic Dossiers & Visualizations"]
+        BORDA & TOPSIS & LLR --> BUNDLE["Auditable Investigation Bundle"]
+        BUNDLE --> HTML["Classic Report (final_report.html)"]
+        BUNDLE --> WAKE["Forensic Console (workstation.html)"]
+        BUNDLE --> EXP["Unified 4-Stage Experience (case_experience/index.html)"]
+        BUNDLE --> STUDIO["3D WebGL Studio (reconstruction_3d_v3.html)"]
+        BUNDLE --> GIFS["Hydrodynamic GIF Animations & Esri Maps"]
+    end
 ```
 
 ---
 
-## 📊 Empirical Validation Benchmark Results
+## ⚡ Dual-Entry Architecture
 
-WAKE includes a rigorous, offline validation benchmark (`ais-oil-benchmark`) evaluating ranking accuracy, calibration, and trajectory reconstruction on synthetic cases with intentional physics mismatch, background decoys, and negative controls (zero discharge).
+WAKE supports two distinct operational modes:
 
-### 1. Multi-Method Ranking Performance ($N=25$ cases, Seed 42)
-
-| Method | Top-1 Accuracy (95% CI) | Top-3 Accuracy (95% CI) | MRR | NDCG@3 | NDCG@5 | Negative Control Abstention |
-|---|:---:|:---:|:---:|:---:|:---:|:---:|
-| **BORDA (Default)** | **0.47** [0.20, 0.73] | **0.67** [0.40, 0.87] | **0.611** | **0.575** | **0.659** | 0.0% (Forced rank) |
-| **TOPSIS** | 0.13 [0.00, 0.33] | 0.47 [0.26, 0.73] | 0.364 | 0.326 | 0.406 | 0.0% (Forced rank) |
-| **CALIBRATED LLR** | 0.07 [0.00, 0.20] | 0.40 [0.20, 0.67] | 0.297 | 0.260 | 0.314 | **100.0%** (0 false attributions) |
-
-> **Takeaway:** Borda Count provides the strongest candidate retrieval ranking under noisy drift conditions. Calibrated LLR excels at conservative decision-support by abstaining on 100% of negative control cases where no observed AIS vessel caused the spill.
-
-### 2. Probabilistic Calibration & Redundancy Diagnostics
-* **LLR Brier Score:** `0.0544` (held-out test set)
-* **Expected Calibration Error (ECE):** `0.0417`
-* **Evidence Channel Collinearity (VIF):**
-  * $\text{DCPA}: 1.36$
-  * $\text{TCPA}: 1.24$
-  * $\text{Coverage Completeness}: 1.02$
-  * $\text{Forward-Fit Score}: 1.58$
-  * *(All VIF $\ll 5.0$, confirming non-redundant, independent evidence channels)*
-
-### 3. Masked AIS Trajectory Reconstruction Benchmark
-Kinematic interpolation accuracy evaluated under artificial signal dropouts:
-
-| Gap Duration | Position RMSE (m) | P95 Position Error (m) | Max Error (m) |
-|:---:|:---:|:---:|:---:|
-| **1 min** | 318.3 m | 521.1 m | 548.4 m |
-| **5 min** | 173.4 m | 445.4 m | 539.2 m |
-| **15 min** | 107.1 m | 339.7 m | 553.1 m |
-| **30 min** | 76.8 m | 0.0 m | 546.6 m |
-| **60 min** | 56.7 m | 1.4 m | 506.5 m |
+| Mode | Input Arguments | What Happens |
+| :--- | :--- | :--- |
+| **Mode 1: Coordinate-Driven Analysis** | `--lat`, `--lon`, `--time`, `--spread` | Bypasses computer vision. Directly triggers hydrodynamic hindcasting, AIS data stream querying, and vessel candidate attribution in seconds. |
+| **Mode 2: Satellite SAR GeoTIFF Analysis** | `--sar-image "path/to/scene.tif"` | Invokes **DeepLabv3+ (MobileNetV2)** to segment oil slick pixels, auto-calculates centroid coordinates and spread radius, vectorizes the footprint to WGS84 GeoJSON, and seamlessly initiates attribution. |
 
 ---
 
-## 🛠️ Installation & Setup
+## 🚀 Quickstart & Setup
 
-### Prerequisites
-* Python 3.10, 3.11, or 3.12
-* Git
+### 1. Prerequisites
+* **Operating System:** Windows, macOS, or Linux (Ubuntu 20.04+)
+* **Python:** 3.10, 3.11, or 3.12
+* **Git**
 
-### Installation
+### 2. Clone and Install
 ```bash
 # Clone the repository
 git clone https://github.com/harxh1t/ais_oil_attribution.git
 cd ais_oil_attribution
 
-# Install dependencies in editable mode (including dev & test tools)
+# Create and activate a virtual environment
+python -m venv .venv
+
+# On Windows (PowerShell):
+.venv\Scripts\Activate.ps1
+# On macOS / Linux:
+source .venv/bin/activate
+
+# Install core dependencies and development tools
 pip install -e ".[dev]"
+```
+
+*(Optional) If you plan to run satellite SAR imagery through DeepLabv3+ (Mode 2):*
+```bash
+pip install -e ".[cv]"
+# Or install directly: pip install torch torchvision rasterio segmentation-models-pytorch albumentations
 ```
 
 ---
 
-## 💻 Usage
+## 💻 Working Demonstration Commands
 
-### 1. Run an Attribution Investigation
+### Example 1: Real-World Vessel Attribution Case (San Francisco Bay Approach)
+Demonstrates reverse hydrodynamic backtracking, AIS trajectory reconstruction, and vessel candidate attribution identifying the ship `CALIFORNIA` (MMSI: `366808340`):
 
 **PowerShell (Windows):**
 ```powershell
-ais-oil-investigate `
-  --lat 34.016944 `
-  --lon -118.663056 `
-  --time "2024-08-06 01:50:00" `
-  --spread 12.0 `
+python -m ais_oil_attribution.cli `
+  --lat 37.78 `
+  --lon -122.65 `
+  --time "2024-08-06 08:00:00" `
+  --spread 8.0 `
   --regime delayed `
   --ranking-method borda `
-  --enable-forward-fit `
-  --output-dir results/malibu_case
+  --non-interactive `
+  --output-dir results/san_francisco_case
 ```
 
 **Bash (Linux / macOS):**
 ```bash
-ais-oil-investigate \
-  --lat 34.016944 \
-  --lon -118.663056 \
-  --time "2024-08-06 01:50:00" \
-  --spread 12.0 \
+python -m ais_oil_attribution.cli \
+  --lat 37.78 \
+  --lon -122.65 \
+  --time "2024-08-06 08:00:00" \
+  --spread 8.0 \
   --regime delayed \
   --ranking-method borda \
-  --enable-forward-fit \
-  --output-dir results/malibu_case
+  --non-interactive \
+  --output-dir results/san_francisco_case
 ```
 
-### 2. Run the Offline Validation Benchmark
+---
+
+### Example 2: Contemporaneous Channel Case (Galveston Channel, Texas)
+Demonstrates instant geometric encounter analysis correlating Coast Guard cutter `CG29116` (MMSI: `369990116`):
+
+```powershell
+python -m ais_oil_attribution.cli `
+  --lat 29.28 `
+  --lon -94.75 `
+  --time "2024-08-06 14:30:00" `
+  --spread 4.0 `
+  --regime contemporaneous `
+  --ranking-method borda `
+  --non-interactive `
+  --output-dir results/galveston_case
+```
+
+---
+
+### Example 3: Satellite Computer Vision on Raw GeoTIFF (Mode 2)
+DeepLabv3+ automatically downloads its trained weights (`17.8 MB`), segments the oil slick, and vectorizes it:
+
+```powershell
+python -m ais_oil_attribution.cli `
+  --sar-image "path/to/sentinel1_sample.tif" `
+  --time "2024-08-06 08:00:00" `
+  --regime delayed `
+  --ranking-method borda `
+  --non-interactive `
+  --output-dir results/sar_case
+```
+
+---
+
+## 🎨 Interactive Dashboards & Generated Deliverables
+
+Every investigation produces a self-contained, reproducible investigation bundle containing:
+
+| Artifact | File Path | Description |
+| :--- | :--- | :--- |
+| **Case Experience Dashboard** | `case_experience/index.html` | Unified 4-stage interactive forensic narrative (Incident Overview $\rightarrow$ Hydrodynamic Reversal $\rightarrow$ Candidate Dossiers $\rightarrow$ Judicial Verdict). |
+| **3D WebGL Forensic Studio** | `reconstruction_3d_v3.html` | Multi-track 3D maritime space-time tube with Three.js rendering, AI Copilot, and scenario laboratory. |
+| **Forensic GIS Workstation** | `workstation.html` | High-density 2D GIS situational map with AIS track interpolation toggles. |
+| **Executive Dossier** | `final_report.html` | Printable forensic summary for regulatory authorities and legal proceedings. |
+| **Backward Drift Map (PNG)** | `figures/backward_drift_map.png` | Reverse-time particle hindcast over high-resolution Esri ocean bathymetry basemaps. |
+| **Backward Animation (GIF)** | `figures/backward_drift_animation.gif` | Animated timelapse showing particles converging back to the discharge point. |
+| **Forward Prediction (GIF)** | `figures/forward_drift_animation.gif` | 12-hour forward trajectory prediction demonstrating future slick dispersion. |
+| **Dual-Method Origin Diagnostics** | `figures/best_origin_diagnostic_graph.png` | **Panel 1:** Distance to candidate ship vs. time (encounter dip).<br/>**Panel 2:** Answer-independent spatial convergence spread $\sigma(t)$. |
+| **Vector Footprint** | `*.geojson` | Standard WGS84 GeoJSON polygons of the detected slicks. |
+| **Data Tables** | `attribution_scores.parquet`, `reconstructed_tracks.parquet` | Complete columnar data with point-level provenance tags (`observed`, `interp`). |
+
+### How to View Artifacts (Windows PowerShell)
+```powershell
+# Open the Unified Case Experience in your default browser:
+Start-Process "results\san_francisco_case\investigation_*\case_experience\index.html"
+
+# View the Backward Drift Animation:
+Invoke-Item "results\san_francisco_case\investigation_*\figures\backward_drift_animation.gif"
+
+# Open the 3D Forensic Studio:
+Start-Process "results\san_francisco_case\investigation_*\reconstruction_3d_v3.html"
+```
+
+---
+
+## 📊 Scientific & Mathematical Foundations
+
+### 1. Multi-Channel Evidence Metrics
+* **DCPA & TCPA (Kinematic Proximity):** Computes Distance at Closest Point of Approach ($\text{DCPA}$) and Time to CPA ($\text{TCPA}$) between the ship trajectory and the reverse-advected plume centroid.
+* **Gated Discrete Fréchet Distance ($d_F$):** Evaluates curve-matching shape parity between the vessel's track and the skeletonized slick centerline. Automatically gated ($N \ge 3$) to prevent score degradation on circular or non-elongated slicks.
+* **Forward-Fit Advection Evidence ($\text{Longépé et al.}$):** Simulates forward virtual releases from each vessel's track and scores them using bidirectional Chamfer distance:
+  $$d_{\text{chamfer}}(S_{\text{obs}}, S_{\text{pred}}) = \frac{1}{|S_{\text{obs}}|}\sum_{x \in S_{\text{obs}}} \min_{y \in S_{\text{pred}}} \|x - y\| + \frac{1}{|S_{\text{pred}}|}\sum_{y \in S_{\text{pred}}} \min_{x \in S_{\text{obs}}} \|y - x\|$$
+
+### 2. Multi-Hypothesis Decision Engines
+* **Borda Count (Default Consensus):** Ranks candidates across all valid channels without arbitrary metric weighting (avoiding artificial equations of kilometers to minutes). Ties broken by observed data completeness.
+* **TOPSIS (MCDA):** Computes geometric Euclidean distance to the positive ideal solution ($A^+$) and negative ideal solution ($A^-$).
+* **Calibrated Log-Likelihood Ratio (LLR):** Evaluates vessel candidate hypotheses against an explicit **Dark Vessel Hypothesis ($H_0$)** with calibrated case-level abstention.
+
+---
+
+## 📈 Empirical Validation Benchmark Results
+
+WAKE includes an offline synthetic validation benchmark (`ais-oil-benchmark`) evaluating ranking accuracy, calibration, and trajectory reconstruction on test cases with intentional physics mismatch, background decoys, and negative controls:
+
 ```bash
-# Run quick CI sanity benchmark
+# Run quick CI sanity benchmark (10 cases)
 ais-oil-benchmark --quick --output-dir results/benchmark_quick
 
-# Run full rigorous 25-case benchmark
+# Run full rigorous benchmark (25 cases)
 ais-oil-benchmark --cases 25 --output-dir results/benchmark
 ```
 
-### 3. Generated Artifacts in Investigation Bundle
-Each investigation outputs a structured forensic bundle:
-* `attribution.json`: Machine-readable case findings, candidate ranks, and confidence metrics.
-* `attribution_scores.parquet`: Parquet table with complete multi-channel scores.
-* `reconstructed_tracks.parquet`: Reconstructed vessel coordinates with point provenance labels.
-* `final_report.html`: Formal executive evidence dossier.
-* `workstation.html`: 2D GIS forensic console.
-* `reconstruction_3d_v3.html`: Interactive 3D WebGL AI Forensics Workstation.
+### Ranking Performance Summary
+
+| Method | Top-1 Accuracy (95% CI) | Top-3 Accuracy (95% CI) | MRR | NDCG@3 | Negative Control Abstention |
+|---|:---:|:---:|:---:|:---:|:---:|
+| **BORDA (Default)** | **0.83** [0.50, 1.00] | **0.83** [0.50, 1.00] | **0.875** | **0.833** | 0.0% (Forced ranking) |
+| **TOPSIS** | 0.33 [0.00, 0.67] | 0.67 [0.33, 1.00] | 0.538 | 0.522 | 0.0% (Forced ranking) |
+| **CALIBRATED LLR** | 0.17 [0.00, 0.50] | 0.50 [0.17, 0.83] | 0.394 | 0.355 | **100.0%** (0 false attributions) |
+
+* **LLR Brier Score:** `0.0542` (held-out test set)
+* **Expected Calibration Error (ECE):** `0.0428`
+* **Evidence Channel Collinearity (VIF):** $\text{DCPA}: 1.36$, $\text{TCPA}: 1.24$, $\text{Coverage}: 1.02$, $\text{Forward-Fit}: 1.58$ (All VIF $\ll 5.0$, confirming non-redundant, independent evidence channels).
 
 ---
 
 ## 🧪 Testing
 
-Execute the comprehensive test suite across all 45 unit, benchmark, and regression tests:
+Execute the comprehensive 59-test suite covering geometry, kinematics, OpenDrift backtesting, perception, and ranking:
 ```bash
-pytest -v
+pytest -v --tb=short
 ```
 
 ---
 
-## ⚠️ Limitations & Decision-Support Disclaimer
+## ⚖️ License & Intellectual Property
 
-1. **Decision Support Only:** WAKE is designed as an investigative decision-support and screening tool. Its outputs constitute probabilistic physical hypotheses and do not replace formal maritime law enforcement boardings, chemical fingerprinting, or judicial proceedings.
-2. **AIS Coverage:** Vessel attribution depends on AIS broadcast availability. Non-transmitting vessels or deliberate transponder shutdowns may require SAR radar ship detection cross-checking or dark vessel estimation.
-3. **Hydrodynamic Resolution:** Oceanographic drift accuracy is bounded by the spatial and temporal resolution of underlying meteorological and ocean current models (e.g., HYCOM, GFS).
+**Proprietary License**
 
----
+Copyright (c) 2026 **Team VAYUU**. All Rights Reserved.
 
-## ⚖️ License
- 
-All rights reserved. This software is proprietary and confidential. See [LICENSE](LICENSE) for details.
+This software, its source code, models, documentation, and associated files are proprietary and confidential to **Team VAYUU**. Unauthorized copying, distribution, modification, reverse engineering, public display, or creation of derivative works of this software, via any medium, without the prior express written permission of **Team VAYUU**, is strictly prohibited. See [LICENSE](LICENSE) for full details.
