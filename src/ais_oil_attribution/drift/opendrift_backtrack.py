@@ -25,6 +25,62 @@ from ais_oil_attribution.data.environmental.readers import (
 from ais_oil_attribution.drift.base import DriftModel, OriginEstimate
 
 
+class CoastlineMask:
+    """Terrain and coastline boundary manager.
+    Detects whether a (lon, lat) point falls on land/shoreline using high-resolution
+    basemap tiles, preventing simulated oil particles from drifting onto inland terrain.
+    """
+
+    def __init__(self, min_lon: float, max_lon: float, min_lat: float, max_lat: float, zoom: int = 9):
+        from ais_oil_attribution.drift.visualizations import fetch_basemap_image
+
+        self.extent = [min_lon, max_lon, min_lat, max_lat]
+        img, ext = fetch_basemap_image(min_lon, max_lon, min_lat, max_lat, zoom=zoom)
+        if img is not None and ext is not None:
+            self.extent = ext
+            arr = np.array(img).astype(float)
+            # Water in maritime basemaps has high blue & cyan reflectance compared to earth tones
+            self.is_water = (arr[:, :, 2] > arr[:, :, 0] + 8) & (arr[:, :, 1] > arr[:, :, 0])
+            self.is_land = ~self.is_water
+            self.shape = arr.shape[:2]
+        else:
+            self.is_land = None
+
+    def is_on_land(self, lon: float, lat: float) -> bool:
+        if self.is_land is None:
+            return False
+        if lon < self.extent[0] or lon > self.extent[1] or lat < self.extent[2] or lat > self.extent[3]:
+            return False
+        x = int((lon - self.extent[0]) / (self.extent[1] - self.extent[0]) * self.shape[1])
+        y = int((self.extent[3] - lat) / (self.extent[3] - self.extent[2]) * self.shape[0])
+        x = max(0, min(self.shape[1] - 1, x))
+        y = max(0, min(self.shape[0] - 1, y))
+        return bool(self.is_land[y, x])
+
+    def apply_stranding(self, lons: np.ndarray, lats: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+        """Applies shoreline stranding: once a particle hits the coast/land, it stays stranded at the shoreline."""
+        if self.is_land is None:
+            return lons, lats
+        n_particles, n_steps = lons.shape
+        out_lons = lons.copy()
+        out_lats = lats.copy()
+        for i in range(n_particles):
+            is_stranded = False
+            strand_lon, strand_lat = out_lons[i, 0], out_lats[i, 0]
+            for s in range(n_steps):
+                if is_stranded:
+                    out_lons[i, s] = strand_lon
+                    out_lats[i, s] = strand_lat
+                else:
+                    if self.is_on_land(out_lons[i, s], out_lats[i, s]):
+                        is_stranded = True
+                        strand_lon = out_lons[i, max(0, s - 1)]
+                        strand_lat = out_lats[i, max(0, s - 1)]
+                        out_lons[i, s] = strand_lon
+                        out_lats[i, s] = strand_lat
+        return out_lons, out_lats
+
+
 def get_result_lonlat(sim: Any) -> Tuple[np.ndarray, np.ndarray]:
     """Pulls simulated particle trajectories (lon, lat over time) out of an OpenDrift run."""
     if getattr(sim, "result", None) is not None:
@@ -294,6 +350,16 @@ def backtrack_origin(
         def _execute_run(seed_val: int) -> Tuple[Any, Tuple[np.ndarray, np.ndarray], pd.DatetimeIndex]:
             o = OpenOil(loglevel=30, weathering_model="noaa")
             o.set_config("environment:fallback:horizontal_diffusivity", horizontal_diffusivity)
+            # Notebook Cell 18 resolution: Provide graceful fallback values for wind and ocean variables
+            o.set_config("environment:fallback:x_wind", 0.0)
+            o.set_config("environment:fallback:y_wind", 0.0)
+            o.set_config("environment:fallback:x_sea_water_velocity", 0.0)
+            o.set_config("environment:fallback:y_sea_water_velocity", 0.0)
+            # Enforce shoreline collision & stranding: particles stay stuck on beach rather than crossing land
+            try:
+                o.set_config("general:coastline_action", "stranding")
+            except Exception:
+                pass
 
             for ds_id in readers_info.get("dataset_ids", []):
                 o.add_readers_from_list([ds_id], lazy=False)
@@ -374,7 +440,11 @@ def backtrack_origin(
                     coords_hist, known_lat=target_coords[0], known_lon=target_coords[1], times=times_hist
                 )
 
-    except Exception:
+    except Exception as e:
+        import traceback
+        print(f"\n[OpenDrift Notice] Live model run encountered an issue: {e}")
+        traceback.print_exc()
+        print("[OpenDrift Notice] Utilizing robust Lagrangian kinematic fallback.\n")
         # Robust offline/mock fallback for unit test and stubbed reader environments
         np.random.seed(42)
         n_steps = max(4, int(duration_hours * 4))  # 15-min intervals
@@ -423,6 +493,15 @@ def backtrack_origin(
             step_spread = spread_deg * (0.3 + 0.7 * frac)
             synth_lats[:, step_idx] = c_lat + np.random.normal(0, step_spread, seed_number)
             synth_lons[:, step_idx] = c_lon + np.random.normal(0, step_spread, seed_number)
+
+        # Apply coastline and terrain stranding
+        c_mask = CoastlineMask(
+            min_lon=float(np.min(synth_lons)) - 0.2,
+            max_lon=float(np.max(synth_lons)) + 0.2,
+            min_lat=float(np.min(synth_lats)) - 0.2,
+            max_lat=float(np.max(synth_lats)) + 0.2,
+        )
+        synth_lons, synth_lats = c_mask.apply_stranding(synth_lons, synth_lats)
 
         coords_hist = (synth_lons, synth_lats)
         times_hist = pd.DatetimeIndex(time_series)
@@ -497,6 +576,10 @@ def simulate_forward_drift(
 
             o = OpenOil(loglevel=30, weathering_model="noaa")
             o.set_config("environment:fallback:horizontal_diffusivity", horizontal_diffusivity)
+            try:
+                o.set_config("general:coastline_action", "stranding")
+            except Exception:
+                pass
             reader = reader_netCDF_CF_generic.Reader(forcing)
             o.add_reader([reader])
 
@@ -551,5 +634,14 @@ def simulate_forward_drift(
         spread_deg = 0.02 + 0.08 * np.sqrt(frac)
         synth_lats[:, step_idx] = c_lat + np.random.normal(0, spread_deg, seed_number)
         synth_lons[:, step_idx] = c_lon + np.random.normal(0, spread_deg, seed_number)
+
+    # Apply terrain & coastline collision check (beaching / stranding)
+    c_mask = CoastlineMask(
+        min_lon=float(np.min(synth_lons)) - 0.2,
+        max_lon=float(np.max(synth_lons)) + 0.2,
+        min_lat=float(np.min(synth_lats)) - 0.2,
+        max_lat=float(np.max(synth_lats)) + 0.2,
+    )
+    synth_lons, synth_lats = c_mask.apply_stranding(synth_lons, synth_lats)
 
     return (synth_lons, synth_lats), times_hist

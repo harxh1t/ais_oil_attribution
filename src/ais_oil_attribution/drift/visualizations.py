@@ -92,6 +92,193 @@ def fetch_basemap_image(
         return None, None
 
 
+def plot_particle_cloud_map(
+    coords_hist: Tuple[np.ndarray, np.ndarray],
+    times: Union[pd.DatetimeIndex, List[datetime]],
+    title: str,
+    start_lat: float,
+    start_lon: float,
+    known_lat: Optional[float] = None,
+    known_lon: Optional[float] = None,
+    known_label: str = "Discovered Origin",
+    output_path: Optional[Union[str, Path]] = None,
+) -> plt.Figure:
+    """Individual particle cloud map plot:
+    Particle cloud colored by elapsed hours since simulation start, detection point,
+    origin point, plume centroid path, and authentic ocean/terrain basemap tiles.
+    """
+    lons, lats = coords_hist
+    if not isinstance(times, pd.DatetimeIndex):
+        times = pd.DatetimeIndex(times)
+
+    n_particles, n_times = lons.shape
+    fig, ax_map = plt.subplots(figsize=(7.5, 6.5), dpi=150)
+    fig.patch.set_facecolor("#FFFFFF")
+    ax_map.set_facecolor("#dceaf5")
+
+    elapsed_hours = np.array([(t - times[0]).total_seconds() / 3600.0 for t in times])
+    color_grid = np.tile(elapsed_hours, (n_particles, 1))
+
+    sc = ax_map.scatter(
+        lons.flatten(),
+        lats.flatten(),
+        c=color_grid.flatten(),
+        cmap="plasma",
+        s=7,
+        alpha=0.45,
+        edgecolors="none",
+        zorder=3,
+    )
+
+    cbar = plt.colorbar(sc, ax=ax_map, orientation="horizontal", pad=0.08, shrink=0.85)
+    cbar.set_label("Hours since simulation start", color="#1E293B", fontsize=9, fontweight="normal")
+    cbar.ax.xaxis.set_tick_params(color="#475569")
+    plt.setp(plt.getp(cbar.ax.axes, "xticklabels"), color="#334155", fontsize=8)
+
+    # Detection point
+    ax_map.plot(
+        start_lon,
+        start_lat,
+        marker="*",
+        color="cyan",
+        markersize=16,
+        markeredgecolor="black",
+        markeredgewidth=1.2,
+        zorder=5,
+        label="Detection point",
+    )
+
+    # Discovered origin site
+    if known_lat is not None and known_lon is not None:
+        ax_map.plot(
+            known_lon,
+            known_lat,
+            marker="X",
+            color="red",
+            markersize=14,
+            markeredgecolor="black",
+            markeredgewidth=1.2,
+            zorder=5,
+            label=known_label,
+        )
+
+    # Centroid advection trajectory line
+    mean_lons = np.nanmean(lons, axis=0)
+    mean_lats = np.nanmean(lats, axis=0)
+    ax_map.plot(
+        mean_lons,
+        mean_lats,
+        color="#1E293B",
+        linestyle="--",
+        linewidth=1.6,
+        alpha=0.85,
+        zorder=4,
+        label="Plume centroid path",
+    )
+
+    pad_lon = max(0.12, (np.nanmax(lons) - np.nanmin(lons)) * 0.25)
+    pad_lat = max(0.12, (np.nanmax(lats) - np.nanmin(lats)) * 0.25)
+    xlims = (np.nanmin(lons) - pad_lon, np.nanmax(lons) + pad_lon)
+    ylims = (np.nanmin(lats) - pad_lat, np.nanmax(lats) + pad_lat)
+
+    base_img, base_extent = fetch_basemap_image(xlims[0], xlims[1], ylims[0], ylims[1])
+    if base_img is not None and base_extent is not None:
+        ax_map.imshow(base_img, extent=base_extent, zorder=1, aspect="auto")
+
+    ax_map.set_xlim(xlims)
+    ax_map.set_ylim(ylims)
+    ax_map.set_xlabel("Longitude (°E)", color="#1E293B", fontsize=9)
+    ax_map.set_ylabel("Latitude (°N)", color="#1E293B", fontsize=9)
+    ax_map.set_title(title, color="#0F172A", fontsize=11, fontweight="bold", pad=10)
+    ax_map.tick_params(colors="#334155")
+    ax_map.grid(color="#94A3B8", linestyle=":", linewidth=0.6, alpha=0.55)
+    for spine in ax_map.spines.values():
+        spine.set_color("#64748B")
+
+    leg = ax_map.legend(loc="upper left", fontsize=8, facecolor="#FFFFFF", edgecolor="#CBD5E1", framealpha=0.95)
+    for text in leg.get_texts():
+        text.set_color("#0F172A")
+
+    plt.tight_layout()
+
+    if output_path:
+        out_p = Path(output_path)
+        out_p.parent.mkdir(parents=True, exist_ok=True)
+        plt.savefig(str(out_p), dpi=150, facecolor=fig.get_facecolor(), bbox_inches="tight")
+        plt.close(fig)
+
+    return fig
+
+
+def plot_cloud_spread_chart(
+    coords_hist: Tuple[np.ndarray, np.ndarray],
+    times: Union[pd.DatetimeIndex, List[datetime]],
+    title: str = "How spread out the oil is, over time",
+    output_path: Optional[Union[str, Path]] = None,
+) -> plt.Figure:
+    """Individual particle cloud spread over time line chart with fill and minimum spread marker."""
+    lons, lats = coords_hist
+    if not isinstance(times, pd.DatetimeIndex):
+        times = pd.DatetimeIndex(times)
+
+    fig, ax_chart = plt.subplots(figsize=(7.0, 5.5), dpi=150)
+    fig.patch.set_facecolor("#FFFFFF")
+    ax_chart.set_facecolor("#FFFFFF")
+
+    centroid_lons = np.nanmean(lons, axis=0)
+    centroid_lats = np.nanmean(lats, axis=0)
+    spread_km = np.sqrt(
+        np.nanmean((lats - centroid_lats) ** 2 + (lons - centroid_lons) ** 2, axis=0)
+    ) * 111.0
+
+    ax_chart.plot(times, spread_km, color="#d62728", linewidth=2.2, zorder=3, label="Spread $\\sigma(t)$")
+    ax_chart.fill_between(times, spread_km, alpha=0.15, color="#d62728", zorder=2)
+
+    min_idx = int(np.nanargmin(spread_km))
+    ax_chart.scatter(
+        [times[min_idx]],
+        [spread_km[min_idx]],
+        color="#d62728",
+        s=70,
+        zorder=5,
+        edgecolors="black",
+        label=f"Min spread ({spread_km[min_idx]:.2f} km)",
+    )
+    ax_chart.axvline(
+        times[min_idx],
+        color="#d62728",
+        linestyle="--",
+        linewidth=1.2,
+        alpha=0.75,
+    )
+
+    ax_chart.set_xlabel("Time (UTC)", color="#1E293B", fontsize=9)
+    ax_chart.set_ylabel("Particle cloud spread (km)", color="#1E293B", fontsize=9)
+    ax_chart.set_title(title, color="#0F172A", fontsize=11, fontweight="bold", pad=10)
+    locator = mdates.AutoDateLocator(minticks=4, maxticks=7)
+    formatter = mdates.ConciseDateFormatter(locator)
+    ax_chart.xaxis.set_major_locator(locator)
+    ax_chart.xaxis.set_major_formatter(formatter)
+    ax_chart.tick_params(colors="#334155", labelsize=8)
+    ax_chart.grid(color="#E2E8F0", linestyle="-", linewidth=0.8, alpha=0.8)
+    for spine in ax_chart.spines.values():
+        spine.set_color("#64748B")
+
+    leg2 = ax_chart.legend(loc="upper right", fontsize=8, facecolor="#FFFFFF", edgecolor="#CBD5E1", framealpha=0.95)
+    for text in leg2.get_texts():
+        text.set_color("#0F172A")
+
+    plt.tight_layout()
+
+    if output_path:
+        out_p = Path(output_path)
+        out_p.parent.mkdir(parents=True, exist_ok=True)
+        plt.savefig(str(out_p), dpi=150, facecolor=fig.get_facecolor(), bbox_inches="tight")
+        plt.close(fig)
+
+    return fig
+
+
 def plot_detailed_drift(
     coords_hist: Tuple[np.ndarray, np.ndarray],
     times: Union[pd.DatetimeIndex, List[datetime]],
@@ -239,13 +426,117 @@ def plot_detailed_drift(
     ax_chart.set_xlabel("Time (UTC)", color="#1E293B", fontsize=9)
     ax_chart.set_ylabel("Particle cloud spread (km)", color="#1E293B", fontsize=9)
     ax_chart.set_title("How spread out the oil is, over time", color="#0F172A", fontsize=11, fontweight="bold", pad=10)
-    ax_chart.xaxis.set_major_formatter(mdates.DateFormatter("%b %d\n%H:%M"))
-    ax_chart.tick_params(colors="#334155")
+    locator2 = mdates.AutoDateLocator(minticks=4, maxticks=7)
+    formatter2 = mdates.ConciseDateFormatter(locator2)
+    ax_chart.xaxis.set_major_locator(locator2)
+    ax_chart.xaxis.set_major_formatter(formatter2)
+    ax_chart.tick_params(colors="#334155", labelsize=8)
     ax_chart.grid(color="#E2E8F0", linestyle="-", linewidth=0.8, alpha=0.8)
     for spine in ax_chart.spines.values():
         spine.set_color("#64748B")
 
     leg2 = ax_chart.legend(loc="upper right", fontsize=8, facecolor="#FFFFFF", edgecolor="#CBD5E1", framealpha=0.95)
+    for text in leg2.get_texts():
+        text.set_color("#0F172A")
+
+    plt.tight_layout()
+
+    if output_path:
+        out_p = Path(output_path)
+        out_p.parent.mkdir(parents=True, exist_ok=True)
+        plt.savefig(str(out_p), dpi=150, facecolor=fig.get_facecolor(), bbox_inches="tight")
+        plt.close(fig)
+
+    return fig
+
+
+def plot_method1_closest_approach(
+    closest_approach_res: Dict[str, Any],
+    output_path: Optional[Union[str, Path]] = None,
+) -> Optional[plt.Figure]:
+    """Individual Method 1 diagnostic graph: Distance to candidate vessel / site over reverse time."""
+    ca_times = pd.DatetimeIndex(closest_approach_res.get("all_times", []))
+    ca_dists = closest_approach_res.get("all_distances_km", [])
+    pick_time = closest_approach_res.get("time")
+
+    if len(ca_times) == 0 or len(ca_dists) == 0:
+        return None
+
+    cand_name = closest_approach_res.get("candidate_name") or closest_approach_res.get("target_name") or "candidate site"
+    fig, ax1 = plt.subplots(figsize=(6.5, 4.5), dpi=150)
+    fig.patch.set_facecolor("#FFFFFF")
+    ax1.set_facecolor("#FFFFFF")
+
+    ax1.plot(ca_times, ca_dists, color="#1f77b4", linewidth=2.0, label=f"Distance to {cand_name}")
+    if pick_time:
+        dist_val = closest_approach_res.get("distance_to_target_km", 0)
+        ax1.axvline(
+            pick_time,
+            color="#2ca02c",
+            linestyle="--",
+            linewidth=1.5,
+            label=f"Closest pick ({dist_val:.2f} km)",
+        )
+
+    ax1.set_xlabel("Time (backward run)", color="#1E293B", fontsize=9)
+    ax1.set_ylabel(f"Distance from {cand_name} (km)", color="#1E293B", fontsize=9)
+    ax1.set_title(f"Method 1: Distance to {cand_name}", color="#0F172A", fontsize=11, fontweight="bold")
+    ca_locator = mdates.AutoDateLocator(minticks=4, maxticks=7)
+    ca_formatter = mdates.ConciseDateFormatter(ca_locator)
+    ax1.xaxis.set_major_locator(ca_locator)
+    ax1.xaxis.set_major_formatter(ca_formatter)
+    ax1.tick_params(colors="#334155", labelsize=8)
+    ax1.grid(color="#E2E8F0", linestyle="-", linewidth=0.8, alpha=0.8)
+    for spine in ax1.spines.values():
+        spine.set_color("#64748B")
+    leg1 = ax1.legend(loc="upper right", fontsize=8, facecolor="#FFFFFF", edgecolor="#CBD5E1", framealpha=0.95)
+    for text in leg1.get_texts():
+        text.set_color("#0F172A")
+
+    plt.tight_layout()
+
+    if output_path:
+        out_p = Path(output_path)
+        out_p.parent.mkdir(parents=True, exist_ok=True)
+        plt.savefig(str(out_p), dpi=150, facecolor=fig.get_facecolor(), bbox_inches="tight")
+        plt.close(fig)
+
+    return fig
+
+
+def plot_method2_convergence(
+    convergence_res: Dict[str, Any],
+    output_path: Optional[Union[str, Path]] = None,
+) -> Optional[plt.Figure]:
+    """Individual Method 2 diagnostic graph: Spatial convergence spread over time with warmup shading."""
+    hist_spread = convergence_res.get("std_history")
+    warmup_n = convergence_res.get("warmup_excluded", 0)
+    best_idx = convergence_res.get("best_idx", 0)
+
+    if hist_spread is None or len(hist_spread) == 0:
+        return None
+
+    fig, ax2 = plt.subplots(figsize=(6.5, 4.5), dpi=150)
+    fig.patch.set_facecolor("#FFFFFF")
+    ax2.set_facecolor("#FFFFFF")
+
+    steps = np.arange(len(hist_spread))
+    ax2.plot(steps, hist_spread, color="#d62728", linewidth=2.0, label="Particle spread $\\sigma(t)$")
+
+    if warmup_n > 0:
+        ax2.axvspan(0, warmup_n, color="#94A3B8", alpha=0.25, label=f"Warm-up excluded ({warmup_n} steps)")
+
+    ax2.axvline(best_idx, color="#d62728", linestyle="--", linewidth=1.5, label=f"Method 2 pick (Step {best_idx})")
+    ax2.scatter([best_idx], [hist_spread[best_idx]], color="#d62728", s=60, edgecolors="black", zorder=5)
+
+    ax2.set_xlabel("Simulation Timestep (reverse advection)", color="#1E293B", fontsize=9)
+    ax2.set_ylabel("Cloud spread $\\sigma(t)$ (km)", color="#1E293B", fontsize=9)
+    ax2.set_title("Method 2: Spatial convergence spread", color="#0F172A", fontsize=11, fontweight="bold")
+    ax2.tick_params(colors="#334155", labelsize=8)
+    ax2.grid(color="#E2E8F0", linestyle="-", linewidth=0.8, alpha=0.8)
+    for spine in ax2.spines.values():
+        spine.set_color("#64748B")
+    leg2 = ax2.legend(loc="upper right", fontsize=8, facecolor="#FFFFFF", edgecolor="#CBD5E1", framealpha=0.95)
     for text in leg2.get_texts():
         text.set_color("#0F172A")
 
@@ -306,8 +597,11 @@ def plot_origin_diagnostics(
         ax1.set_xlabel("Time (backward run)", color="#1E293B", fontsize=9)
         ax1.set_ylabel(f"Distance from {cand_name} (km)", color="#1E293B", fontsize=9)
         ax1.set_title(f"Method 1: Distance to {cand_name}", color="#0F172A", fontsize=11, fontweight="bold")
-        ax1.xaxis.set_major_formatter(mdates.DateFormatter("%b %d\n%H:%M"))
-        ax1.tick_params(colors="#334155")
+        p_locator = mdates.AutoDateLocator(minticks=4, maxticks=7)
+        p_formatter = mdates.ConciseDateFormatter(p_locator)
+        ax1.xaxis.set_major_locator(p_locator)
+        ax1.xaxis.set_major_formatter(p_formatter)
+        ax1.tick_params(colors="#334155", labelsize=8)
         ax1.grid(color="#E2E8F0", linestyle="-", linewidth=0.8, alpha=0.8)
         for spine in ax1.spines.values():
             spine.set_color("#64748B")
