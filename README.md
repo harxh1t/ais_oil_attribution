@@ -9,6 +9,7 @@
 [![Three.js](https://img.shields.io/badge/3D%20Engine-Three.js%20r128-black.svg)](https://threejs.org/)
 [![Perception: DeepLabv3+](https://img.shields.io/badge/Perception-DeepLabv3%2B%20MobileNetV2-orange.svg)]()
 [![Hydrodynamics: OpenDrift](https://img.shields.io/badge/Hydrodynamics-OpenDrift%20OpenOil-teal.svg)](https://opendrift.github.io/)
+[![Dataset: US SAR Imagery](https://img.shields.io/badge/Dataset-US%20SAR%20Imagery%20(704%20MB)-4285F4.svg?logo=google-drive&logoColor=white)](https://drive.google.com/drive/folders/1Kg-F1SyECqERm5-ZWVqvc_VuUIf3ZHBX?usp=sharing)
 
 **WAKE** is an AI-assisted maritime forensics and vessel attribution workstation designed to identify commercial ships responsible for illegal oily waste discharges ("magic pipe" dumps) across global waters. 
 
@@ -189,6 +190,35 @@ python -m ais_oil_attribution.cli `
   --ranking-method borda `
   --non-interactive `
   --output-dir results/sar_case
+```
+
+---
+
+### 🛰️ Sample Sentinel-1 SAR Radar Imagery Dataset (Google Drive)
+
+To test Mode 2 satellite perception without needing to acquire multi-gigabyte ESA Copernicus orbit granules, we provide a curated evaluation dataset of **22 Sentinel-1 SAR GeoTIFF scenes (~704 MB)** covering US coastal waters:
+
+🔗 **Google Drive Repository:** [**US Region SAR Images (Google Drive Folder)**](https://drive.google.com/drive/folders/1Kg-F1SyECqERm5-ZWVqvc_VuUIf3ZHBX?usp=sharing)
+
+| Dataset Attribute | Specification |
+| :--- | :--- |
+| **Satellite / Sensor** | Sentinel-1 C-Band Synthetic Aperture Radar (SAR) |
+| **Product Mode** | Interferometric Wide (IW), Ground Range Detected (GRD) |
+| **Scene Resolution** | $2048 \times 2048$ pixels (~10 m / pixel resolution) |
+| **Polarization Bands** | Dual-polarization (`VV` vertical + `VH` cross-polarization, float32) |
+| **Dataset Size** | 22 scenes (~32 MB per scene, ~704 MB total) |
+| **Geographic Coverage** | US Coastal waters (Pacific Northwest, Columbia River approach, etc.) |
+| **Geospatial Reference** | EPSG:4326 (WGS 84 geographic latitude/longitude) |
+
+#### Quick Run on Any Downloaded Scene:
+```powershell
+python -m ais_oil_attribution.cli `
+  --sar-image "path/to/00060.tif" `
+  --time "2024-08-06 08:00:00" `
+  --regime delayed `
+  --ranking-method borda `
+  --non-interactive `
+  --output-dir results/us_sar_case
 ```
 
 ---
