@@ -2,8 +2,6 @@
 
 import math
 import numpy as np
-from frechetdist import frdist
-from geopy.distance import geodesic
 from scipy.spatial.distance import directed_hausdorff
 
 
@@ -52,12 +50,23 @@ def resample_curve(curve_km: np.ndarray, num_points: int) -> np.ndarray:
     return np.column_stack([resampled_x, resampled_y])
 
 
+def haversine_km(p1: tuple, p2: tuple) -> float:
+    """Computes great circle distance between two (lat, lon) points in kilometers."""
+    lat1, lon1 = math.radians(p1[0]), math.radians(p1[1])
+    lat2, lon2 = math.radians(p2[0]), math.radians(p2[1])
+    dlat = lat2 - lat1
+    dlon = lon2 - lon1
+    a = math.sin(dlat / 2.0) ** 2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2.0) ** 2
+    c = 2.0 * math.atan2(math.sqrt(a), math.sqrt(1.0 - a))
+    return 6371.0 * c
+
+
 def hausdorff_km(track_latlon: np.ndarray, slick_latlon: np.ndarray) -> float:
     """
     Computes the symmetric Hausdorff distance in kilometers (§6.7).
 
     Finds the worst-case closest point pair using directed_hausdorff and computes
-    the exact geodesic Vincenty/WGS-84 distance for that pair.
+    the exact distance for that pair.
     """
     if len(track_latlon) == 0 or len(slick_latlon) == 0:
         return float("inf")
@@ -78,7 +87,7 @@ def hausdorff_km(track_latlon: np.ndarray, slick_latlon: np.ndarray) -> float:
         pt_t = (track_latlon[idx_t2, 0], track_latlon[idx_t2, 1])
         pt_s = (slick_latlon[idx_s2, 0], slick_latlon[idx_s2, 1])
 
-    return float(geodesic(pt_t, pt_s).kilometers)
+    return float(haversine_km(pt_t, pt_s))
 
 
 def discrete_frechet_distance(p: np.ndarray, q: np.ndarray) -> float:

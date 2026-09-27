@@ -79,6 +79,15 @@ class MultiSourceEnvironmentalManager:
             "ocean": "https://pae-paha.pacioos.hawaii.edu/thredds/dodsC/roms_hiig",
             "wind": "https://pae-paha.pacioos.hawaii.edu/thredds/dodsC/wrf_hi",
         },
+        "hycom_global": {
+            "ocean": "https://tds.hycom.org/thredds/dodsC/GLBy0.08/expt_93.0",
+        },
+        "hycom_gom": {
+            "ocean": "https://tds.hycom.org/thredds/dodsC/GOMu0.04/expt_90.1m000",
+        },
+        "noaa_gfs_winds": {
+            "wind": "https://nomads.ncep.noaa.gov/dods/gfs_0p25/gfs",
+        },
         "cmems_glorys_reanalysis": {
             "ocean_dataset_id": "cmems_mod_glo_phy_my_0.083deg_P1D-m",
         },
@@ -102,23 +111,31 @@ class MultiSourceEnvironmentalManager:
 
         # 1. Combined source (single file containing both ocean currents and wind)
         if self.combined_source:
-            reader = EnvironmentalReader().load_reader(self.combined_source)
+            source = self.combined_source
+            if source in self.KNOWN_PRESETS:
+                source = self.KNOWN_PRESETS[source].get("ocean") or self.KNOWN_PRESETS[source].get("wind") or source
+            reader = EnvironmentalReader().load_reader(source)
             readers_dict["readers"].append(reader)
             return readers_dict
 
         # 2. Ocean Current Reader
         if self.ocean_source:
-            if self.ocean_source.startswith("cmems_"):
+            source = self.ocean_source
+            if source in self.KNOWN_PRESETS:
+                source = self.KNOWN_PRESETS[source].get("ocean", source)
+            if str(source).startswith("cmems_"):
                 # Copernicus Marine Service dataset ID (added directly to OpenDrift simulation)
-                readers_dict["dataset_ids"].append(self.ocean_source)
+                readers_dict["dataset_ids"].append(source)
             else:
-                ocean_reader = EnvironmentalReader().load_reader(self.ocean_source)
+                ocean_reader = EnvironmentalReader().load_reader(source)
                 readers_dict["readers"].append(ocean_reader)
 
         # 3. Atmospheric Wind Reader
         if self.wind_source:
-            # Check for common wind variable name mappings (e.g. u10/v10 for ERA5 or uwnd/vwnd for NCEP)
-            wind_reader = EnvironmentalReader().load_reader(self.wind_source)
+            source = self.wind_source
+            if source in self.KNOWN_PRESETS:
+                source = self.KNOWN_PRESETS[source].get("wind", source)
+            wind_reader = EnvironmentalReader().load_reader(source)
             readers_dict["readers"].append(wind_reader)
 
         return readers_dict
