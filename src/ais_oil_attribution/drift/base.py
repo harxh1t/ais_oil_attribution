@@ -1,9 +1,11 @@
 """Drift model interface and abstraction."""
 
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 import numpy as np
 
 
@@ -17,6 +19,12 @@ class OriginEstimate:
     particles_final: np.ndarray  # (N, 2) array of (lat, lon)
     duration_hours: float
     note: str
+    origin_time: Optional[datetime] = None
+    convergence_details: Optional[Dict[str, Any]] = None
+    closest_approach_details: Optional[Dict[str, Any]] = None
+    ensemble_details: Optional[Dict[str, Any]] = None
+    coords_history: Optional[Tuple[np.ndarray, np.ndarray]] = None
+    times_history: Optional[Any] = None
 
 
 class DriftModel(ABC):

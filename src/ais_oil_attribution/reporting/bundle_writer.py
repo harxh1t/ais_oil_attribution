@@ -162,12 +162,56 @@ def write_investigation_bundle(
     }
 
     if regime_decision.get("regime") == "delayed" and origin_estimate is not None:
+        # If closest approach (Method 1) was not pre-computed, evaluate against top suspect vessel
+        if (
+            getattr(origin_estimate, "closest_approach_details", None) is None
+            and getattr(origin_estimate, "coords_history", None) is not None
+            and scores_df is not None
+            and not scores_df.empty
+        ):
+            try:
+                from ais_oil_attribution.drift.opendrift_backtrack import estimate_origin_by_closest_approach
+
+                top_cand = scores_df.iloc[0]
+                top_mmsi = top_cand.get("mmsi")
+                top_name = str(top_cand.get("vessel_name", "Top Candidate"))
+                cand_lat, cand_lon = None, None
+
+                if reconstructed_df is not None and not reconstructed_df.empty and "mmsi" in reconstructed_df.columns:
+                    v_track = reconstructed_df[reconstructed_df["mmsi"] == top_mmsi]
+                    if not v_track.empty:
+                        best_lat = getattr(origin_estimate, "best_guess_lat", float(input_data.get("lat", 0.0)))
+                        best_lon = getattr(origin_estimate, "best_guess_lon", float(input_data.get("lon", 0.0)))
+                        dists = (v_track["lat"] - best_lat) ** 2 + (v_track["lon"] - best_lon) ** 2
+                        closest_pt = v_track.iloc[int(np.argmin(dists.values))]
+                        cand_lat = float(closest_pt["lat"])
+                        cand_lon = float(closest_pt["lon"])
+
+                if cand_lat is None:
+                    cand_lat = float(input_data.get("lat", 0.0))
+                    cand_lon = float(input_data.get("lon", 0.0))
+
+                ca_details = estimate_origin_by_closest_approach(
+                    origin_estimate.coords_history,
+                    known_lat=cand_lat,
+                    known_lon=cand_lon,
+                    times=origin_estimate.times_history,
+                )
+                ca_details["candidate_name"] = top_name
+                origin_estimate.closest_approach_details = ca_details
+            except Exception:
+                pass
+
         attribution_json_data["origin_estimate"] = {
             "method": "opendrift_openoil_backtrack",
             "best_guess_lat": getattr(origin_estimate, "best_guess_lat", None),
             "best_guess_lon": getattr(origin_estimate, "best_guess_lon", None),
+            "origin_time": getattr(origin_estimate, "origin_time", None).isoformat() if getattr(origin_estimate, "origin_time", None) else None,
             "best_guess_region_geojson": getattr(origin_estimate, "best_guess_geojson", {}),
             "minimum_regret_region_geojson": getattr(origin_estimate, "minimum_regret_geojson", {}),
+            "convergence_details": getattr(origin_estimate, "convergence_details", {}),
+            "closest_approach_details": getattr(origin_estimate, "closest_approach_details", {}),
+            "ensemble_details": getattr(origin_estimate, "ensemble_details", {}),
             "note": getattr(origin_estimate, "note", ""),
         }
 
@@ -218,7 +262,7 @@ Metrics:
         input_data=input_data,
         regime_decision=regime_decision,
         scores_df=scores_df,
-        origin_estimate=attribution_json_data.get("origin_estimate"),
+        origin_estimate=origin_estimate,
         map_rel_path="maps/attribution_map.html",
         output_html_path=report_path,
     )
@@ -299,5 +343,110 @@ Metrics:
             import logging
 
             logging.getLogger(__name__).warning("Failed to generate case_experience.html: %s", e)
+
+    # 15. OpenDrift Visualizations & Animations (Forward, Backward, Diagnostic Graph)
+    if origin_estimate is not None:
+        try:
+            from ais_oil_attribution.drift.visualizations import (
+                plot_detailed_drift,
+                plot_origin_diagnostics,
+                generate_opendrift_animation,
+            )
+            from ais_oil_attribution.drift.opendrift_backtrack import simulate_forward_drift
+
+            figures_dir = bundle_dir / "figures"
+            figures_dir.mkdir(parents=True, exist_ok=True)
+
+            obs_lat = float(input_data.get("lat", 0.0))
+            obs_lon = float(input_data.get("lon", 0.0))
+            orig_lat = getattr(origin_estimate, "best_guess_lat", obs_lat)
+            orig_lon = getattr(origin_estimate, "best_guess_lon", obs_lon)
+
+            # 15a. Backward Drift Map & Spread Chart (Notebook Cell 28/33)
+            if getattr(origin_estimate, "coords_history", None) is not None:
+                plot_detailed_drift(
+                    coords_hist=origin_estimate.coords_history,
+                    times=origin_estimate.times_history,
+                    title="Backward Hindcast: Tracing Spill Back to Source",
+                    start_lat=obs_lat,
+                    start_lon=obs_lon,
+                    known_lat=orig_lat,
+                    known_lon=orig_lon,
+                    known_label="Discovered Origin",
+                    output_path=figures_dir / "backward_drift_map.png",
+                )
+
+                # 15b. Backward Drift Animation (GIF + HTML Player)
+                generate_opendrift_animation(
+                    coords_hist=origin_estimate.coords_history,
+                    times=origin_estimate.times_history,
+                    start_lat=obs_lat,
+                    start_lon=obs_lon,
+                    origin_lat=orig_lat,
+                    origin_lon=orig_lon,
+                    output_base_path=figures_dir / "backward_drift_animation",
+                    fps=4,
+                )
+
+            # 15c. Step 8 Best Origin Diagnostic Graph (Notebook Cell 35)
+            conv_details = getattr(origin_estimate, "convergence_details", None)
+            if conv_details:
+                plot_origin_diagnostics(
+                    convergence_res=conv_details,
+                    closest_approach_res=getattr(origin_estimate, "closest_approach_details", None),
+                    output_path=figures_dir / "best_origin_diagnostic_graph.png",
+                )
+
+            # 15d. Forward Drift Simulation (Notebook Cell 27/28)
+            spill_poly = [[float(p[0]), float(p[1])] for p in slick_coords] if slick_coords is not None else None
+            obs_time_raw = input_data.get("time_utc")
+            if isinstance(obs_time_raw, str):
+                try:
+                    obs_time_dt = datetime.strptime(obs_time_raw.replace(" UTC", ""), "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc)
+                except Exception:
+                    obs_time_dt = datetime.now(timezone.utc)
+            elif isinstance(obs_time_raw, datetime):
+                obs_time_dt = obs_time_raw
+            else:
+                obs_time_dt = datetime.now(timezone.utc)
+
+            fwd_coords, fwd_times = simulate_forward_drift(
+                lat=obs_lat,
+                lon=obs_lon,
+                start_time=obs_time_dt,
+                duration_hours=12.0,
+                config=config_dict,
+                spill_polygon=spill_poly,
+            )
+
+            # Forward Drift Map
+            plot_detailed_drift(
+                coords_hist=fwd_coords,
+                times=fwd_times,
+                title="Forward Prediction: Where the Spill Will Spread",
+                start_lat=obs_lat,
+                start_lon=obs_lon,
+                known_lat=None,
+                known_lon=None,
+                output_path=figures_dir / "forward_drift_map.png",
+            )
+
+            # Forward Drift Animation (GIF + HTML Player)
+            mean_fwd_lat = float(np.nanmean(fwd_coords[1][:, -1]))
+            mean_fwd_lon = float(np.nanmean(fwd_coords[0][:, -1]))
+            generate_opendrift_animation(
+                coords_hist=fwd_coords,
+                times=fwd_times,
+                start_lat=obs_lat,
+                start_lon=obs_lon,
+                origin_lat=mean_fwd_lat,
+                origin_lon=mean_fwd_lon,
+                output_base_path=figures_dir / "forward_drift_animation",
+                fps=4,
+            )
+
+        except Exception as err:
+            import logging
+            logging.getLogger(__name__).warning("Failed to generate OpenDrift figures: %s", err)
 
     return bundle_dir

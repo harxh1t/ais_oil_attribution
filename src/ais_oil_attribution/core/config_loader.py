@@ -1,4 +1,4 @@
-﻿"""Configuration loader for ais_oil_attribution."""
+"""Configuration loader for ais_oil_attribution."""
 
 import os
 from pathlib import Path

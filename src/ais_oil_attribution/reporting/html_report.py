@@ -143,15 +143,20 @@ def generate_html_report(
     # Drift section (if available)
     drift_section_html = ""
     if origin_estimate is not None:
-        best_lat = getattr(origin_estimate, "best_guess_lat", None)
-        best_lon = getattr(origin_estimate, "best_guess_lon", None)
+        if isinstance(origin_estimate, dict):
+            best_lat = origin_estimate.get("best_guess_lat")
+            best_lon = origin_estimate.get("best_guess_lon")
+        else:
+            best_lat = getattr(origin_estimate, "best_guess_lat", None)
+            best_lon = getattr(origin_estimate, "best_guess_lon", None)
+        best_str = f"{best_lat:.4f}&deg;, {best_lon:.4f}&deg;" if (best_lat is not None and best_lon is not None) else "Identified Origin Zone"
         drift_section_html = f"""
         <div class="card">
             <h2>Lagrangian Drift Backtracking (OpenDrift / OpenOil)</h2>
             <div class="grid grid-3">
                 <div class="kpi-box">
                     <div class="stat-label">Estimated Best Guess Origin</div>
-                    <div class="stat-val">{best_lat:.4f}&deg;, {best_lon:.4f}&deg;</div>
+                    <div class="stat-val">{best_str}</div>
                 </div>
                 <div class="kpi-box">
                     <div class="stat-label">Drift Displacement</div>

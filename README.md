@@ -1,7 +1,7 @@
-﻿# WAKE: AI-Assisted Satellite & AIS Maritime Oil-Spill Vessel Attribution System
+# WAKE: AI-Assisted Satellite & AIS Maritime Oil-Spill Vessel Attribution System
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue.svg)](https://www.python.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![License: Proprietary](https://img.shields.io/badge/License-Proprietary-red.svg)](LICENSE)
 [![Tests: 45 Passed](https://img.shields.io/badge/tests-45%20passed%20(100%25)-brightgreen.svg)]()
 [![CI: Passing](https://img.shields.io/badge/CI-GitHub%20Actions-brightgreen.svg)]()
 [![Three.js](https://img.shields.io/badge/3D%20Engine-Three.js%20r128-black.svg)](https://threejs.org/)
@@ -205,5 +205,5 @@ pytest -v
 ---
 
 ## ⚖️ License
-
-Distributed under the MIT License. See [LICENSE](LICENSE) for details.
+ 
+All rights reserved. This software is proprietary and confidential. See [LICENSE](LICENSE) for details.

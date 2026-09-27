@@ -1,0 +1,179 @@
+@import "tailwindcss";
+@import "./styles/tokens.css";
+
+@theme {
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-serif: 'Source Serif 4', Georgia, serif;
+  --font-sans: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --color-bg-void: var(--bg-void);
+  --color-bg-base: var(--bg-base);
+  --color-surface-1: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-surface-4: var(--surface-4);
+
+  --color-border-subtle: var(--border-subtle);
+  --color-border-default: var(--border-default);
+  --color-border-strong: var(--border-strong);
+
+  --color-violet-300: var(--violet-300);
+  --color-violet-400: var(--violet-400);
+  --color-violet-500: var(--violet-500);
+  --color-violet-600: var(--violet-600);
+  --color-violet-700: var(--violet-700);
+
+  --color-text-1: var(--text-1);
+  --color-text-2: var(--text-2);
+  --color-text-3: var(--text-3);
+  --color-text-disabled: var(--text-disabled);
+
+  --color-observed: var(--observed);
+  --color-derived: var(--derived);
+  --color-inferred: var(--inferred);
+
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-info: var(--info);
+}
+
+@layer base {
+  body {
+    background-color: var(--bg-void);
+    color: var(--text-2);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* Global minimum text size rule (min 12px everywhere) */
+  * {
+    min-height: 0;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Space Grotesk', sans-serif;
+    color: var(--text-1);
+    letter-spacing: -0.02em;
+  }
+
+  code, pre, .mono, .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .font-serif {
+    font-family: 'Source Serif 4', Georgia, serif;
+  }
+
+  ::selection {
+    background: rgba(79, 44, 255, 0.4);
+    color: var(--text-1);
+  }
+
+  :focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--bg-void), 0 0 0 4px var(--violet-300);
+  }
+
+  /* In-page navigation scroll-margin-top */
+  section[id] {
+    scroll-margin-top: calc(var(--header-h) + 16px);
+  }
+
+  /* Custom subtle scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--bg-void);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--surface-2);
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--surface-3);
+  }
+}
+
+/* Editorial prose styling for long-form narrative & why it matters */
+.prose-editorial {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 19px;
+  line-height: 1.7;
+  color: var(--text-2);
+  max-width: 68ch;
+}
+
+@media (max-width: 640px) {
+  .prose-editorial {
+    font-size: 17px;
+    line-height: 1.65;
+  }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Light Print Stylesheet */
+@media print {
+  @page {
+    margin: 1.5cm;
+    size: portrait;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #111827 !important;
+    font-size: 11pt !important;
+  }
+
+  /* Hide interactive controls, header navigation, buttons, footers */
+  header,
+  footer,
+  button,
+  .print-hidden,
+  .journey-footer,
+  .leaflet-control-container,
+  .no-print {
+    display: none !important;
+  }
+
+  /* Avoid page breaks inside tables and cards */
+  table,
+  tr,
+  td,
+  th,
+  .card,
+  .print-break-avoid {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Force high contrast text and light containers */
+  div, section, article {
+    background-color: transparent !important;
+    border-color: #d1d5db !important;
+    box-shadow: none !important;
+  }
+
+  * {
+    color: #111827 !important;
+  }
+}
+
