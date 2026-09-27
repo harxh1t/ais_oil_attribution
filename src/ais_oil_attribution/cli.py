@@ -16,7 +16,7 @@ import click
 @click.option("--regime", type=click.Choice(["auto", "contemporaneous", "delayed"], case_sensitive=False), default="auto", help="Analysis regime.")
 @click.option("--config", "config_path", type=click.Path(exists=True), default=None, help="Path to custom config.yaml.")
 @click.option("--oil-type", type=str, default=None, help="Oil type name for drift modeling (e.g. 'GENERIC DIESEL').")
-@click.option("--output-dir", type=click.Path(), default="results", help="Directory where investigation bundles are saved.")
+@click.option("--output-dir", type=click.Path(), default="pipeline_runs", help="Directory where investigation bundles are saved.")
 @click.option("--non-interactive", is_flag=True, default=False, help="Run without requiring interactive human confirmation.")
 @click.option("--ranking-method", type=click.Choice(["borda", "topsis", "llr"], case_sensitive=False), default="borda", help="Candidate ranking method (borda, topsis, llr).")
 @click.option("--enable-forward-fit", is_flag=True, default=False, help="Enable Longépé-style forward-fit trajectory recreation evidence channel.")
@@ -26,6 +26,10 @@ import click
 @click.option("--case-experience/--no-case-experience", "case_experience", default=True, help="Emit unified 4-stage case_experience.html output.")
 @click.option("--target-lat", type=float, default=None, help="Optional known/suspected origin latitude for Method 1 closest approach.")
 @click.option("--target-lon", type=float, default=None, help="Optional known/suspected origin longitude for Method 1 closest approach.")
+@click.option("--save-sar-images/--no-save-sar-images", "save_sar_images", default=True, help="Save processed DeepLabv3+ diagnostic images (preprocessed, mask, heatmap, overlay, summary).")
+@click.option("--sar-images-dir", "sar_images_dir", type=click.Path(), default=None, help="Directory where processed SAR diagnostic images are saved.")
+@click.option("--serve", is_flag=True, default=False, help="Launch local Uvicorn server on port 1644.")
+@click.option("--port", type=int, default=1644, help="Port to run the local server on (default: 1644).")
 def main(
     lat: Optional[float],
     lon: Optional[float],
@@ -46,14 +50,24 @@ def main(
     case_experience: bool,
     target_lat: Optional[float] = None,
     target_lon: Optional[float] = None,
+    save_sar_images: bool = True,
+    sar_images_dir: Optional[str] = None,
+    serve: bool = False,
+    port: int = 1644,
 ):
     """
     AIS + Satellite Oil-Spill Vessel Attribution System.
     Investigates marine oil pollution incidents by correlating AIS vessel tracks with observed slicks.
     Supports dual entry: coordinate input (--lat, --lon, --spread) or raw Sentinel-1 SAR image (--sar-image).
     """
+    if serve:
+        from ais_oil_attribution.server import start_server
+        start_server(host="0.0.0.0", port=port)
+        return
+
     from ais_oil_attribution.core.orchestrator import run_investigation
 
+    detection_res = None
     # If SAR image is provided, run DeepLabv3+ perception stage first
     if sar_image_path:
         click.echo("=======================================================")
@@ -62,10 +76,13 @@ def main(
         click.echo(f"Ingesting raw Sentinel-1 SAR GeoTIFF: {sar_image_path}")
         from ais_oil_attribution.perception.deeplabv3_detector import detect_oil_slick_from_sar
 
+        sar_out_dir = Path(sar_images_dir) if sar_images_dir else (Path(output_dir) / "sar_processed")
         detection_res = detect_oil_slick_from_sar(
             tiff_path=sar_image_path,
             weights_path=weights_path,
             output_geojson_path=spill_geojson_path,
+            output_images_dir=sar_out_dir,
+            save_processed_images=save_sar_images,
         )
         spill_geojson_path = detection_res["geojson_path"]
         primary = detection_res.get("primary_slick")
@@ -82,6 +99,13 @@ def main(
                 spread_km = primary["spread_km"]
         else:
             click.echo("  • Notice: No slicks detected in SAR imagery.")
+
+        proc_imgs = detection_res.get("processed_images", {})
+        if proc_imgs:
+            click.echo("  • DeepLabv3+ Processed Diagnostic Images Generated:")
+            for img_name in ["preprocessed", "mask", "probability_heatmap", "overlay", "summary"]:
+                if img_name in proc_imgs:
+                    click.echo(f"    - {img_name}: {proc_imgs[img_name]}")
 
     # Validation for coordinate mode
     if lat is None or lon is None:
@@ -110,6 +134,7 @@ def main(
             emit_case_experience=case_experience,
             target_lat=target_lat,
             target_lon=target_lon,
+            sar_detection=detection_res,
         )
         report_path = investigation_result.get("report_path")
         workstation_path = investigation_result.get("workstation_path")
@@ -141,16 +166,34 @@ def main(
                 click.echo("\n--- OpenDrift Hydrodynamic Visualizations (Light Mode) ---")
                 for fig_name, label in [
                     ("backward_drift_map.png", "Backward Drift Map (PNG)"),
-                    ("backward_drift_animation.gif", "Backward Animation (GIF)"),
+                    ("backtrack_spread_chart.png", "Backward Spread Chart (PNG)"),
+                    ("backward_drift_animation.mp4", "Backward Drift Animation (MP4)"),
+                    ("backward_drift_animation.gif", "Backward Drift Animation (GIF)"),
                     ("backward_drift_animation.html", "Backward Animation Player (HTML)"),
                     ("forward_drift_map.png", "Forward Prediction Map (PNG)"),
-                    ("forward_drift_animation.gif", "Forward Animation (GIF)"),
+                    ("forward_spread_chart.png", "Forward Spread Chart (PNG)"),
+                    ("forward_drift_animation.mp4", "Forward Drift Animation (MP4)"),
+                    ("forward_drift_animation.gif", "Forward Drift Animation (GIF)"),
                     ("forward_drift_animation.html", "Forward Animation Player (HTML)"),
                     ("best_origin_diagnostic_graph.png", "Origin Diagnostics Graph (PNG)"),
                 ]:
                     f_file = figures_dir / fig_name
                     if f_file.exists():
                         click.echo(f"  • {label}: {f_file}")
+
+            sar_proc_dir = Path(bundle_path_str) / "sar_processed"
+            if sar_proc_dir.exists():
+                click.echo("\n--- DeepLabv3+ SAR Perception Deliverables ---")
+                for img_name, label in [
+                    ("sar_preprocessed.png", "Preprocessed SAR (Dual-Pol VV/VH)"),
+                    ("probability_heatmap.png", "Probability Heatmap [0-1]"),
+                    ("segmentation_mask.png", "Binary Segmentation Mask"),
+                    ("segmentation_overlay.png", "Forensic Slick Overlay"),
+                    ("detection_summary.png", "Multi-Panel Diagnostic Summary Card"),
+                ]:
+                    img_f = sar_proc_dir / img_name
+                    if img_f.exists():
+                        click.echo(f"  • {label}: {img_f}")
 
         click.echo("=======================================================\n")
     except Exception as e:

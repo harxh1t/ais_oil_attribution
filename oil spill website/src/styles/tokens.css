@@ -1,0 +1,76 @@
+:root {
+  /* 4-Color Vibrant Aqua / Cyan / Teal Palette (From uploaded image.png, dark colors shifted 5% lighter) */
+  --ocean-1: #00526E; /* Darkest Marine Teal shifted 5% lighter (was #004862) */
+  --ocean-2: #007D9F; /* Deep Marine Teal shifted 5% lighter (was #007096) */
+  --ocean-3: #00A7CC; /* Swatch 3: Ocean Cerulean Teal */
+  --ocean-4: #3ED4EB; /* Swatch 2: Vivid Aqua Turquoise */
+  --ocean-5: #8FEFF6; /* Swatch 1: Bright Ice Aqua (Lightest) */
+
+  /* Palette tints for large components / surfaces (Lighter shades for bigger components) */
+  --ocean-5-tint: #E6FAFC;   /* Very soft ice aqua tint */
+  --ocean-5-light: #D4F6F9;  /* Soft light ice aqua surface */
+  --ocean-5-card: #D4F6F9;   /* Light aqua for big cards */
+  --ocean-5-nested: #BAEFF5; /* Nested areas */
+
+  /* Neutral & Base Surfaces: Big components use lighter shades */
+  --bg-void: transparent;
+  --bg-base: transparent;
+  --surface-1: #D4F6F9;      /* Large component cards / modals / sections (Light ice aqua) */
+  --surface-2: #BAEFF5;      /* Medium inner areas / subpanels / readouts (Nested aqua) */
+  --surface-3: #8FEFF6;      /* Active / hover states / progress backgrounds (Swatch 1) */
+  --surface-4: #3ED4EB;      /* Swatch 2 (Vivid Aqua) */
+
+  /* Aqua / Teal Borders (shifted 5% lighter) */
+  --border-subtle: rgba(0, 82, 110, 0.16);
+  --border-default: rgba(0, 82, 110, 0.28);
+  --border-strong: #007D9F;
+
+  /* Primary accents from palette */
+  --primary-50: #E6FAFC;
+  --primary-100: #D4F6F9;
+  --primary-300: #3ED4EB;
+  --primary-500: #00A7CC;
+  --primary-600: #007D9F;
+  --primary-700: #00526E;
+
+  /* Aliases for legacy tokens mapped to aqua palette */
+  --violet-300: var(--ocean-4);
+  --violet-400: var(--ocean-3);
+  --violet-500: var(--ocean-2);
+  --violet-600: var(--ocean-2);
+  --violet-700: var(--ocean-1);
+  --indigo-600: var(--ocean-2);
+  --pink-400: var(--inferred);
+  --teal-400: var(--observed);
+  --amber-400: var(--derived);
+
+  --gradient-primary: var(--ocean-2);
+  --glow-violet: transparent;
+  --glow-wine: transparent;
+  --glow: transparent;
+
+  /* Text on light components: DARK COLOURED TEXT (Shifted 5% towards lighter) */
+  --text-1: #00435C;  /* Darkest marine teal (5% lighter than #00384D, 8.9:1 AAA contrast) */
+  --text-2: #005B7D;  /* Deep teal for body copy (5% lighter than #004F6B, 6.3:1 AA contrast) */
+  --text-3: #017A9F;  /* Medium ocean teal for labels / secondary text */
+  --text-disabled: #4BBAD0;
+
+  /* Text on dark components: LIGHT COLOURED TEXT */
+  --text-light: #FFFFFF;
+  --text-light-subtle: #D4F6F9;
+
+  /* Evidence classes — preserved semantics with aqua harmony */
+  --observed: #026651;   /* Deep sea emerald, solid line */
+  --derived: #8F5800;    /* Amber ochre, dashed line */
+  --inferred: #851C4A;   /* Deep magenta berry, dotted line */
+
+  /* Status */
+  --success: #0C6546;
+  --warning: #945705;
+  --danger: #9B1C1C;
+  --info: #00A7CC;
+
+  --header-h: 64px;
+  --page-max: 1440px;
+  --page-pad: 24px;
+}
