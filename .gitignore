@@ -57,3 +57,7 @@ results/test_defender_case/
 results/test_gulf_maggie_a/
 models/
 
+# Large imagery datasets
+22 Zenodo tif images/
+*.tif
+*.tiff
