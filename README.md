@@ -16,6 +16,13 @@ It bridges the gap between **spaceborne radar perception** and **court-admissibl
 
 **Repository:** [https://github.com/harxh1t/ais_oil_attribution.git](https://github.com/harxh1t/ais_oil_attribution.git)
 
+<div align="center">
+
+| <span style="color:#7C3AED; font-weight:bold; font-size:24px;">│</span> <b style="font-size:26px; color:#FFFFFF; font-family:monospace;">8</b><br/><span style="font-size:10px; color:#9E98C7; letter-spacing:1.5px; font-weight:600;">WORKFLOW STAGES</span> | <span style="color:#7C3AED; font-weight:bold; font-size:24px;">│</span> <b style="font-size:26px; color:#FFFFFF; font-family:monospace;">3</b><br/><span style="font-size:10px; color:#9E98C7; letter-spacing:1.5px; font-weight:600;">EVIDENCE CLASSES</span> | <span style="color:#7C3AED; font-weight:bold; font-size:24px;">│</span> <b style="font-size:26px; color:#FFFFFF; font-family:monospace;">4+1</b><br/><span style="font-size:10px; color:#9E98C7; letter-spacing:1.5px; font-weight:600;">METRICS + BORDA</span> | <span style="color:#7C3AED; font-weight:bold; font-size:24px;">│</span> <b style="font-size:26px; color:#FFFFFF; font-family:monospace;">59/59</b><br/><span style="font-size:10px; color:#9E98C7; letter-spacing:1.5px; font-weight:600;">FORENSIC TESTS PASSING</span> |
+| :---: | :---: | :---: | :---: |
+
+</div>
+
 ---
 
 ## 🌊 The Problem: Why Attribution is Hard
@@ -183,6 +190,42 @@ python -m ais_oil_attribution.cli `
   --non-interactive `
   --output-dir results/sar_case
 ```
+
+---
+
+## 📂 Forensic Investigation Case Studies
+
+WAKE includes four pre-configured reference cases spanning high-density coastal corridors, open-ocean drift regimes, and raw spaceborne radar computer vision:
+
+### 🚢 Case 01: Santa Monica Bay / Malibu (`WAKE-2024-0806-MLB`)
+* **Incident Profile:** 9.2-hour delayed slick advecting across the Santa Monica Basin commercial traffic lane.
+* **Observation Centroid:** `34.0169°N, 118.6631°W` (Sentinel-1 SAR IW acquisition at 01:50:00 UTC).
+* **Lagrangian Origin Hindcast:** Traced back to release epoch `2024-08-05 16:40:00 UTC` at `34.0080°N, 118.7310°W` with a 95% confidence error ellipse ($a = 4.4\text{ km}, b = 2.4\text{ km}$).
+* **Slick Morphology:** Elongated `11.6 km` plume covering `4.7 km²` aligned along $100^\circ$ bearing.
+* **Attribution Finding:** 6 candidate ships evaluated. **`MV Meridian Crest`** (Eastbound container ship) identified as Rank 1 culprit ($\text{DCPA} = 1.8\text{ km}$, $\text{TCPA} = +14\text{ min}$, $97\%$ observed AIS continuity, 18/20 Borda points). Runner-up `MV Pacific Lantern` exhibited a 38-minute deliberate AIS transponder blackout across the discharge window.
+
+---
+
+### 🌉 Case 02: San Francisco Offshore Traffic Separation Scheme
+* **Incident Profile:** Complex multi-vessel crossing within the Gulf of the Farallones Marine Sanctuary approach.
+* **Observation Centroid:** `37.7800°N, 122.6500°W` (Spread: $8.0\text{ km}$).
+* **Environmental Forcing:** Coastal California upwelling current ($0.45\text{ m/s}$) + prevailing NW offshore winds ($14\text{ kts}$).
+* **Methodology:** Automated regime classification identifies **Delayed Drift Regime** ($>1\text{ h}$ dispersion). Initiates OpenDrift particle reversal, queries NOAA MarineCadastre GeoParquet archives, and generates 3D WebGL space-time tubes.
+
+---
+
+### ⛽ Case 03: Galveston Bay / Gulf of Mexico Deepwater Corridor
+* **Incident Profile:** Offshore petrochemical shipping corridor with extreme decoy vessel density and oil rig proximity.
+* **Observation Centroid:** `28.9500°N, 94.7500°W` (Spread: $6.5\text{ km}$).
+* **Safety & Integrity Checks:** Automatically triggers the **Deepwater Horizon & Natural Seep Proximity Filter**, distinguishing active ship engine discharges from known subsea hydrocarbon seeps and stationary platform infrastructure.
+
+---
+
+### 🛰️ Case 04: Red Sea Satellite Radar GeoTIFF (Mode 2 Perception)
+* **Incident Profile:** Unassisted end-to-end computer vision inference directly on raw spaceborne Synthetic Aperture Radar imagery.
+* **Input Scene:** Sentinel-1 IW GRD GeoTIFF (`Sample1.tif`, $50\text{ m}$ spatial resolution).
+* **Perception Engine:** Pre-trained **DeepLabv3+ (MobileNetV2 backbone)** calibrated for low-backscatter capillary wave dampening.
+* **Detection Outcome:** 5 distinct discharge slicks segmented and georeferenced; principal slick centroid localized to `20.1323°N, 38.2116°E` with $3.79\text{ km}$ spread, automatically vectorizing polygons into `Sample1_detection.geojson` without manual coordinate entry.
 
 ---
 
