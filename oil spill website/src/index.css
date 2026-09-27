@@ -1,0 +1,215 @@
+@import "tailwindcss";
+@import "./styles/tokens.css";
+
+@theme {
+  --font-heading: Arial, Helvetica, sans-serif;
+  --font-display: Arial, Helvetica, sans-serif;
+  --font-subheading: Arial, Helvetica, sans-serif;
+  --font-serif: Arial, Helvetica, sans-serif;
+  --font-sans: Arial, Helvetica, sans-serif;
+  --font-paragraph: Arial, Helvetica, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --color-bg-void: var(--bg-void);
+  --color-bg-base: var(--bg-base);
+  --color-surface-1: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-surface-4: var(--surface-4);
+
+  --color-ocean-1: var(--ocean-1);
+  --color-ocean-2: var(--ocean-2);
+  --color-ocean-3: var(--ocean-3);
+  --color-ocean-4: var(--ocean-4);
+  --color-ocean-5: var(--ocean-5);
+
+  --color-border-subtle: var(--border-subtle);
+  --color-border-default: var(--border-default);
+  --color-border-strong: var(--border-strong);
+
+  --color-primary-50: var(--primary-50);
+  --color-primary-100: var(--primary-100);
+  --color-primary-300: var(--primary-300);
+  --color-primary-500: var(--primary-500);
+  --color-primary-600: var(--primary-600);
+  --color-primary-700: var(--primary-700);
+
+  --color-violet-300: var(--primary-300);
+  --color-violet-400: var(--primary-500);
+  --color-violet-500: var(--primary-500);
+  --color-violet-600: var(--primary-600);
+  --color-violet-700: var(--primary-700);
+
+  --color-text-1: var(--text-1);
+  --color-text-2: var(--text-2);
+  --color-text-3: var(--text-3);
+  --color-text-disabled: var(--text-disabled);
+
+  --color-observed: var(--observed);
+  --color-derived: var(--derived);
+  --color-inferred: var(--inferred);
+
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-info: var(--info);
+}
+
+@layer base {
+  body {
+    background-color: #031422;
+    color: var(--text-2);
+    font-family: Arial, Helvetica, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    font-size: 14px;
+    line-height: 1.5;
+    position: relative;
+  }
+
+  #root {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Global minimum text size rule (min 12px everywhere) */
+  * {
+    min-height: 0;
+  }
+
+  /* Headings & Subheadings: Arial and sans-serif */
+  h1, h2, h3, h4, h5, h6, .font-heading, .heading, .subheading, .font-subheading, .subtitle {
+    font-family: Arial, Helvetica, sans-serif !important;
+    color: var(--text-1);
+    letter-spacing: -0.015em;
+  }
+
+  /* Paragraphs & body copy: Arial and sans-serif */
+  p, .paragraph, .font-paragraph, article p, section p, .prose p {
+    font-family: Arial, Helvetica, sans-serif !important;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* Controls, Buttons, Nav, Labels, Tables: Arial and sans-serif */
+  input, select, textarea, button, nav, label, th, td, dt, dd, caption, .caption {
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  /* Monospace metrics */
+  code, pre, .mono, .font-mono {
+    font-family: 'JetBrains Mono', monospace !important;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .font-serif {
+    font-family: Arial, Helvetica, sans-serif !important;
+  }
+
+  .font-sans {
+    font-family: Arial, Helvetica, sans-serif !important;
+  }
+
+  ::selection {
+    background: var(--primary-100);
+    color: var(--text-1);
+  }
+
+  :focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--bg-base), 0 0 0 4px var(--primary-500);
+  }
+
+  /* In-page navigation scroll-margin-top */
+  section[id] {
+    scroll-margin-top: calc(var(--header-h) + 16px);
+  }
+
+  /* Custom subtle scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--bg-void);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--surface-3);
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--surface-4);
+  }
+}
+
+/* Editorial prose styling: Arial, Helvetica, sans-serif */
+.prose-editorial {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--text-2);
+  max-width: 68ch;
+}
+
+@media (max-width: 640px) {
+  .prose-editorial {
+    font-size: 15px;
+    line-height: 1.6;
+  }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Light Print Stylesheet */
+@media print {
+  @page {
+    margin: 1.5cm;
+    size: portrait;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #111827 !important;
+    font-size: 11pt !important;
+  }
+
+  header,
+  footer,
+  button,
+  .print-hidden,
+  .journey-footer,
+  .leaflet-control-container,
+  .no-print {
+    display: none !important;
+  }
+
+  table,
+  tr,
+  td,
+  th,
+  .card,
+  .print-break-avoid {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  div, section, article {
+    background-color: transparent !important;
+    border-color: #d1d5db !important;
+    box-shadow: none !important;
+  }
+
+  * {
+    color: #111827 !important;
+  }
+}

@@ -370,7 +370,8 @@ def backtrack_origin(
 
             # Seed from authentic polygon if provided, else seed cluster
             if spill_geojson:
-                o.seed_from_geojson(spill_geojson)
+                gj_content = Path(spill_geojson).read_text(encoding="utf-8") if Path(spill_geojson).is_file() else spill_geojson
+                o.seed_from_geojson(gj_content)
             elif spill_polygon and len(spill_polygon) >= 3:
                 poly_feature = {
                     "type": "Feature",

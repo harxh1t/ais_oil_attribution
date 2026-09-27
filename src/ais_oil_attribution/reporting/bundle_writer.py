@@ -62,6 +62,7 @@ def write_investigation_bundle(
     slick_coords: np.ndarray | None,
     origin_estimate: Any | None,
     output_base_dir: Path,
+    sar_detection: dict[str, Any] | None = None,
 ) -> Path:
     """
     Writes the complete reproducible investigation bundle to disk (§4, §20).
@@ -215,6 +216,30 @@ def write_investigation_bundle(
             "note": getattr(origin_estimate, "note", ""),
         }
 
+    # SAR perception images & metadata
+    if sar_detection and sar_detection.get("processed_images"):
+        sar_dir = bundle_dir / "sar_processed"
+        sar_dir.mkdir(parents=True, exist_ok=True)
+        import shutil
+
+        sar_processed_rel = {}
+        for img_name, img_path_str in sar_detection["processed_images"].items():
+            if img_name == "output_dir":
+                continue
+            src_p = Path(img_path_str)
+            if src_p.exists():
+                dest_p = sar_dir / src_p.name
+                if src_p.resolve() != dest_p.resolve():
+                    shutil.copy2(src_p, dest_p)
+                sar_processed_rel[img_name] = f"sar_processed/{src_p.name}"
+
+        attribution_json_data["sar_perception"] = {
+            "num_slicks_detected": sar_detection.get("num_slicks_detected", 0),
+            "primary_slick": sar_detection.get("primary_slick"),
+            "acquisition_time_hint": sar_detection.get("acquisition_time_hint"),
+            "processed_images": sar_processed_rel,
+        }
+
     (bundle_dir / "attribution.json").write_text(json.dumps(attribution_json_data, indent=2, default=str), encoding="utf-8")
 
     # 6. sources.md
@@ -265,6 +290,7 @@ Metrics:
         origin_estimate=origin_estimate,
         map_rel_path="maps/attribution_map.html",
         output_html_path=report_path,
+        sar_detection=sar_detection,
     )
 
     # 10. Additional Forensic Workstation Dashboard (Senior UX Audit Preview)
@@ -344,26 +370,27 @@ Metrics:
 
             logging.getLogger(__name__).warning("Failed to generate case_experience.html: %s", e)
 
-    # 15. OpenDrift Visualizations & Animations (Forward, Backward, Diagnostic Graph)
-    if origin_estimate is not None:
-        try:
-            from ais_oil_attribution.drift.visualizations import (
-                plot_detailed_drift,
-                plot_origin_diagnostics,
-                generate_opendrift_animation,
-            )
-            from ais_oil_attribution.drift.opendrift_backtrack import simulate_forward_drift
+    # 15. OpenDrift Visualizations & MP4 Animations (Forward, Backward, Diagnostic Graph)
+    try:
+        from ais_oil_attribution.drift.visualizations import (
+            plot_detailed_drift,
+            plot_cloud_spread_chart,
+            plot_origin_diagnostics,
+            generate_opendrift_animation,
+        )
+        from ais_oil_attribution.drift.opendrift_backtrack import simulate_forward_drift
 
-            figures_dir = bundle_dir / "figures"
-            figures_dir.mkdir(parents=True, exist_ok=True)
+        figures_dir = bundle_dir / "figures"
+        figures_dir.mkdir(parents=True, exist_ok=True)
 
-            obs_lat = float(input_data.get("lat", 0.0))
-            obs_lon = float(input_data.get("lon", 0.0))
-            orig_lat = getattr(origin_estimate, "best_guess_lat", obs_lat)
-            orig_lon = getattr(origin_estimate, "best_guess_lon", obs_lon)
+        obs_lat = float(input_data.get("lat", 0.0))
+        obs_lon = float(input_data.get("lon", 0.0))
+        orig_lat = getattr(origin_estimate, "best_guess_lat", obs_lat) if origin_estimate else obs_lat
+        orig_lon = getattr(origin_estimate, "best_guess_lon", obs_lon) if origin_estimate else obs_lon
 
-            # 15a. Backward Drift Map & Spread Chart (Notebook Cell 28/33)
-            if getattr(origin_estimate, "coords_history", None) is not None:
+        # 15a & 15b. Backward Drift Map, Spread Chart & MP4 Animation
+        if origin_estimate is not None and getattr(origin_estimate, "coords_history", None) is not None:
+            try:
                 plot_detailed_drift(
                     coords_hist=origin_estimate.coords_history,
                     times=origin_estimate.times_history,
@@ -375,8 +402,22 @@ Metrics:
                     known_label="Discovered Origin",
                     output_path=figures_dir / "backward_drift_map.png",
                 )
+            except Exception as e_bmap:
+                import logging
+                logging.getLogger(__name__).warning("Failed to render backward drift map: %s", e_bmap)
 
-                # 15b. Backward Drift Animation (GIF + HTML Player)
+            try:
+                plot_cloud_spread_chart(
+                    coords_hist=origin_estimate.coords_history,
+                    times=origin_estimate.times_history,
+                    title="Particle Convergence Over Time",
+                    output_path=figures_dir / "backtrack_spread_chart.png",
+                )
+            except Exception as e_bspread:
+                import logging
+                logging.getLogger(__name__).warning("Failed to render backtrack spread chart: %s", e_bspread)
+
+            try:
                 generate_opendrift_animation(
                     coords_hist=origin_estimate.coords_history,
                     times=origin_estimate.times_history,
@@ -385,31 +426,40 @@ Metrics:
                     origin_lat=orig_lat,
                     origin_lon=orig_lon,
                     output_base_path=figures_dir / "backward_drift_animation",
-                    fps=4,
+                    fps=5,
                 )
+            except Exception as e_banim:
+                import logging
+                logging.getLogger(__name__).warning("Failed to render backward MP4 animation: %s", e_banim)
 
-            # 15c. Step 8 Best Origin Diagnostic Graph (Notebook Cell 35)
+        # 15c. Step 8 Best Origin Diagnostic Graph
+        if origin_estimate is not None:
             conv_details = getattr(origin_estimate, "convergence_details", None)
             if conv_details:
-                plot_origin_diagnostics(
-                    convergence_res=conv_details,
-                    closest_approach_res=getattr(origin_estimate, "closest_approach_details", None),
-                    output_path=figures_dir / "best_origin_diagnostic_graph.png",
-                )
-
-            # 15d. Forward Drift Simulation (Notebook Cell 27/28)
-            spill_poly = [[float(p[0]), float(p[1])] for p in slick_coords] if slick_coords is not None else None
-            obs_time_raw = input_data.get("time_utc")
-            if isinstance(obs_time_raw, str):
                 try:
-                    obs_time_dt = datetime.strptime(obs_time_raw.replace(" UTC", ""), "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc)
-                except Exception:
-                    obs_time_dt = datetime.now(timezone.utc)
-            elif isinstance(obs_time_raw, datetime):
-                obs_time_dt = obs_time_raw
-            else:
-                obs_time_dt = datetime.now(timezone.utc)
+                    plot_origin_diagnostics(
+                        convergence_res=conv_details,
+                        closest_approach_res=getattr(origin_estimate, "closest_approach_details", None),
+                        output_path=figures_dir / "best_origin_diagnostic_graph.png",
+                    )
+                except Exception as e_diag:
+                    import logging
+                    logging.getLogger(__name__).warning("Failed to render origin diagnostic graph: %s", e_diag)
 
+        # 15d. Forward Drift Simulation, Spread Chart & MP4 Animation (Always generated)
+        spill_poly = [[float(p[0]), float(p[1])] for p in slick_coords] if slick_coords is not None else None
+        obs_time_raw = input_data.get("time_utc")
+        if isinstance(obs_time_raw, str):
+            try:
+                obs_time_dt = datetime.strptime(obs_time_raw.replace(" UTC", ""), "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc)
+            except Exception:
+                obs_time_dt = datetime.now(timezone.utc)
+        elif isinstance(obs_time_raw, datetime):
+            obs_time_dt = obs_time_raw
+        else:
+            obs_time_dt = datetime.now(timezone.utc)
+
+        try:
             fwd_coords, fwd_times = simulate_forward_drift(
                 lat=obs_lat,
                 lon=obs_lon,
@@ -420,33 +470,57 @@ Metrics:
             )
 
             # Forward Drift Map
-            plot_detailed_drift(
-                coords_hist=fwd_coords,
-                times=fwd_times,
-                title="Forward Prediction: Where the Spill Will Spread",
-                start_lat=obs_lat,
-                start_lon=obs_lon,
-                known_lat=None,
-                known_lon=None,
-                output_path=figures_dir / "forward_drift_map.png",
-            )
+            try:
+                plot_detailed_drift(
+                    coords_hist=fwd_coords,
+                    times=fwd_times,
+                    title="Forward Prediction: Where the Spill Will Spread",
+                    start_lat=obs_lat,
+                    start_lon=obs_lon,
+                    known_lat=None,
+                    known_lon=None,
+                    output_path=figures_dir / "forward_drift_map.png",
+                )
+            except Exception as e_fmap:
+                import logging
+                logging.getLogger(__name__).warning("Failed to render forward drift map: %s", e_fmap)
 
-            # Forward Drift Animation (GIF + HTML Player)
-            mean_fwd_lat = float(np.nanmean(fwd_coords[1][:, -1]))
-            mean_fwd_lon = float(np.nanmean(fwd_coords[0][:, -1]))
-            generate_opendrift_animation(
-                coords_hist=fwd_coords,
-                times=fwd_times,
-                start_lat=obs_lat,
-                start_lon=obs_lon,
-                origin_lat=mean_fwd_lat,
-                origin_lon=mean_fwd_lon,
-                output_base_path=figures_dir / "forward_drift_animation",
-                fps=4,
-            )
+            # Forward Spread Chart
+            try:
+                plot_cloud_spread_chart(
+                    coords_hist=fwd_coords,
+                    times=fwd_times,
+                    title="Forward Prediction: Particle Cloud Spread Over Time",
+                    output_path=figures_dir / "forward_spread_chart.png",
+                )
+            except Exception as e_fspread:
+                import logging
+                logging.getLogger(__name__).warning("Failed to render forward spread chart: %s", e_fspread)
 
-        except Exception as err:
+            # Forward Drift MP4 Animation
+            try:
+                mean_fwd_lat = float(np.nanmean(fwd_coords[1][:, -1]))
+                mean_fwd_lon = float(np.nanmean(fwd_coords[0][:, -1]))
+                generate_opendrift_animation(
+                    coords_hist=fwd_coords,
+                    times=fwd_times,
+                    start_lat=obs_lat,
+                    start_lon=obs_lon,
+                    origin_lat=mean_fwd_lat,
+                    origin_lon=mean_fwd_lon,
+                    output_base_path=figures_dir / "forward_drift_animation",
+                    fps=5,
+                )
+            except Exception as e_fanim:
+                import logging
+                logging.getLogger(__name__).warning("Failed to render forward MP4 animation: %s", e_fanim)
+
+        except Exception as e_fwd:
             import logging
-            logging.getLogger(__name__).warning("Failed to generate OpenDrift figures: %s", err)
+            logging.getLogger(__name__).warning("Failed to simulate forward drift: %s", e_fwd)
+
+    except Exception as err:
+        import logging
+        logging.getLogger(__name__).warning("Failed to initialize OpenDrift visualizations: %s", err)
 
     return bundle_dir
