@@ -121,6 +121,11 @@ All data is simulated; all vessels fictional.
         mmsi: v.mmsi,
         type: v.type,
         flag: v.flag,
+        track: (v.track || []).map((pt) => ({
+          lat: pt.lat,
+          lon: pt.lon,
+          timestamp: pt.t || (pt.timestampMs ? new Date(pt.timestampMs).toISOString() : ''),
+        })),
         metrics: {
           dcpaKm: v.dcpa,
           tcpaMinutes: v.tcpa,
