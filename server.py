@@ -1,5 +1,6 @@
-"""Entrypoint to launch the WAKE Local Engine FastAPI/Uvicorn server on port 1644."""
+"""Entrypoint to launch the WAKE Local Engine FastAPI/Uvicorn server on port 8000."""
 
+import os
 import sys
 from pathlib import Path
 
@@ -11,4 +12,5 @@ if str(src_dir) not in sys.path:
 from ais_oil_attribution.server import start_server, app
 
 if __name__ == "__main__":
-    start_server(host="0.0.0.0", port=1644)
+    port = int(os.environ.get("PORT", 8000))
+    start_server(host="0.0.0.0", port=port)
