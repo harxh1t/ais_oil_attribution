@@ -1,0 +1,32 @@
+[
+  {
+    "mmsi":354128000,
+    "vessel_name":"PACIFIC GLORY",
+    "frechet_km":22.5582608091,
+    "dcpa_km":0.0,
+    "tcpa_minutes":0.0,
+    "coverage_completeness":0.1037344398,
+    "rank_dcpa":1,
+    "rank_frechet":1,
+    "rank_tcpa":1,
+    "borda_score":6,
+    "final_rank":1,
+    "confidence_score":0.5518672199,
+    "confidence_label":"MEDIUM"
+  },
+  {
+    "mmsi":219014000,
+    "vessel_name":"MAERSK NEVADA",
+    "frechet_km":27.6659203702,
+    "dcpa_km":19.471988478,
+    "tcpa_minutes":-9.0,
+    "coverage_completeness":0.1037344398,
+    "rank_dcpa":2,
+    "rank_frechet":2,
+    "rank_tcpa":2,
+    "borda_score":3,
+    "final_rank":2,
+    "confidence_score":0.27593361,
+    "confidence_label":"LOW"
+  }
+]

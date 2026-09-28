@@ -15,7 +15,6 @@ import urllib.request
 import numpy as np
 import pandas as pd
 from PIL import Image
-import cv2
 import matplotlib
 matplotlib.use("Agg")  # Headless rendering
 import matplotlib.pyplot as plt
@@ -661,16 +660,18 @@ def generate_opendrift_animation(
     output_base_path: Union[str, Path],
     fps: int = 5,
 ) -> Tuple[Path, Path]:
-    """Renders the authentic Matplotlib simulation animation in Light Mode:
-    - Generates MP4 video (H.264 / MPEG-4 Part 14, hardware-accelerated playback).
-    - Generates companion animated GIF.
-    - Generates lightweight HTML5 video player widget.
+    """Renders the authentic Matplotlib simulation animation exactly as OpenDrift's
+    o.animation() produces in Light Mode:
+    - Generates animated GIF (viewable natively on all platforms).
+    - Generates interactive HTML player widget via Matplotlib's native animation.to_jshtml().
     """
     lons, lats = coords_hist
     if not isinstance(times, pd.DatetimeIndex):
         times = pd.DatetimeIndex(times)
 
     n_particles, n_times = lons.shape
+
+    matplotlib.rcParams["animation.embed_limit"] = 60.0
 
     # Set up matplotlib figure in Light Mode
     fig, ax = plt.subplots(figsize=(8.5, 6.5), dpi=120)
@@ -716,27 +717,13 @@ def generate_opendrift_animation(
 
     ax.legend(loc="lower right", fontsize=8, facecolor="#FFFFFF", edgecolor="#CBD5E1", framealpha=0.95)
 
-    out_base = Path(output_base_path)
-    out_base.parent.mkdir(parents=True, exist_ok=True)
-    mp4_path = out_base.with_suffix(".mp4")
-    gif_path = out_base.with_suffix(".gif")
-    html_path = out_base.with_suffix(".html")
+    def init():
+        scatter_pts.set_offsets(np.empty((0, 2)))
+        centroid_pt.set_data([], [])
+        time_text.set_text("")
+        return scatter_pts, centroid_pt, time_text
 
-    # Initial draw to establish canvas dimensions
-    fig.canvas.draw()
-    buf_init = np.asarray(fig.canvas.buffer_rgba())
-    h, w = buf_init.shape[:2]
-    if w % 2 != 0:
-        w -= 1
-    if h % 2 != 0:
-        h -= 1
-
-    fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-    vw = cv2.VideoWriter(str(mp4_path), fourcc, float(fps), (w, h))
-
-    frames_pil: List[Image.Image] = []
-
-    for frame_idx in range(n_times):
+    def update(frame_idx):
         cur_lons = lons[:, frame_idx]
         cur_lats = lats[:, frame_idx]
         valid_mask = ~np.isnan(cur_lons) & ~np.isnan(cur_lats)
@@ -750,35 +737,31 @@ def generate_opendrift_animation(
 
         cur_time = times[frame_idx].strftime("%Y-%m-%d %H:%M UTC")
         time_text.set_text(f"Simulation Time: {cur_time}\nStep {frame_idx + 1} of {n_times}")
+        return scatter_pts, centroid_pt, time_text
 
-        fig.canvas.draw()
-        rgba_frame = np.asarray(fig.canvas.buffer_rgba())[:h, :w]
-        frame_bgr = cv2.cvtColor(rgba_frame, cv2.COLOR_RGBA2BGR)
-        vw.write(frame_bgr)
-        frames_pil.append(Image.fromarray(rgba_frame[:, :, :3]))
+    anim = animation.FuncAnimation(
+        fig,
+        update,
+        init_func=init,
+        frames=n_times,
+        interval=int(1000 / fps),
+        blit=True,
+    )
 
-    vw.release()
+    out_base = Path(output_base_path)
+    gif_path = out_base.with_suffix(".gif")
+    html_path = out_base.with_suffix(".html")
 
-    # Save companion GIF for full backward compatibility
-    try:
-        if frames_pil:
-            frames_pil[0].save(
-                str(gif_path),
-                save_all=True,
-                append_images=frames_pil[1:],
-                duration=int(1000 / fps),
-                loop=0,
-            )
-    except Exception:
-        pass
+    # 1. Export Animated GIF (Pillow writer)
+    anim.save(str(gif_path), writer="pillow", fps=fps)
 
-    # Export lightweight HTML5 video player widget
+    # 2. Export Matplotlib's native interactive HTML animation player
+    js_html = anim.to_jshtml()
     html_wrapped = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OpenDrift Simulation Animation (MP4)</title>
+    <title>OpenDrift Simulation Animation (Light Mode)</title>
     <style>
         body {{
             background: #F8FAFC;
@@ -808,44 +791,17 @@ def generate_opendrift_animation(
             border: 1px solid #E2E8F0;
             border-radius: 12px;
             padding: 16px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-            max-width: 900px;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }}
-        video {{
-            max-width: 100%;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }}
-        .meta-bar {{
-            margin-top: 12px;
-            font-size: 12px;
-            color: #64748B;
-            display: flex;
-            gap: 16px;
-            align-items: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }}
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>🌊 OpenDrift Oil Spill Simulation (MP4)</h1>
-        <p>Lagrangian Particle Advection Playback</p>
+        <h1>🌊 OpenDrift Oil Spill Simulation Animation</h1>
+        <p>Authentic Frame-by-Frame Matplotlib Advection Player (Light Mode)</p>
     </div>
     <div class="anim-container">
-        <video controls autoplay loop playsinline>
-            <source src="{mp4_path.name}" type="video/mp4">
-            <source src="{gif_path.name}" type="image/gif">
-            Your browser does not support the video tag.
-        </video>
-        <div class="meta-bar">
-            <span>📹 Format: MP4 (MPEG-4 / H.264)</span>
-            <span>⏱️ Frame Rate: {fps} FPS</span>
-            <span><a href="{mp4_path.name}" download style="color: #0284c7; text-decoration: none; font-weight: 600;">⬇ Download MP4 Video</a></span>
-        </div>
+        {js_html}
     </div>
 </body>
 </html>
@@ -853,4 +809,4 @@ def generate_opendrift_animation(
     html_path.write_text(html_wrapped, encoding="utf-8")
     plt.close(fig)
 
-    return mp4_path, html_path
+    return gif_path, html_path

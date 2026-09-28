@@ -22,7 +22,6 @@ from ais_oil_attribution.drift.opendrift_backtrack import backtrack_origin, simu
 from ais_oil_attribution.drift.visualizations import (
     plot_particle_cloud_map,
     plot_cloud_spread_chart,
-    generate_opendrift_animation,
 )
 from ais_oil_attribution.processing.ais_cleaning import clean_ais_data
 from ais_oil_attribution.processing.trajectory_reconstruction import reconstruct_all_tracks
@@ -42,7 +41,7 @@ logger = logging.getLogger("OilAttributionPipeline")
 class AttributionPipeline:
     """Manages sequential execution across Perception, Hydrodynamics, and Attribution."""
 
-    def __init__(self, output_dir: str = "pipeline_runs", forcing_source: str = "auto"):
+    def __init__(self, output_dir: str = "results/pipeline_runs", forcing_source: str = "auto"):
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.forcing_source = forcing_source
@@ -133,7 +132,6 @@ class AttributionPipeline:
             detection_res = detect_oil_slick_from_sar(
                 tiff_path=str(image_path),
                 output_geojson_path=str(detection_geojson),
-                output_images_dir=case_dir / "sar_processed",
             )
 
         num_slicks = detection_res.get("num_slicks_detected", 0)
@@ -196,7 +194,7 @@ class AttributionPipeline:
             f"at timestamp {origin_time} (±{uncertainty_radius:.1f} km)"
         )
 
-        # 2B. Visualizations (Standalone Map, Spread Curves, and MP4 Animation)
+        # 2B. Decoupled Visualizations (Standalone Map & Spread Curves)
         map_path = case_dir / "backtrack_trajectory_map.png"
         spread_path = case_dir / "backtrack_spread_chart.png"
         plot_particle_cloud_map(
@@ -216,87 +214,6 @@ class AttributionPipeline:
             title="Particle Convergence Over Time",
             output_path=str(spread_path),
         )
-
-        anim_backward_path = case_dir / "backward_drift_animation"
-        try:
-            generate_opendrift_animation(
-                coords_hist=origin_est.coords_history,
-                times=origin_est.times_history,
-                start_lat=primary_slick["lat"],
-                start_lon=primary_slick["lon"],
-                origin_lat=origin_lat,
-                origin_lon=origin_lon,
-                output_base_path=anim_backward_path,
-                fps=5,
-            )
-        except Exception as e_anim:
-            logger.warning(f"Could not generate backward MP4 animation: {e_anim}")
-
-        # 2C. Backtrack Summary Text File
-        summary_txt_path = case_dir / "backtrack_summary.txt"
-        summary_content = (
-            f"=======================================================\n"
-            f"       OPENDRIFT BACKTRACKING SUMMARY REPORT           \n"
-            f"=======================================================\n"
-            f"Image Source:           {image_path.name}\n"
-            f"Observation Timestamp:  {obs_time}\n"
-            f"Detected Slick Centroid: Lat {primary_slick['lat']:.5f}, Lon {primary_slick['lon']:.5f}\n"
-            f"Initial Spread Radius:  {primary_slick['spread_km']:.2f} km\n"
-            f"Simulation Duration:    {duration_hours} hours (reverse advection)\n"
-            f"Environmental Forcing:  {effective_forcing}\n"
-            f"-------------------------------------------------------\n"
-            f"Discovered Origin Site: Lat {origin_lat:.5f}, Lon {origin_lon:.5f}\n"
-            f"Estimated Spill Time:   {origin_time}\n"
-            f"Uncertainty Radius:     ±{uncertainty_radius:.2f} km\n"
-            f"Convergence Method:     {origin_est.convergence_details.get('method', 'N/A') if origin_est.convergence_details else 'N/A'}\n"
-            f"=======================================================\n"
-        )
-        summary_txt_path.write_text(summary_content, encoding="utf-8")
-
-        # 2D. Forward Drift Simulation & MP4 Animation
-        fwd_map_path = case_dir / "forward_drift_map.png"
-        anim_forward_path = case_dir / "forward_drift_animation"
-        try:
-            logger.info("Simulating forward drift for 12.0h to forecast spill trajectory...")
-            fwd_coords, fwd_times = simulate_forward_drift(
-                lat=primary_slick["lat"],
-                lon=primary_slick["lon"],
-                start_time=obs_time,
-                duration_hours=12.0,
-                config=cfg,
-                spill_polygon=spill_poly,
-            )
-            plot_particle_cloud_map(
-                coords_hist=fwd_coords,
-                times=fwd_times,
-                title="OpenDrift Forward Prediction: Spill Trajectory Forecast",
-                start_lat=primary_slick["lat"],
-                start_lon=primary_slick["lon"],
-                known_lat=None,
-                known_lon=None,
-                output_path=str(fwd_map_path),
-            )
-            fwd_spread_path = case_dir / "forward_spread_chart.png"
-            plot_cloud_spread_chart(
-                coords_hist=fwd_coords,
-                times=fwd_times,
-                title="Forward Prediction: Particle Cloud Spread Over Time",
-                output_path=str(fwd_spread_path),
-            )
-            mean_fwd_lat = float(np.nanmean(fwd_coords[1][:, -1]))
-            mean_fwd_lon = float(np.nanmean(fwd_coords[0][:, -1]))
-            generate_opendrift_animation(
-                coords_hist=fwd_coords,
-                times=fwd_times,
-                start_lat=primary_slick["lat"],
-                start_lon=primary_slick["lon"],
-                origin_lat=mean_fwd_lat,
-                origin_lon=mean_fwd_lon,
-                output_base_path=anim_forward_path,
-                fps=5,
-            )
-        except Exception as e_fwd:
-            logger.warning(f"Could not complete forward drift simulation: {e_fwd}")
 
         # =====================================================================
         # PHASE 3: AIS Ship Association & Attribution Engine
@@ -360,10 +277,7 @@ class AttributionPipeline:
                 f"  Distance to Origin (DCPA): {top_culprit['dcpa_km']:.2f} km | Time Offset (TCPA): {top_culprit['tcpa_minutes']:.1f} min\n"
                 f"  Confidence Rating: {top_culprit['confidence_label']} ({top_culprit['confidence_score']:.3f})"
             )
-        print(
-            f"  Artifacts generated: {map_path.name}, {spread_path.name}, backward_drift_animation.mp4, "
-            f"forward_drift_map.png, forward_spread_chart.png, forward_drift_animation.mp4, {dossier_path.name}, backtrack_summary.txt"
-        )
+        print(f"  Artifacts generated: {map_path.name}, {spread_path.name}, {dossier_path.name}")
         print("=" * 65 + "\n")
 
         return {
@@ -374,14 +288,7 @@ class AttributionPipeline:
             "origin_lon": origin_lon,
             "origin_time": str(origin_time),
             "dossier_json": str(dossier_path),
-            "backtrack_summary_txt": str(summary_txt_path),
             "map_image": str(map_path),
-            "spread_chart_image": str(spread_path),
-            "backward_animation_mp4": str(case_dir / "backward_drift_animation.mp4"),
-            "forward_map_image": str(fwd_map_path),
-            "forward_spread_chart_image": str(case_dir / "forward_spread_chart.png"),
-            "forward_animation_mp4": str(case_dir / "forward_drift_animation.mp4"),
-            "sar_processed_images": detection_res.get("processed_images", {}),
         }
 
     def _generate_ais_traffic(self, origin_lat: float, origin_lon: float, origin_time: datetime) -> pd.DataFrame:
@@ -428,7 +335,7 @@ class AttributionPipeline:
         return df
 
 
-def watch_directory(watch_dir: str, output_dir: str = "pipeline_runs", poll_interval: float = 3.0):
+def watch_directory(watch_dir: str, poll_interval: float = 3.0):
     """
     Continuous Event Daemon:
     Watches an incoming directory and autonomously processes any new satellite image.
@@ -436,7 +343,7 @@ def watch_directory(watch_dir: str, output_dir: str = "pipeline_runs", poll_inte
     """
     path = Path(watch_dir)
     path.mkdir(parents=True, exist_ok=True)
-    pipeline = AttributionPipeline(output_dir=output_dir)
+    pipeline = AttributionPipeline()
 
     processed_files = set()
     logger.info(f"*** Continuous Pipeline Daemon Running ***")
@@ -482,7 +389,7 @@ if __name__ == "__main__":
     parser.add_argument("--image", type=str, help="Process a single SAR satellite image immediately")
     parser.add_argument("--watch-dir", type=str, help="Run as continuous daemon watching this directory")
     parser.add_argument("--time", type=str, default="2024-05-15 12:00:00", help="Observation time UTC (YYYY-MM-DD HH:MM:SS)")
-    parser.add_argument("--output-dir", type=str, default="pipeline_runs", help="Output directory")
+    parser.add_argument("--output-dir", type=str, default="results/pipeline_runs", help="Output directory")
 
     parser.add_argument(
         "--forcing",
@@ -495,7 +402,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.watch_dir:
-        watch_directory(args.watch_dir, output_dir=args.output_dir)
+        watch_directory(args.watch_dir)
     elif args.image:
         obs_dt = datetime.strptime(args.time, "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc)
         pipe = AttributionPipeline(output_dir=args.output_dir, forcing_source=args.forcing)
