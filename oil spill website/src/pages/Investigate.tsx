@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useCase } from '../context/CaseContext';
-import { ForensicMap } from '../components/investigation/ForensicMap';
 import { InvestigationSetup } from '../components/investigation/InvestigationSetup';
 import { LiveCliCard } from '../components/investigation/LiveCliCard';
 import { RunConsole } from '../components/investigation/RunConsole';
@@ -14,10 +13,13 @@ import { Terminal, ArrowRight, ArrowLeft, Database, ChevronDown, Wind, Check } f
 import { cn } from '../utils/cn';
 import backwardDriftImg from '../assets/images/backward_drift_map.svg';
 import forwardDriftImg from '../assets/images/forward_drift_map.svg';
-import methodComparisonImg from '../assets/images/method_comparison_plot.svg';
+import forwardDriftAnim from '../assets/images/forward_drift_animation.gif';
+import backwardDriftAnim from '../assets/images/backward_drift_animation.gif';
+import segmentationOverlayImg from '../assets/images/segmentation_overlay.png';
+import sarPreprocessedImg from '../assets/images/sar_preprocessed.png';
 
 export const Investigate: React.FC = () => {
-  const { runStatus, startForensicRun } = useCase();
+  const { runStatus, startForensicRun, artifacts } = useCase();
   const [showCli, setShowCli] = useState<boolean>(true);
   const [driftMode, setDriftMode] = useState<'forward' | 'backward'>('backward');
   const [isCdsModalOpen, setIsCdsModalOpen] = useState<boolean>(false);
@@ -26,6 +28,14 @@ export const Investigate: React.FC = () => {
   const [windCurrentSource, setWindCurrentSource] = useState<string | null>(null);
   const [isWindDropdownOpen, setIsWindDropdownOpen] = useState<boolean>(false);
   const windDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Dynamic artifacts: prefer backend output when available, fallback to bundled assets
+  const forwardAnimSrc = artifacts?.forwardAnimation || forwardDriftAnim;
+  const backwardAnimSrc = artifacts?.backwardAnimation || backwardDriftAnim;
+  const forwardMapSrc = artifacts?.forwardMap || forwardDriftImg;
+  const backwardMapSrc = artifacts?.backwardMap || backwardDriftImg;
+  const sarPreprocessedSrc = artifacts?.sarPreprocessed || sarPreprocessedImg;
+  const segmentationOverlaySrc = artifacts?.segmentationOverlay || segmentationOverlayImg;
   const [cdsUser, setCdsUser] = useState<string | null>(() => {
     try {
       const saved = localStorage.getItem('cds_auth_session');
@@ -268,6 +278,54 @@ export const Investigate: React.FC = () => {
           <LiveCliCard />
         )}
 
+        {/* Deeplab Image Model Detection Box */}
+        <div className="w-full bg-[var(--surface-1)] border border-[var(--border-default)] rounded-[10px] p-4 sm:p-5 shadow-sm transition-all flex flex-col">
+          <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)] mb-4">
+            <div className="flex items-center gap-2">
+              <h2 className="text-sm sm:text-base font-bold text-[var(--text-1)]">
+                Deeplab Image Model Detection:
+              </h2>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+            {/* Deeplab Detection 1 */}
+            <div className="flex flex-col bg-white/60 border border-[var(--border-subtle)] rounded-[8px] p-3 sm:p-4 shadow-xs">
+              <div className="flex items-center justify-between pb-2 mb-2 border-b border-black/5">
+                <span className="text-xs sm:text-sm font-bold text-[var(--text-1)]">
+                  Preprocessed image
+                </span>
+              </div>
+              <div className="flex-1 w-full flex items-center justify-center overflow-hidden rounded-[6px] bg-slate-950/5 min-h-[280px]">
+                <img
+                  src={sarPreprocessedSrc}
+                  alt="sar_preprocessed"
+                  className="w-full max-h-[420px] object-contain rounded-[4px]"
+                  referrerPolicy="no-referrer"
+                />
+              </div>
+            </div>
+
+            {/* Deeplab Detection 2 */}
+            <div className="flex flex-col bg-white/60 border border-[var(--border-subtle)] rounded-[8px] p-3 sm:p-4 shadow-xs">
+              <div className="flex items-center justify-between pb-2 mb-2 border-b border-black/5">
+                <span className="text-xs sm:text-sm font-bold text-[var(--text-1)]">
+                  Detected Spill
+                </span>
+              </div>
+              <div className="flex-1 w-full flex items-center justify-center overflow-hidden rounded-[6px] bg-slate-950/5 min-h-[280px]">
+                <img
+                  src={segmentationOverlaySrc}
+                  alt="segmentation_overlay"
+                  title="segmentation_overlay"
+                  className="w-full max-h-[420px] object-contain rounded-[4px]"
+                  referrerPolicy="no-referrer"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Main Grid: Parameters on Left, Map & Visuals on Right */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
           {/* Left Column: Investigation Setup & Controls (4 cols) */}
@@ -314,15 +372,29 @@ export const Investigate: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex-1 w-full h-full relative">
-                <ForensicMap driftMode={driftMode} />
+              <div className="flex-1 w-full h-full relative bg-slate-950 flex items-center justify-center overflow-hidden min-h-[480px]">
+                <img
+                  src={forwardAnimSrc}
+                  alt="forward_animation.gif"
+                  title="forward_animation.gif"
+                  className={cn(
+                    'w-full h-full object-contain transition-opacity duration-150',
+                    driftMode === 'forward' ? 'opacity-100' : 'opacity-0 absolute inset-0 pointer-events-none'
+                  )}
+                />
+                <img
+                  src={backwardAnimSrc}
+                  alt="backward_animation.gif"
+                  title="backward_animation.gif"
+                  className={cn(
+                    'w-full h-full object-contain transition-opacity duration-150',
+                    driftMode === 'backward' ? 'opacity-100' : 'opacity-0 absolute inset-0 pointer-events-none'
+                  )}
+                />
               </div>
             </Card>
           </div>
         </div>
-
-        {/* Light Blue Box Element (matching page's light blue surface and border) */}
-        <div className="w-full bg-[var(--surface-1)] border border-[var(--border-default)] rounded-[10px] min-h-[180px] sm:min-h-[220px] shadow-sm transition-all" />
 
         {/* Forensic Diagnostics & Spatiotemporal Correlation (2 equal boxes side-by-side, then 1 long box width-wise) */}
         <div className="space-y-6 pt-2">
@@ -335,7 +407,7 @@ export const Investigate: React.FC = () => {
               </h3>
               <div className="flex-1 min-h-0 w-full rounded-[8px] overflow-hidden bg-white/70 border border-[var(--border-subtle)] flex items-center justify-center p-2">
                 <img
-                  src={backwardDriftImg}
+                  src={backwardMapSrc}
                   alt="Backward Drift Map"
                   className="w-full h-full object-contain"
                   referrerPolicy="no-referrer"
@@ -350,23 +422,14 @@ export const Investigate: React.FC = () => {
               </h3>
               <div className="flex-1 min-h-0 w-full rounded-[8px] overflow-hidden bg-white/70 border border-[var(--border-subtle)] flex items-center justify-center p-2">
                 <img
-                  src={forwardDriftImg}
-                  alt="Forward Drift Map"
+                  src={forwardMapSrc}
+                  alt="forward_drift_map"
+                  title="forward_drift_map"
                   className="w-full h-full object-contain"
                   referrerPolicy="no-referrer"
                 />
               </div>
             </div>
-          </div>
-
-          {/* Long Box Width-Wise */}
-          <div className="w-full bg-[var(--surface-1)] border border-[var(--border-default)] rounded-[10px] p-3 sm:p-4 overflow-hidden shadow-sm flex items-center justify-center">
-            <img
-              src={methodComparisonImg}
-              alt="Method 1 Distance to CALIFORNIA and Method 2 Spatial convergence spread"
-              className="w-full h-auto object-contain rounded-[6px]"
-              referrerPolicy="no-referrer"
-            />
           </div>
         </div>
 

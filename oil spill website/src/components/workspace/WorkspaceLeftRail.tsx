@@ -10,6 +10,7 @@ interface WorkspaceLeftRailProps {
     vessels: boolean;
     bathymetry: boolean;
     currents: boolean;
+    terrain?: boolean;
   };
   toggleLayer: (layer: any) => void;
 }

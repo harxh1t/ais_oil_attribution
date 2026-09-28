@@ -9,6 +9,7 @@ import {
   CandidateVessel,
   RANK_STABILITY_CASES,
 } from '../data/malibuCase';
+import { SimulationArtifacts, executeBackendForensicRun } from '../services/api';
 
 export type RunStatus = 'idle' | 'running' | 'done' | 'completed' | 'error';
 
@@ -110,6 +111,8 @@ interface CaseContextType {
   isFormValid: boolean;
   formValidationError: string | null;
   scenarioScoreDelta: ScenarioScoreInfo;
+  artifacts: SimulationArtifacts;
+  setArtifacts: React.Dispatch<React.SetStateAction<SimulationArtifacts>>;
 }
 
 
@@ -172,6 +175,7 @@ export const CaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [runProgress, setRunProgress] = useState<number>(0);
   const [activeWorkflowStep, setActiveWorkflowStep] = useState<number>(0);
   const [pipelineLogs, setPipelineLogs] = useState<PipelineLog[]>([]);
+  const [artifacts, setArtifacts] = useState<SimulationArtifacts>({});
 
   const [timeCursor, setTimeCursor] = useState<number>(1.0);
   const [mapLayers, setMapLayers] = useState<MapLayers>(DEFAULT_LAYERS);
@@ -251,13 +255,49 @@ export const CaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setRunStatus('error');
   };
 
-  const startForensicRun = () => {
+  const startForensicRun = async () => {
     if (runIntervalRef.current) clearInterval(runIntervalRef.current);
 
     setRunStatus('running');
-    setRunProgress(0);
-    setActiveWorkflowStep(0);
-    setPipelineLogs([]);
+    setRunProgress(10);
+    setActiveWorkflowStep(1);
+    setPipelineLogs([
+      {
+        id: `run-log-${Date.now()}-0`,
+        timestamp: new Date().toISOString().substring(11, 19) + ' UTC',
+        stage: 'INITIALIZATION',
+        message: 'Connecting to forensic drift solver pipeline...',
+        level: 'info',
+      },
+    ]);
+
+    // Check if backend API is responding
+    try {
+      const backendResult = await executeBackendForensicRun(parameters);
+      if (backendResult && backendResult.status !== 'error') {
+        if (backendResult.artifacts) {
+          setArtifacts(backendResult.artifacts);
+        }
+        if (backendResult.logs && backendResult.logs.length > 0) {
+          setPipelineLogs(
+            backendResult.logs.map((l, idx) => ({
+              id: l.id || `run-log-${Date.now()}-${idx}`,
+              timestamp: l.timestamp || new Date().toISOString().substring(11, 19) + ' UTC',
+              stage: l.stage,
+              message: l.message,
+              level: l.level || 'info',
+            }))
+          );
+        }
+        setActiveWorkflowStep(8);
+        setRunProgress(100);
+        setRunStatus('done');
+        setTimeCursor(1.0);
+        return;
+      }
+    } catch {
+      // Backend not running, proceed to client fallback simulation
+    }
 
     let stepIndex = 0;
     const stepDurationMs = 1120; // 8 steps * 1.12s ≈ 9s total
@@ -378,6 +418,8 @@ export const CaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isFormValid,
         formValidationError,
         scenarioScoreDelta,
+        artifacts,
+        setArtifacts,
       }}
     >
       {children}

@@ -27,21 +27,53 @@ export const BaseMap: React.FC<BaseMapProps> = ({ driftMode = 'backward' }) => {
       attributionControl: false
     });
 
-    // Clean ESRI World Light Gray Canvas for high-contrast light mode
-    L.tileLayer(
+    // Basemap Options: Terrain Shaded Relief & Gray Canvas
+    const shadedReliefTerrain = L.tileLayer(
+      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}',
+      {
+        maxZoom: 13,
+        subdomains: ['server', 'services'],
+        attribution: 'Esri, USGS'
+      }
+    );
+
+    const topoTerrain = L.tileLayer(
+      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+      {
+        maxZoom: 18,
+        subdomains: ['server', 'services'],
+        attribution: 'Esri'
+      }
+    );
+
+    const grayCanvas = L.tileLayer(
       'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
       {
         maxZoom: 16,
         subdomains: ['server', 'services']
       }
-    ).addTo(map);
+    );
+
+    // Default to Topographic Terrain rendering
+    topoTerrain.addTo(map);
 
     // Reference labels layer
-    L.tileLayer(
+    const referenceLabels = L.tileLayer(
       'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}',
       {
         maxZoom: 16
       }
+    ).addTo(map);
+
+    // Add Terrain Layer Switcher control
+    L.control.layers(
+      {
+        'Topographic Terrain': topoTerrain,
+        'Shaded Relief Terrain': shadedReliefTerrain,
+        'Gray Marine Canvas': grayCanvas
+      },
+      undefined,
+      { position: 'topright' }
     ).addTo(map);
 
     // 1. Observed Slick Footprint (Teal-green, solid border, semi-transparent fill)

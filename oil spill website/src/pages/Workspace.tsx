@@ -14,12 +14,14 @@ export const Workspace: React.FC = () => {
     vessels: boolean;
     bathymetry: boolean;
     currents: boolean;
+    terrain?: boolean;
   }>({
     slick: true,
     trajectories: true,
     vessels: true,
     bathymetry: false,
-    currents: true
+    currents: true,
+    terrain: false,
   });
 
   const [cameraView, setCameraView] = React.useState<'perspective' | 'top' | 'oblique'>('perspective');

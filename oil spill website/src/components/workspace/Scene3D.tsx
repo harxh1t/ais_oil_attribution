@@ -12,8 +12,69 @@ interface Scene3DProps {
     vessels: boolean;
     bathymetry: boolean;
     currents: boolean;
+    terrain?: boolean;
   };
   cameraView: 'perspective' | 'top' | 'oblique';
+}
+
+/**
+ * Coastal promontory / shoreline Z function for Santa Monica Bay & Point Dume
+ */
+export function getCoastlineZ(wx: number): number {
+  const dumePromontory = Math.exp(-Math.pow((wx + 22) / 11, 2)) * 8.5; // Point Dume headland
+  const malibuPoint = Math.exp(-Math.pow((wx - 14) / 9, 2)) * 4.8;
+  const bayBight = Math.sin(wx * 0.038) * 4.5;
+  return -27 + dumePromontory + malibuPoint + bayBight;
+}
+
+/**
+ * Procedural coastal mountain terrain height (Santa Monica Mountains & coastal bluffs)
+ */
+export function getCoastalTerrainElevation(wx: number, wz: number): number {
+  const coastZ = getCoastlineZ(wx);
+  const inlandDist = coastZ - wz;
+  if (inlandDist <= 0) return 0; // Submerged / seaward of shoreline
+
+  const normDist = Math.min(inlandDist / 85, 1.0);
+  const baseRise = Math.pow(normDist, 0.72) * 19.5;
+
+  // Mountain ridgelines and coastal canyons (Topanga, Malibu, Zuma canyons)
+  const r1 = Math.abs(Math.sin(wx * 0.055 + wz * 0.035)) * 6.5;
+  const r2 = Math.cos(wx * 0.12 - wz * 0.08) * 3.2;
+  const r3 = Math.sin(wx * 0.22 + wz * 0.15) * 1.5;
+  const canyonMod = 1.0 - 0.45 * Math.pow(Math.sin(wx * 0.065 + 0.8), 6);
+
+  const rawElevation = (baseRise + (r1 + r2 + r3) * (0.3 + normDist * 0.7)) * canyonMod;
+  const beachRamp = Math.min(1.0, Math.pow(inlandDist / 3.8, 1.4));
+  return Math.max(0, rawElevation * beachRamp);
+}
+
+/**
+ * Procedural bathymetric seabed depth (Continental shelf & Point Dume submarine canyon)
+ */
+export function getSeabedDepth(wx: number, wz: number): number {
+  const coastZ = getCoastlineZ(wx);
+  const seawardDist = wz - coastZ;
+  if (seawardDist <= 0) return 0; // Coastal land
+
+  // Continental shelf gentle slope dropping over continental shelf break
+  const shelfBreak = 35; // units offshore
+  let depth = 0;
+  if (seawardDist < shelfBreak) {
+    depth = -1.0 - (seawardDist / shelfBreak) * 3.5;
+  } else {
+    const slopeDist = seawardDist - shelfBreak;
+    depth = -4.5 - Math.pow(Math.min(slopeDist / 55, 1.0), 0.85) * 14.0;
+  }
+
+  // Point Dume Submarine Canyon cutting through shelf
+  const canyonDistToAxis = Math.abs((wx + 20) - (wz * 0.45));
+  if (canyonDistToAxis < 16) {
+    const canyonDepth = (1.0 - canyonDistToAxis / 16) * 7.5;
+    depth -= canyonDepth;
+  }
+
+  return depth;
 }
 
 export function createOilSlickTexture(): THREE.CanvasTexture {
@@ -231,6 +292,10 @@ export const Scene3D: React.FC<Scene3DProps> = ({ layers, cameraView }) => {
 
       scene.add(oceanGroup);
     }
+
+    // ----------------------------------------------------
+    // 1.5 Terrain Rendering (Removed as requested)
+    // ----------------------------------------------------
 
     // ----------------------------------------------------
     // 2. AIS Yellow Corridor Curve & The 3D Oil Tanker Ship

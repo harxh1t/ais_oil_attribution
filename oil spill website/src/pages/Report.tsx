@@ -14,8 +14,9 @@ import { JourneyFooter } from '../components/shared/JourneyFooter';
 import { Footer } from '../components/shared/Footer';
 import { Button, Card } from '../components/ui';
 import { FileDown, Printer, Check, CheckCircle2 } from 'lucide-react';
-import backwardSimulationImg from '../assets/images/backward_simulation_spread.svg';
-import forwardSimulationImg from '../assets/images/forward_simulation_spread.svg';
+import backwardSimulationImg from '../assets/images/backtrack_spread_chart.svg';
+import forwardSimulationImg from '../assets/images/forward_spread_chart.svg';
+import detectionSummaryImg from '../assets/images/detection_summary.png';
 
 function generatePrintableHtml(cData: any): string {
   const topCandidate = cData.vessels?.[0];
@@ -62,10 +63,14 @@ function generatePrintableHtml(cData: any): string {
 
 export const Report: React.FC = () => {
   const navigate = useNavigate();
-  const { caseData } = useCase();
+  const { caseData, artifacts } = useCase();
   const [printStatus, setPrintStatus] = useState<'idle' | 'active'>('idle');
   const [exportStatus, setExportStatus] = useState<'idle' | 'active'>('idle');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const forwardSimSrc = artifacts?.forwardSimulation || forwardSimulationImg;
+  const backwardSimSrc = artifacts?.backwardSimulation || backwardSimulationImg;
+  const detectionSummarySrc = artifacts?.detectionSummary || detectionSummaryImg;
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -254,7 +259,7 @@ export const Report: React.FC = () => {
             </div>
           </div>
 
-          {/* Section 4B: Diagnostics Cards */}
+            {/* Section 4B: Diagnostics Cards */}
           <div className="space-y-8">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
               <div className="lg:col-span-6">
@@ -264,8 +269,9 @@ export const Report: React.FC = () => {
                   </h3>
                   <div className="flex-1 min-h-0 w-full rounded-[8px] overflow-hidden bg-white/70 border border-[var(--border-subtle)] flex items-center justify-center p-2">
                     <img
-                      src={forwardSimulationImg}
-                      alt="Forward Simulation — How spread out the oil is, over time"
+                      src={forwardSimSrc}
+                      alt="forward_spread chart"
+                      title="forward_spread chart"
                       className="w-full h-full object-contain"
                       referrerPolicy="no-referrer"
                     />
@@ -279,8 +285,9 @@ export const Report: React.FC = () => {
                   </h3>
                   <div className="flex-1 min-h-0 w-full rounded-[8px] overflow-hidden bg-white/70 border border-[var(--border-subtle)] flex items-center justify-center p-2">
                     <img
-                      src={backwardSimulationImg}
-                      alt="Backward Simulation — How spread out the oil is, over time"
+                      src={backwardSimSrc}
+                      alt="backtrack_spread_chart"
+                      title="backtrack_spread_chart"
                       className="w-full h-full object-contain"
                       referrerPolicy="no-referrer"
                     />
@@ -289,7 +296,15 @@ export const Report: React.FC = () => {
               </div>
             </div>
             <div className="w-full">
-              <Card className="min-h-[160px] bg-[var(--surface-1)] border border-[var(--border-default)] rounded-[8px]" />
+              <Card className="w-full aspect-square bg-[var(--surface-1)] border border-[var(--border-default)] rounded-[8px] shadow-sm transition-all p-2 sm:p-4 flex items-center justify-center overflow-hidden">
+                <img
+                  src={detectionSummarySrc}
+                  alt="detection_summary"
+                  title="detection_summary"
+                  className="w-full h-full object-contain rounded-[6px]"
+                  referrerPolicy="no-referrer"
+                />
+              </Card>
             </div>
           </div>
 
