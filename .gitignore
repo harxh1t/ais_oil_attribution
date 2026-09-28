@@ -55,15 +55,7 @@ results/*_case/
 results/opendrift_demo/
 results/test_defender_case/
 results/test_gulf_maggie_a/
-
-# Models - keep Deeplab weights tracked
-models/*
-!models/best_deeplabv3plus_mobilenet.pth
-
-# Pipeline output runs
-pipeline_runs/
-output/
-node_modules/
+models/
 
 # Large imagery datasets
 22 Zenodo tif images/

@@ -59,8 +59,8 @@ class EnvironmentalReader:
             if standard_name_mapping:
                 return reader_netCDF_CF_generic.Reader(source, standard_name_mapping=standard_name_mapping)
             return reader_netCDF_CF_generic.Reader(source)
-        except (ImportError, Exception):
-            # Fallback stub for environments without full OpenDrift reader dependencies or dummy test files
+        except ImportError:
+            # Fallback stub for environments without full OpenDrift reader dependencies
             return {
                 "source": source,
                 "type": "netCDF_CF_generic",
