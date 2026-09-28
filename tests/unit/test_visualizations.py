@@ -13,6 +13,7 @@ from ais_oil_attribution.drift.visualizations import (
 
 
 def test_generate_opendrift_animation_mp4(tmp_path: Path):
+    pytest.importorskip("cv2", reason="OpenCV is required for MP4 video writing")
     n_particles = 20
     n_times = 6
     times = pd.date_range("2024-08-06 00:00:00", periods=n_times, freq="1h", tz="UTC")

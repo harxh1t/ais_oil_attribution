@@ -103,6 +103,21 @@ def write_investigation_bundle(
     # 5. attribution.json (§4.5 schema)
     cand_list = []
     ranking_method_used = config_dict.get("attribution", {}).get("ranking_method", "borda_count")
+    pts_by_mmsi: dict[int, list[dict[str, Any]]] = {}
+    if reconstructed_df is not None and not reconstructed_df.empty and "mmsi" in reconstructed_df.columns:
+        for mmsi_grp, group in reconstructed_df.groupby("mmsi"):
+            g_sorted = group.sort_values("timestamp") if "timestamp" in group.columns else group
+            pts_by_mmsi[int(mmsi_grp)] = [
+                {
+                    "lat": float(r["lat"]),
+                    "lon": float(r["lon"]),
+                    "timestamp": pd.Timestamp(r["timestamp"]).isoformat() if "timestamp" in r and pd.notna(r["timestamp"]) else None,
+                    "sog": float(r.get("sog_knots", 0.0)) if "sog_knots" in r and pd.notna(r["sog_knots"]) else None,
+                    "cog": float(r.get("cog_degrees", 0.0)) if "cog_degrees" in r and pd.notna(r["cog_degrees"]) else None,
+                }
+                for _, r in g_sorted.iterrows()
+            ]
+
     if not scores_df.empty:
         for _, row in scores_df.iterrows():
             frechet_val = float(row["frechet_km"]) if pd.notna(row.get("frechet_km")) else None
@@ -125,10 +140,15 @@ def write_investigation_bundle(
             if ff_val is not None:
                 expl.append(f"Forward-fit trajectory recreation score: {ff_val:.2f}")
 
+            mmsi_int = int(row["mmsi"])
+            # Use precomputed track or candidate row's track if already present
+            cand_track = row.get("track") if ("track" in row and isinstance(row.get("track"), list)) else pts_by_mmsi.get(mmsi_int, [])
+
             cand_item: dict[str, Any] = {
                 "rank": int(row["final_rank"]),
-                "mmsi": int(row["mmsi"]),
+                "mmsi": mmsi_int,
                 "vessel_name": str(row["vessel_name"]),
+                "track": cand_track,
                 "evidence": {
                     "frechet_km": frechet_val,
                     "dcpa_km": float(row["dcpa_km"]),

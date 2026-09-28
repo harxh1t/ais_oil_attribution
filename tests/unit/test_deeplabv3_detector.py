@@ -51,7 +51,7 @@ def test_detect_oil_slick_missing_file_raises_error():
 
 
 def test_render_and_save_processed_images(tmp_path):
-    import cv2
+    cv2 = pytest.importorskip("cv2", reason="OpenCV is required for SAR image rendering")
 
     H, W = 64, 64
     img_rgb = np.full((H, W, 3), 120, dtype=np.uint8)

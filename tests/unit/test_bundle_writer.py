@@ -91,4 +91,10 @@ def test_write_investigation_bundle_creates_all_artifacts(tmp_path: Path):
     attr_json = json.loads((bundle_path / "attribution.json").read_text(encoding="utf-8"))
     assert attr_json["investigation_id"] == inv_id
     assert len(attr_json["candidates"]) == 1
-    assert attr_json["candidates"][0]["mmsi"] == 111111111
+    cand_0 = attr_json["candidates"][0]
+    assert cand_0["mmsi"] == 111111111
+    assert "track" in cand_0
+    assert len(cand_0["track"]) > 0
+    assert "lat" in cand_0["track"][0]
+    assert "lon" in cand_0["track"][0]
+    assert "timestamp" in cand_0["track"][0]

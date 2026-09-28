@@ -168,7 +168,7 @@ def main():
     scored_records = []
 
     for mmsi in survivors:
-        v_track = reconstructed_df[reconstructed_df["mmsi"] == mmsi]
+        v_track = reconstructed_df[reconstructed_df["mmsi"] == mmsi].sort_values("timestamp")
         cand_row = candidates_df[candidates_df["mmsi"] == mmsi].iloc[0]
         track_coords = np.column_stack([v_track["lat"].values, v_track["lon"].values])
 
@@ -182,6 +182,17 @@ def main():
             obs_time=origin_time,
         )
 
+        track_points = [
+            {
+                "lat": float(r["lat"]),
+                "lon": float(r["lon"]),
+                "timestamp": pd.Timestamp(r["timestamp"]).isoformat(),
+                "sog": float(r.get("sog_knots", 0.0)),
+                "cog": float(r.get("cog_degrees", 0.0)),
+            }
+            for _, r in v_track.iterrows()
+        ]
+
         scored_records.append({
             "mmsi": int(mmsi),
             "vessel_name": str(cand_row["vessel_name"]),
@@ -189,6 +200,7 @@ def main():
             "dcpa_km": float(dcpa_km),
             "tcpa_minutes": float(tcpa_min),
             "coverage_completeness": float(cand_row["coverage_completeness"]),
+            "track": track_points,
         })
 
     scores_df = pd.DataFrame(scored_records)

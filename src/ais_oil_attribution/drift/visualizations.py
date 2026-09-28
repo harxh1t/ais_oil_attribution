@@ -15,7 +15,10 @@ import urllib.request
 import numpy as np
 import pandas as pd
 from PIL import Image
-import cv2
+try:
+    import cv2
+except ImportError:
+    cv2 = None
 import matplotlib
 matplotlib.use("Agg")  # Headless rendering
 import matplotlib.pyplot as plt
@@ -731,8 +734,13 @@ def generate_opendrift_animation(
     if h % 2 != 0:
         h -= 1
 
-    fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-    vw = cv2.VideoWriter(str(mp4_path), fourcc, float(fps), (w, h))
+    vw = None
+    if cv2 is not None:
+        try:
+            fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+            vw = cv2.VideoWriter(str(mp4_path), fourcc, float(fps), (w, h))
+        except Exception:
+            vw = None
 
     frames_pil: List[Image.Image] = []
 
@@ -753,11 +761,13 @@ def generate_opendrift_animation(
 
         fig.canvas.draw()
         rgba_frame = np.asarray(fig.canvas.buffer_rgba())[:h, :w]
-        frame_bgr = cv2.cvtColor(rgba_frame, cv2.COLOR_RGBA2BGR)
-        vw.write(frame_bgr)
+        if vw is not None and cv2 is not None:
+            frame_bgr = cv2.cvtColor(rgba_frame, cv2.COLOR_RGBA2BGR)
+            vw.write(frame_bgr)
         frames_pil.append(Image.fromarray(rgba_frame[:, :, :3]))
 
-    vw.release()
+    if vw is not None:
+        vw.release()
 
     # Save companion GIF for full backward compatibility
     try:
