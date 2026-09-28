@@ -159,15 +159,209 @@ def ensure_model_weights(weights_path: Optional[Union[str, Path]] = None) -> Pat
     return target_path
 
 
+def render_and_save_processed_images(
+    img_rgb: np.ndarray,
+    pred_mask_full: np.ndarray,
+    probs_full: np.ndarray,
+    features: List[Dict[str, Any]],
+    output_dir: Union[str, Path],
+    scene_stem: str,
+    primary_slick: Optional[Dict[str, Any]] = None,
+) -> Dict[str, str]:
+    """Renders and saves forensic imagery generated during DeepLabv3+ perception:
+    1. sar_preprocessed.png: Normalized 3-channel pseudo-RGB SAR backscatter [VV, VH, avg]
+    2. segmentation_mask.png: High-contrast binary oil slick segmentation mask (0 / 255)
+    3. probability_heatmap.png: Continuous sigmoid probability map [0.0 - 1.0] in TURBO colormap
+    4. segmentation_overlay.png: Composite overlay of detected slicks with contours and centroid pins
+    5. detection_summary.png: 4-panel diagnostic comparison dashboard with incident metadata
+    """
+    import cv2
+
+    out_p = Path(output_dir)
+    out_p.mkdir(parents=True, exist_ok=True)
+
+    # 1. Normalized SAR preprocessed image
+    preproc_file = out_p / "sar_preprocessed.png"
+    cv2.imwrite(str(preproc_file), cv2.cvtColor(img_rgb, cv2.COLOR_RGB2BGR))
+
+    # 2. Binary segmentation mask
+    mask_file = out_p / "segmentation_mask.png"
+    mask_vis = (pred_mask_full.astype(np.uint8) * 255)
+    cv2.imwrite(str(mask_file), mask_vis)
+
+    # 3. Continuous probability heatmap
+    heatmap_file = out_p / "probability_heatmap.png"
+    probs_clamped = np.clip(probs_full * 255.0, 0, 255).astype(np.uint8)
+    heatmap = cv2.applyColorMap(probs_clamped, cv2.COLORMAP_TURBO)
+    cv2.imwrite(str(heatmap_file), heatmap)
+
+    # 4. Forensic segmentation overlay
+    overlay_file = out_p / "segmentation_overlay.png"
+    overlay = img_rgb.copy()
+    mask_idx = pred_mask_full > 0
+
+    if np.any(mask_idx):
+        # Tint detected slick regions in fluorescent coral/red
+        tint_rgb = np.array([255, 30, 80], dtype=np.float32)
+        overlay[mask_idx] = np.clip(
+            0.45 * tint_rgb + 0.55 * overlay[mask_idx].astype(np.float32), 0, 255
+        ).astype(np.uint8)
+
+        # Draw boundary contours
+        contours, _ = cv2.findContours(
+            (pred_mask_full > 0).astype(np.uint8),
+            cv2.RETR_EXTERNAL,
+            cv2.CHAIN_APPROX_SIMPLE,
+        )
+        # Sort contours by area descending
+        contours = sorted(contours, key=cv2.contourArea, reverse=True)
+        cv2.drawContours(overlay, contours, -1, (255, 230, 0), thickness=2)
+
+        # Draw markers & labels on detected slick centroids
+        for idx, c in enumerate(contours[:5], start=1):
+            M = cv2.moments(c)
+            if M["m00"] > 0:
+                cX = int(M["m10"] / M["m00"])
+                cY = int(M["m01"] / M["m00"])
+                cv2.drawMarker(
+                    overlay,
+                    (cX, cY),
+                    (0, 240, 255),
+                    markerType=cv2.MARKER_CROSS,
+                    markerSize=18,
+                    thickness=2,
+                )
+                cv2.circle(overlay, (cX, cY), 6, (0, 240, 255), 1)
+                label_txt = f"SLICK #{idx}"
+                cv2.putText(
+                    overlay,
+                    label_txt,
+                    (cX + 12, max(20, cY - 8)),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.55,
+                    (255, 255, 255),
+                    2,
+                    cv2.LINE_AA,
+                )
+                cv2.putText(
+                    overlay,
+                    label_txt,
+                    (cX + 12, max(20, cY - 8)),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.55,
+                    (0, 0, 0),
+                    1,
+                    cv2.LINE_AA,
+                )
+
+    cv2.imwrite(str(overlay_file), cv2.cvtColor(overlay, cv2.COLOR_RGB2BGR))
+
+    # 5. Multi-panel diagnostic summary card (2x2 grid + forensic header banner)
+    summary_file = out_p / "detection_summary.png"
+    target_w, target_h = 640, 640
+
+    p1 = cv2.resize(cv2.cvtColor(img_rgb, cv2.COLOR_RGB2BGR), (target_w, target_h))
+    p2 = cv2.resize(heatmap, (target_w, target_h))
+    p3 = cv2.resize(cv2.cvtColor(mask_vis, cv2.COLOR_GRAY2BGR), (target_w, target_h))
+    p4 = cv2.resize(cv2.cvtColor(overlay, cv2.COLOR_RGB2BGR), (target_w, target_h))
+
+    def _add_panel_title(img: np.ndarray, title: str) -> None:
+        cv2.rectangle(img, (0, 0), (target_w, 36), (20, 24, 33), -1)
+        cv2.putText(
+            img,
+            title,
+            (14, 24),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.55,
+            (240, 244, 248),
+            1,
+            cv2.LINE_AA,
+        )
+
+    _add_panel_title(p1, "1. Normalized SAR Backscatter (VV/VH)")
+    _add_panel_title(p2, "2. DeepLabv3+ Probability Heatmap [0-1]")
+    _add_panel_title(p3, "3. Binary Segmentation Mask (>0.5)")
+    _add_panel_title(p4, "4. Forensic Oil Slick Overlay")
+
+    grid_top = np.hstack([p1, p2])
+    grid_bottom = np.hstack([p3, p4])
+    grid = np.vstack([grid_top, grid_bottom])
+
+    total_w = grid.shape[1]
+    banner_h = 75
+    banner = np.full((banner_h, total_w, 3), (20, 24, 33), dtype=np.uint8)
+
+    cv2.putText(
+        banner,
+        "WAKE SATELLITE PERCEPTION // DEEPLABV3+ MOBILENETV2",
+        (20, 32),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.75,
+        (0, 230, 255),
+        2,
+        cv2.LINE_AA,
+    )
+
+    num_slicks = len(features)
+    if primary_slick:
+        info_txt = (
+            f"Scene: {scene_stem} | Slicks Detected: {num_slicks} | "
+            f"Centroid: {primary_slick['lat']:.4f}N, {primary_slick['lon']:.4f}W | "
+            f"Spread: {primary_slick['spread_km']:.2f} km"
+        )
+    else:
+        info_txt = f"Scene: {scene_stem} | Slicks Detected: 0 (Sea Surface Clean)"
+
+    cv2.putText(
+        banner,
+        info_txt,
+        (20, 60),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.52,
+        (200, 210, 224),
+        1,
+        cv2.LINE_AA,
+    )
+
+    footer_h = 32
+    footer = np.full((footer_h, total_w, 3), (15, 17, 26), dtype=np.uint8)
+    cv2.putText(
+        footer,
+        "SENTINEL-1 C-BAND SAR FORENSIC INGESTION ENGINE | EPSG:4326 GEOREFERENCED",
+        (20, 21),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.45,
+        (140, 150, 160),
+        1,
+        cv2.LINE_AA,
+    )
+
+    summary_dashboard = np.vstack([banner, grid, footer])
+    cv2.imwrite(str(summary_file), summary_dashboard)
+
+    return {
+        "preprocessed": str(preproc_file),
+        "mask": str(mask_file),
+        "probability_heatmap": str(heatmap_file),
+        "overlay": str(overlay_file),
+        "summary": str(summary_file),
+        "output_dir": str(out_p),
+    }
+
+
 def detect_oil_slick_from_sar(
     tiff_path: Union[str, Path],
     weights_path: Optional[Union[str, Path]] = None,
     output_geojson_path: Optional[Union[str, Path]] = None,
+    output_images_dir: Optional[Union[str, Path]] = None,
+    save_processed_images: bool = True,
     device_name: str = "auto",
     confidence_threshold: float = 0.5,
 ) -> Dict[str, Any]:
     """Runs DeepLabv3+ inference on a dual-polarization Sentinel-1 GeoTIFF image,
-    generating vector GeoJSON slicks and extracting centroid and spread parameters.
+    generating vector GeoJSON slicks, extracting centroid and spread parameters,
+    and rendering processed diagnostic images (preprocessed SAR, probability heatmap,
+    binary mask, forensic overlay, and multi-panel summary).
     """
     has_cv, error_msg = check_cv_dependencies()
     if not has_cv:
@@ -232,12 +426,18 @@ def detect_oil_slick_from_sar(
         logits = model(input_tensor)
         probs = torch.sigmoid(logits)
         pred_mask_512 = (probs > confidence_threshold).float()[0, 0].cpu().numpy()
+        probs_512 = probs[0, 0].cpu().numpy()
 
-    # Upscale mask back to original GeoTIFF resolution
+    # Upscale mask and probability map back to original GeoTIFF resolution
     pred_mask_full = cv2.resize(
         pred_mask_512,
         (original_shape[1], original_shape[0]),
         interpolation=cv2.INTER_NEAREST,
+    )
+    probs_full = cv2.resize(
+        probs_512,
+        (original_shape[1], original_shape[0]),
+        interpolation=cv2.INTER_LINEAR,
     )
 
     if output_geojson_path is None:
@@ -262,10 +462,30 @@ def detect_oil_slick_from_sar(
             "area_deg2": float(props.get("area_deg2", 0.0)),
         }
 
+    # Render and save processed diagnostic images if enabled
+    processed_images = {}
+    if save_processed_images:
+        if output_images_dir is None:
+            if output_geojson_path is not None:
+                output_images_dir = Path(output_geojson_path).parent / "sar_processed"
+            else:
+                output_images_dir = tiff_path.parent / f"{tiff_path.stem}_processed"
+
+        processed_images = render_and_save_processed_images(
+            img_rgb=img_rgb,
+            pred_mask_full=pred_mask_full,
+            probs_full=probs_full,
+            features=features,
+            output_dir=output_images_dir,
+            scene_stem=tiff_path.stem,
+            primary_slick=primary_slick,
+        )
+
     return {
         "geojson_path": str(output_geojson_path),
         "geojson_data": geojson_data,
         "num_slicks_detected": len(features),
         "primary_slick": primary_slick,
         "acquisition_time_hint": acq_time_str,
+        "processed_images": processed_images,
     }

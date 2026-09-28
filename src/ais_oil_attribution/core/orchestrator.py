@@ -31,7 +31,7 @@ def run_investigation(
     regime: str = "auto",
     config_path: Optional[str] = None,
     oil_type: Optional[str] = None,
-    output_dir: str = "results",
+    output_dir: str = "pipeline_runs",
     non_interactive: bool = False,
     forcing_source: Optional[str] = None,
     slick_coords_override: Optional[np.ndarray] = None,
@@ -45,6 +45,7 @@ def run_investigation(
     spill_geojson: Optional[str] = None,
     target_lat: Optional[float] = None,
     target_lon: Optional[float] = None,
+    sar_detection: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     """
     Executes the full 12-step investigation pipeline (§12).
@@ -320,6 +321,7 @@ def run_investigation(
         slick_coords=slick_coords,
         origin_estimate=origin_estimate,
         output_base_dir=output_base_path,
+        sar_detection=sar_detection,
     )
 
     top_candidate = scores_df.iloc[0].to_dict() if not scores_df.empty else None
@@ -335,4 +337,5 @@ def run_investigation(
         "top_candidate": top_candidate,
         "regime_decision": regime_dict,
         "candidates_count": len(scores_df),
+        "sar_detection": sar_detection,
     }

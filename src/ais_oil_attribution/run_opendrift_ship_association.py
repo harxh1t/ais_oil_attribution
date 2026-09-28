@@ -201,7 +201,8 @@ def main():
     print(ranked_df[summary_cols].to_string(index=False))
 
     # Save to disk
-    out_file = Path("results/opendrift_outputs/ship_association_results.json")
+    out_file = Path("pipeline_runs/opendrift_outputs/ship_association_results.json")
+    out_file.parent.mkdir(parents=True, exist_ok=True)
     ranked_df.to_json(out_file, orient="records", indent=2)
     print(f"\n[Artifact Saved] Detailed forensic dossier: {out_file}")
 

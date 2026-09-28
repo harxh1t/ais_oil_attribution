@@ -13,6 +13,7 @@ def generate_html_report(
     origin_estimate: Optional[Dict[str, Any]],
     map_rel_path: str,
     output_html_path: Path,
+    sar_detection: Optional[Dict[str, Any]] = None,
 ) -> str:
     """
     Renders a comprehensive, interactive HTML investigation report dashboard.
@@ -166,6 +167,52 @@ def generate_html_report(
                     <div class="stat-label">Uncertainty Hull</div>
                     <div class="stat-val">95% Minimum Regret Bounds</div>
                 </div>
+            </div>
+        </div>
+        """
+
+    # SAR Perception Section (if available)
+    sar_perception_html = ""
+    if sar_detection and sar_detection.get("processed_images"):
+        num_slicks = sar_detection.get("num_slicks_detected", 0)
+        primary = sar_detection.get("primary_slick")
+        coords_str = (
+            f"{primary['lat']:.4f}&deg;N, {primary['lon']:.4f}&deg;W (Spread: {primary['spread_km']:.2f} km)"
+            if primary
+            else "Clean sea surface (0 slicks)"
+        )
+        sar_perception_html = f"""
+        <!-- Spaceborne SAR Radar Perception & DeepLabv3+ Image Gallery -->
+        <div class="card">
+            <h2>
+                <span>🛰️ Spaceborne Radar Perception & DeepLabv3+ Diagnostics</span>
+                <span style="font-size: 0.8rem; font-weight: normal; color: var(--accent);">Sentinel-1 SAR C-Band // MobileNetV2</span>
+            </h2>
+            <div style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 1.25rem;">
+                Neural segmentation identified <strong>{num_slicks} slick(s)</strong>. Primary detection centroid: <span class="mono-stat" style="color: var(--accent);">{coords_str}</span>.
+            </div>
+            <div class="grid grid-4" style="gap: 16px; margin-bottom: 16px;">
+                <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 8px; padding: 12px; text-align: center;">
+                    <div style="font-size: 0.72rem; color: var(--muted); margin-bottom: 8px; font-weight: 700;">1. PREPROCESSED SAR (VV/VH)</div>
+                    <a href="sar_processed/sar_preprocessed.png" target="_blank"><img src="sar_processed/sar_preprocessed.png" style="width: 100%; border-radius: 6px; aspect-ratio: 1; object-fit: cover;" alt="SAR Preprocessed"/></a>
+                </div>
+                <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 8px; padding: 12px; text-align: center;">
+                    <div style="font-size: 0.72rem; color: var(--muted); margin-bottom: 8px; font-weight: 700;">2. PROBABILITY HEATMAP [0-1]</div>
+                    <a href="sar_processed/probability_heatmap.png" target="_blank"><img src="sar_processed/probability_heatmap.png" style="width: 100%; border-radius: 6px; aspect-ratio: 1; object-fit: cover;" alt="Probability Heatmap"/></a>
+                </div>
+                <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 8px; padding: 12px; text-align: center;">
+                    <div style="font-size: 0.72rem; color: var(--muted); margin-bottom: 8px; font-weight: 700;">3. BINARY SEGMENTATION MASK</div>
+                    <a href="sar_processed/segmentation_mask.png" target="_blank"><img src="sar_processed/segmentation_mask.png" style="width: 100%; border-radius: 6px; aspect-ratio: 1; object-fit: cover;" alt="Segmentation Mask"/></a>
+                </div>
+                <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 8px; padding: 12px; text-align: center;">
+                    <div style="font-size: 0.72rem; color: var(--muted); margin-bottom: 8px; font-weight: 700;">4. FORENSIC SLICK OVERLAY</div>
+                    <a href="sar_processed/segmentation_overlay.png" target="_blank"><img src="sar_processed/segmentation_overlay.png" style="width: 100%; border-radius: 6px; aspect-ratio: 1; object-fit: cover;" alt="Forensic Overlay"/></a>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 14px;">
+                <a href="sar_processed/detection_summary.png" target="_blank" class="btn" style="background: rgba(2, 132, 199, 0.25); border: 1px solid var(--accent); color: #fff; font-weight: 600;">
+                    🔍 Expand Full Diagnostic Summary Card (detection_summary.png)
+                </a>
             </div>
         </div>
         """
@@ -556,6 +603,9 @@ def generate_html_report(
                 </div>
             </div>
         </div>
+
+        <!-- Satellite SAR Perception Section -->
+        {sar_perception_html}
 
         <!-- Interactive Map Panel -->
         <div class="card">
