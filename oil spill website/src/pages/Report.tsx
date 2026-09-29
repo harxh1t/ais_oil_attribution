@@ -133,8 +133,18 @@ export const Report: React.FC = () => {
           frechetKm: c.frechet,
           bordaScore: c.borda,
           status: c.rank === 1 ? "Attributed" : "Excluded",
+          tracksFile: `WAKE_Vessel_Tracks_${caseData.id}.json`,
+          trackPointsCount: (c.track || []).length,
         })),
-        fullCaseRecord: caseData,
+        vesselTracksFile: `WAKE_Vessel_Tracks_${caseData.id}.json`,
+        fullCaseRecord: {
+          ...caseData,
+          vessels: (caseData.vessels || []).map(({ track, ...vRest }) => ({
+            ...vRest,
+            tracksFile: `WAKE_Vessel_Tracks_${caseData.id}.json`,
+            trackPointsCount: (track || []).length,
+          })),
+        },
       };
 
       const jsonStr = JSON.stringify(exportPayload, null, 2);
@@ -154,6 +164,46 @@ export const Report: React.FC = () => {
       console.error('Export error:', err);
       showToast('Export failed. Check console for details.');
       setExportStatus('idle');
+    }
+  };
+
+  const handleExportTracksJson = () => {
+    try {
+      const tracksPayload = {
+        exportTimestamp: new Date().toISOString(),
+        caseId: caseData.id,
+        classification: "SIMULATED INVESTIGATIVE VESSEL TRACKS",
+        disclaimer: "Kinematic AIS coordinates (lat/long) for candidate vessels separated from dossier.",
+        vessels: (caseData.vessels || []).map((v) => ({
+          rank: v.rank,
+          name: v.name,
+          mmsi: v.mmsi,
+          pointsCount: (v.track || []).length,
+          track: (v.track || []).map((pt) => ({
+            lat: pt.lat,
+            lon: pt.lon,
+            timestamp: pt.t || (pt.timestampMs ? new Date(pt.timestampMs).toISOString() : ''),
+            sog: pt.sog,
+            cog: pt.cog,
+          })),
+        })),
+      };
+
+      const jsonStr = JSON.stringify(tracksPayload, null, 2);
+      const blob = new Blob([jsonStr], { type: 'application/json;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `WAKE_Vessel_Tracks_${caseData.id}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+
+      showToast(`Exported ${caseData.id} vessel tracks JSON (${(blob.size / 1024).toFixed(1)} KB)`);
+    } catch (err) {
+      console.error('Export tracks error:', err);
+      showToast('Export tracks failed.');
     }
   };
 
@@ -215,6 +265,16 @@ export const Report: React.FC = () => {
                   Export Dossier (JSON)
                 </>
               )}
+            </Button>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={handleExportTracksJson}
+              aria-label="Export candidate vessel lat/long tracks as separate JSON"
+              title="Export candidate vessel coordinates (lat/long) into separate JSON"
+            >
+              <FileDown className="w-4 h-4 mr-1.5" />
+              Export Tracks (Lat/Lon)
             </Button>
           </div>
         </div>

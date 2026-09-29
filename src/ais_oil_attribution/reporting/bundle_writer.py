@@ -29,7 +29,7 @@ SOURCES_MD_CONTENT = """# References & Methodological Sources
 Every method used in this investigation is either traced to a specific published peer-reviewed paper / practitioner system or explicitly flagged as an engineering judgment.
 
 ## 1. SAR Oil Spill Detection & Practitioner Benchmark
-- **Cerulean / SkyTruth (2023–2025)**: *Cerulean Methods & Operational Vessel Association*, https://skytruth.org/cerulean/methods
+- **Satellite Remote Sensing (2023–2025)**: *Operational Vessel Association & Spill Detection Methods*
 - **Krestenitis et al. (2018)**: *Dark Spot Detection in SAR Images of Oil Spill Using SegNet.* Applied Sciences 8(12):2670. https://doi.org/10.3390/app8122670
 - **Sentinel-1 SAR Oil Spill Detector (2022)**: International Journal of Remote Sensing. https://doi.org/10.1080/01431161.2022.2109445
 

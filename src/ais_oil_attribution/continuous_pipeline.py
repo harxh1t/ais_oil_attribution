@@ -322,6 +322,7 @@ class AttributionPipeline:
 
         # 3C. Spatio-Temporal Association (DCPA, TCPA) to Origin
         scored_records = []
+        vessel_tracks = []
         for mmsi in survivors:
             v_track = reconstructed_df[reconstructed_df["mmsi"] == mmsi].sort_values("timestamp")
             cand_row = candidates_df[candidates_df["mmsi"] == mmsi].iloc[0]
@@ -346,6 +347,13 @@ class AttributionPipeline:
                 for _, r in v_track.iterrows()
             ]
 
+            vessel_tracks.append({
+                "mmsi": int(mmsi),
+                "vessel_name": str(cand_row["vessel_name"]),
+                "points_count": len(track_points),
+                "track": track_points,
+            })
+
             scored_records.append({
                 "mmsi": int(mmsi),
                 "vessel_name": str(cand_row["vessel_name"]),
@@ -353,7 +361,8 @@ class AttributionPipeline:
                 "dcpa_km": float(dcpa_km),
                 "tcpa_minutes": float(tcpa_min),
                 "coverage_completeness": float(cand_row["coverage_completeness"]),
-                "track": track_points,
+                "track_points_count": len(track_points),
+                "tracks_file": "vessel_tracks.json",
             })
 
         scores_df = pd.DataFrame(scored_records)
@@ -363,6 +372,9 @@ class AttributionPipeline:
 
         dossier_path = case_dir / "attribution_dossier.json"
         ranked_df.to_json(dossier_path, orient="records", indent=2)
+
+        tracks_path = case_dir / "vessel_tracks.json"
+        tracks_path.write_text(json.dumps(vessel_tracks, indent=2), encoding="utf-8")
 
         print("\n" + "=" * 65)
         print(f"[INVESTIGATION COMPLETE] Case output: {case_dir}")
@@ -374,7 +386,8 @@ class AttributionPipeline:
             )
         print(
             f"  Artifacts generated: {map_path.name}, {spread_path.name}, backward_drift_animation.mp4, "
-            f"forward_drift_map.png, forward_spread_chart.png, forward_drift_animation.mp4, {dossier_path.name}, backtrack_summary.txt"
+            f"forward_drift_map.png, forward_spread_chart.png, forward_drift_animation.mp4, {dossier_path.name}, "
+            f"{tracks_path.name}, backtrack_summary.txt"
         )
         print("=" * 65 + "\n")
 
@@ -386,6 +399,7 @@ class AttributionPipeline:
             "origin_lon": origin_lon,
             "origin_time": str(origin_time),
             "dossier_json": str(dossier_path),
+            "vessel_tracks_json": str(tracks_path),
             "backtrack_summary_txt": str(summary_txt_path),
             "map_image": str(map_path),
             "spread_chart_image": str(spread_path),

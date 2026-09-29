@@ -1,4 +1,4 @@
-"""Cerulean OGC API client for satellite oil slick detections."""
+"""OGC API client for satellite oil slick detections."""
 
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -8,7 +8,7 @@ import numpy as np
 import requests
 from shapely.geometry import LineString, Polygon, shape
 
-DEFAULT_BASE_URL = "https://api.cerulean.skytruth.org"
+DEFAULT_BASE_URL = "https://api.satellite.marine.org"
 DEFAULT_COVERAGE_START = "2023-01-01"
 
 
@@ -24,8 +24,8 @@ class SlickDetection:
     raw_properties: Dict[str, Any]
 
 
-class CeruleanClient:
-    """Client for SkyTruth Cerulean OGC API."""
+class SatelliteSlickClient:
+    """Client for satellite slick detection OGC API."""
 
     def __init__(self, base_url: str = DEFAULT_BASE_URL, coverage_start_date: str = DEFAULT_COVERAGE_START):
         self.base_url = base_url.rstrip("/")
@@ -82,7 +82,7 @@ class CeruleanClient:
         if time.tzinfo is None:
             time = time.replace(tzinfo=timezone.utc)
 
-        # Documented fact: Cerulean API data coverage begins in 2023
+        # API data coverage begins in 2023
         if time < self.coverage_start:
             return None
 
