@@ -134,9 +134,10 @@ export function createOilSlickTexture(): THREE.CanvasTexture {
 
 export const Scene3D: React.FC<Scene3DProps> = ({ layers, cameraView }) => {
   const mountRef = useRef<HTMLDivElement>(null);
-  const { caseData, timeCursor } = useCase();
+  const { caseData, selectedVesselId, selectedVessel, timeCursor } = useCase();
   const controlsRef = useRef<OrbitControls | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const shipPosRef = useRef<THREE.Vector3>(new THREE.Vector3(0, 0, 0));
 
   // Keep a reference to timeCursor for 60fps animation without triggering full scene rebuilds
   const timeCursorRef = useRef<number>(timeCursor);
@@ -299,13 +300,21 @@ export const Scene3D: React.FC<Scene3DProps> = ({ layers, cameraView }) => {
 
     // ----------------------------------------------------
     // 2. AIS Yellow Corridor Curve & The 3D Oil Tanker Ship
+    // Dynamically tuned to selected candidate vessel (PACIFIC GLORY: DCPA 0.0, TCPA 0.0; MAERSK NEVADA: DCPA 19.5, TCPA -9.0)
     // ----------------------------------------------------
+    const isMaersk = selectedVessel?.name === 'MAERSK NEVADA' || selectedVesselId === 'v2';
+    // For PACIFIC GLORY (Rank 1): direct intercept through (0, 0, 0)
+    // For MAERSK NEVADA (Rank 2): offset track with DCPA 19.5 km (mapped to 19.5 world units offshore)
+    const dcpaOffsetZ = isMaersk ? 19.5 : (selectedVessel?.dcpa ?? 0.0);
+    const tcpaOffset = isMaersk ? -9.0 : (selectedVessel?.tcpaSigned ?? 0.0);
+    const trackAngle = isMaersk ? 0.28 : -0.12;
+
     const aisWaypoints = [
-      new THREE.Vector3(-45, 0.1, 5.5),
-      new THREE.Vector3(-22, 0.1, 2.8),
-      new THREE.Vector3(0, 0.1, 0),
-      new THREE.Vector3(22, 0.1, -2.8),
-      new THREE.Vector3(45, 0.1, -5.5)
+      new THREE.Vector3(-45, 0.1, dcpaOffsetZ - 45 * trackAngle),
+      new THREE.Vector3(-22, 0.1, dcpaOffsetZ - 22 * trackAngle),
+      new THREE.Vector3(0, 0.1, dcpaOffsetZ),
+      new THREE.Vector3(22, 0.1, dcpaOffsetZ + 22 * trackAngle),
+      new THREE.Vector3(45, 0.1, dcpaOffsetZ + 45 * trackAngle),
     ];
     const aisCurve = new THREE.CatmullRomCurve3(aisWaypoints);
 
@@ -315,6 +324,38 @@ export const Scene3D: React.FC<Scene3DProps> = ({ layers, cameraView }) => {
     tankerShip.position.set(0, 0, 0);
     tankerShip.rotation.y = 0; // Local +X is forward heading
     shipContainer.add(tankerShip);
+
+    // Glowing stern discharge manifold flange directly mounted to the ship model
+    const dischargeFlangeGeo = new THREE.CylinderGeometry(0.18, 0.18, 0.35, 16);
+    const dischargeFlangeMat = new THREE.MeshStandardMaterial({
+      color: 0xEC4899,
+      emissive: 0xBE185D,
+      emissiveIntensity: 0.8,
+      metalness: 0.6,
+      roughness: 0.2,
+    });
+    const dischargeFlange = new THREE.Mesh(dischargeFlangeGeo, dischargeFlangeMat);
+    dischargeFlange.rotation.z = Math.PI / 2;
+    dischargeFlange.position.set(-4.85, 0.28, 0);
+    tankerShip.add(dischargeFlange);
+
+    // Dedicated discharge point light on the ship stern
+    const dischargeLight = new THREE.PointLight(0xEC4899, 1.8, 12);
+    dischargeLight.position.set(-5.1, 0.35, 0);
+    tankerShip.add(dischargeLight);
+
+    // Pulsing connection halo ring on the ship stern
+    const sternHaloGeo = new THREE.RingGeometry(0.5, 0.72, 28);
+    const sternHaloMat = new THREE.MeshBasicMaterial({
+      color: 0xEC4899,
+      transparent: true,
+      opacity: 0.85,
+      side: THREE.DoubleSide
+    });
+    const sternHalo = new THREE.Mesh(sternHaloGeo, sternHaloMat);
+    sternHalo.rotation.y = Math.PI / 2;
+    sternHalo.position.set(-4.95, 0.35, 0);
+    tankerShip.add(sternHalo);
 
     // Dynamic Propeller Wake & Foam Trail trailing behind the stern
     const wakeGeo = new THREE.PlaneGeometry(16, 3.2, 16, 4);
@@ -491,7 +532,7 @@ export const Scene3D: React.FC<Scene3DProps> = ({ layers, cameraView }) => {
       const aisPoints = aisCurve.getPoints(120);
       aisGeo = new THREE.BufferGeometry().setFromPoints(aisPoints);
       const aisMat = new THREE.LineDashedMaterial({
-        color: 0xF59E0B, // Vibrant yellow/amber AIS corridor
+        color: 0xEF4444, // Red selected vessel track corridor
         dashSize: 1.6,
         gapSize: 0.6
       });
@@ -502,7 +543,7 @@ export const Scene3D: React.FC<Scene3DProps> = ({ layers, cameraView }) => {
       // Waypoint beacons along track
       aisWaypoints.forEach((wp) => {
         const wpGeo = new THREE.CylinderGeometry(0.18, 0.18, 0.1, 14);
-        const wpMat = new THREE.MeshBasicMaterial({ color: 0xF59E0B });
+        const wpMat = new THREE.MeshBasicMaterial({ color: 0xEF4444 });
         const wpMesh = new THREE.Mesh(wpGeo, wpMat);
         wpMesh.position.copy(wp);
         aisGroup.add(wpMesh);
@@ -642,6 +683,15 @@ export const Scene3D: React.FC<Scene3DProps> = ({ layers, cameraView }) => {
         }
       }
 
+      // Update vessel world matrix for precise child world-coordinate extraction
+      shipContainer.updateMatrixWorld(true);
+      shipPosRef.current.copy(shipContainer.position);
+
+      // Dynamic pulse on stern halo & discharge light mounted to the ship
+      sternHalo.scale.setScalar(1 + Math.sin(t * 4.5) * 0.15);
+      sternHaloMat.opacity = 0.7 + Math.sin(t * 4.5) * 0.2;
+      dischargeLight.intensity = 1.4 + Math.sin(t * 5.0) * 0.5;
+
       // 4. Make the oil slick conform and float directly on top of the water topography
       if (dynamicSlickGeo) {
         const slickPosAttr = dynamicSlickGeo.attributes.position as THREE.BufferAttribute;
@@ -662,36 +712,42 @@ export const Scene3D: React.FC<Scene3DProps> = ({ layers, cameraView }) => {
         if (pingRingMesh) pingRingMesh.position.set(18, slickH + 0.1, 0);
       }
 
-      // 5. Make the Lagrangian trajectory zero in directly on the exact center of the ship model!
+      // 5. Connect backward Lagrangian drift trajectory directly between observed slick (18, y, 0) and the ship model
       if (trajCurve && trajGeo && trajLine && ellipseMesh) {
-        const shipCenter = shipContainer.position;
         const slickH = dynamicWaveGeo ? getWaveHeight(18, 0, t) : 0;
         const slickStart = new THREE.Vector3(18, slickH + 0.15, 0);
-        const shipTarget = new THREE.Vector3(shipCenter.x, shipCenter.y + 0.15, shipCenter.z);
 
-        const midX = (18 + shipCenter.x) * 0.5;
-        const midZ = (0 + shipCenter.z) * 0.5 + 5.5;
+        // Get exact world coordinate of the ship's stern discharge manifold on the ship model
+        const shipDischargeWorldPos = new THREE.Vector3();
+        dischargeFlange.getWorldPosition(shipDischargeWorldPos);
+
+        // Hydrodynamic curve connects observed slick directly into the ship model
+        const midX = (slickStart.x + shipDischargeWorldPos.x) * 0.5;
+        const midZ = (slickStart.z + shipDischargeWorldPos.z) * 0.5 + 4.8;
         const midWaveH = dynamicWaveGeo ? getWaveHeight(midX, midZ, t) : 0;
-        const midY = Math.max(slickStart.y, shipTarget.y, midWaveH) + 1.8;
+        const midY = Math.max(slickStart.y, shipDischargeWorldPos.y, midWaveH) + 2.2;
 
         trajCurve.v0.copy(slickStart);
         trajCurve.v1.set(midX, midY, midZ);
-        trajCurve.v2.copy(shipTarget); // ZEROED DIRECTLY ON THE SHIP MODEL CENTER
+        trajCurve.v2.copy(shipDischargeWorldPos);
 
         const pts = trajCurve.getPoints(60);
         trajGeo.setFromPoints(pts);
         trajGeo.attributes.position.needsUpdate = true;
         trajLine.computeLineDistances();
 
-        // Release ellipse centered right on ship model
-        ellipseMesh.position.set(shipCenter.x, shipCenter.y + 0.1, shipCenter.z);
+        // Release ellipse anchored at the ship's discharge point / wake
+        const ellipseY = dynamicWaveGeo ? getWaveHeight(shipDischargeWorldPos.x, shipDischargeWorldPos.z, t) + 0.08 : 0.08;
+        ellipseMesh.position.set(shipDischargeWorldPos.x, ellipseY, shipDischargeWorldPos.z);
+        ellipseMesh.scale.set(1 + Math.sin(t * 2.5) * 0.05, 1 + Math.sin(t * 2.5) * 0.05, 1);
 
-        // Animate tracer particles along the dynamic curve converging on ship center
+        // Animate tracer particles along the dynamic curve converging directly into the ship model
         particleMeshes.forEach((p) => {
           p.userData.t += p.userData.speed;
           if (p.userData.t > 1) p.userData.t = 0;
           const curvePt = trajCurve.getPoint(p.userData.t);
-          const convergence = 1 - p.userData.t * 0.85;
+          // Particle cloud converges tightly into the ship's discharge port (t -> 1)
+          const convergence = 1 - Math.pow(p.userData.t, 1.6) * 0.95;
           p.position.set(
             curvePt.x + (p.userData.offsetX || 0) * convergence,
             curvePt.y + (p.userData.offsetY || 0) * convergence,
@@ -749,7 +805,7 @@ export const Scene3D: React.FC<Scene3DProps> = ({ layers, cameraView }) => {
       }
       renderer.dispose();
     };
-  }, [layers, cameraView, caseData]);
+  }, [layers, cameraView, caseData, selectedVesselId]);
 
   // Quick Action Buttons (Enforcing zoom in & zoom out caps)
   const handleZoomIn = () => {
@@ -774,8 +830,9 @@ export const Scene3D: React.FC<Scene3DProps> = ({ layers, cameraView }) => {
 
   const handleCenterShip = () => {
     if (cameraRef.current && controlsRef.current) {
-      controlsRef.current.target.set(0, 0.6, 0);
-      cameraRef.current.position.set(58, 48, 72);
+      const sp = shipPosRef.current;
+      controlsRef.current.target.set(sp.x, sp.y + 0.6, sp.z);
+      cameraRef.current.position.set(sp.x + 36, sp.y + 26, sp.z + 38);
       controlsRef.current.update();
     }
   };

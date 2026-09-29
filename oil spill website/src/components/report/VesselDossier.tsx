@@ -61,7 +61,7 @@ export const VesselDossier: React.FC = () => {
           <div className="text-xs font-mono uppercase tracking-wider text-[var(--text-3)]">BORDA SCORE (INFERRED)</div>
           <div className="font-mono font-bold text-2xl text-[var(--text-1)]">
             {selectedVessel.borda}
-            <span className="text-sm font-normal text-[var(--text-3)]">/20</span>
+            <span className="text-sm font-normal text-[var(--text-3)]"> pts</span>
           </div>
         </div>
       </div>

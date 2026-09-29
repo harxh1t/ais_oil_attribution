@@ -9,6 +9,7 @@ import {
   CandidateVessel,
   RANK_STABILITY_CASES,
 } from '../data/malibuCase';
+import { GULF_CASE } from '../data/gulfOfMexicoCase';
 import { SimulationArtifacts, executeBackendForensicRun } from '../services/api';
 
 export type RunStatus = 'idle' | 'running' | 'done' | 'completed' | 'error';
@@ -117,23 +118,23 @@ interface CaseContextType {
 
 
 const DEFAULT_PARAMS: ForensicParameters = {
-  lat: 34.016944,
-  lon: -118.663056,
-  observationTime: '2024-08-06T01:50:00Z',
-  sarTime: '2024-08-06T01:50:00Z',
-  spreadKm: 12.0,
+  lat: 28.718,
+  lon: -90.440,
+  observationTime: '2024-05-15T13:45:00Z',
+  sarTime: '2024-05-15T13:45:00Z',
+  spreadKm: 14.0,
   regime: 'delayed',
   rankingMethod: 'borda',
   enableForwardFit: false,
-  outputDir: 'results/malibu_case',
-  slickLengthKm: 11.6,
-  slickAreaKm2: 4.7,
-  windSpeedKts: 9.8,
-  windDirectionDeg: 290,
-  currentSpeedKts: 0.35,
-  currentDirectionDeg: 135,
+  outputDir: 'results/gom_case',
+  slickLengthKm: 14.2,
+  slickAreaKm2: 8.6,
+  windSpeedKts: 11.2,
+  windDirectionDeg: 210,
+  currentSpeedKts: 0.42,
+  currentDirectionDeg: 65,
   diffusionRate: 0.18,
-  backtrackingHours: 9.2,
+  backtrackingHours: 2.75,
   timeStepMin: 5,
   particleCount: 1500,
 };
@@ -150,7 +151,7 @@ const DEFAULT_LAYERS: MapLayers = {
 
 const INITIAL_LOGS: PipelineLog[] = WORKFLOW_STEPS.map((s) => ({
   id: `step-${s.step}`,
-  timestamp: '01:50:00 UTC',
+  timestamp: '13:45:00 UTC',
   stage: s.title.toUpperCase(),
   message: s.log,
   level: s.step === 8 ? 'success' : 'info',
@@ -159,12 +160,20 @@ const INITIAL_LOGS: PipelineLog[] = WORKFLOW_STEPS.map((s) => ({
 const CaseContext = createContext<CaseContextType | undefined>(undefined);
 
 export const CaseProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [caseData] = useState<MalibuCaseData>(MALIBU_CASE);
+  const [caseData, setCaseData] = useState<MalibuCaseData>(GULF_CASE);
   const [selectedVesselId, setSelectedVesselId] = useState<string>('v1');
   const [parameters, setParameters] = useState<ForensicParameters>(() => {
     try {
       const saved = localStorage.getItem('wake_forensic_params');
-      return saved ? { ...DEFAULT_PARAMS, ...JSON.parse(saved) } : DEFAULT_PARAMS;
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.lat && parsed.lat > 30) {
+          localStorage.removeItem('wake_forensic_params');
+          return DEFAULT_PARAMS;
+        }
+        return { ...DEFAULT_PARAMS, ...parsed };
+      }
+      return DEFAULT_PARAMS;
     } catch {
       return DEFAULT_PARAMS;
     }
@@ -338,6 +347,7 @@ export const CaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const loadExample = () => {
+    setCaseData(GULF_CASE);
     setParameters(DEFAULT_PARAMS);
     setSelectedVesselId('v1');
     setRunStatus('done');
@@ -350,25 +360,14 @@ export const CaseProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Scenario score info for focused candidate strip
   const scenarioScoreDelta: ScenarioScoreInfo = React.useMemo(() => {
-    if (activeScenario === 'epoch_plus25') {
-      return {
-        leadName: 'MV Pacific Lantern',
-        leadRank: 1,
-        scoreText: 'Borda #1 (17/20 pts)',
-        isSwap: true,
-        leadDcpa: 1.4,
-        leadTcpa: 8,
-        continuity: 94,
-      };
-    }
     return {
-      leadName: 'MV Meridian Crest',
+      leadName: 'PACIFIC GLORY',
       leadRank: 1,
-      scoreText: 'Borda #1 (18/20 pts)',
+      scoreText: 'Borda #1 (6/6 pts)',
       isSwap: false,
-      leadDcpa: 1.8,
-      leadTcpa: 12,
-      continuity: 97,
+      leadDcpa: 0.0,
+      leadTcpa: 0,
+      continuity: 10.37,
     };
   }, [activeScenario]);
 

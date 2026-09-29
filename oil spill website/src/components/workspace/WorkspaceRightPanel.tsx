@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
-import { useCase } from '../../context/CaseContext';
 import { EvidenceGraphTab } from './panels/EvidenceGraphTab';
-import { ScenarioLabTab } from './panels/ScenarioLabTab';
 import { CopilotTab } from './panels/CopilotTab';
 import { DetailsTab } from './panels/DetailsTab';
-import { GitCommit, Sparkles, SlidersHorizontal, Info, ChevronRight, ChevronLeft } from 'lucide-react';
+import { ChevronRight, ChevronLeft } from 'lucide-react';
 
 export const WorkspaceRightPanel: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'evidence' | 'scenario' | 'copilot' | 'details'>('evidence');
+  const [activeTab, setActiveTab] = useState<'evidence' | 'copilot' | 'details'>('evidence');
   const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
 
   const toggleCollapse = (collapsed: boolean) => {
@@ -47,16 +45,6 @@ export const WorkspaceRightPanel: React.FC = () => {
             Evidence
           </button>
           <button
-            onClick={() => setActiveTab('scenario')}
-            className={`px-3 py-1.5 rounded-[4px] text-xs font-medium transition-colors cursor-pointer ${
-              activeTab === 'scenario'
-                ? 'bg-[var(--ocean-1)] text-white shadow-xs font-semibold'
-                : 'text-[var(--text-1)] hover:bg-[var(--surface-3)]'
-            }`}
-          >
-            Scenario Lab
-          </button>
-          <button
             onClick={() => setActiveTab('copilot')}
             className={`px-3 py-1.5 rounded-[4px] text-xs font-medium transition-colors cursor-pointer ${
               activeTab === 'copilot'
@@ -90,7 +78,6 @@ export const WorkspaceRightPanel: React.FC = () => {
       {/* Tab Body */}
       <div className="flex-1 overflow-y-auto p-4">
         {activeTab === 'evidence' && <EvidenceGraphTab />}
-        {activeTab === 'scenario' && <ScenarioLabTab />}
         {activeTab === 'copilot' && <CopilotTab />}
         {activeTab === 'details' && <DetailsTab />}
       </div>

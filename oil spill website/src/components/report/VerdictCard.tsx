@@ -57,7 +57,7 @@ export const VerdictCard: React.FC = () => {
           </div>
 
           <div className="p-3 bg-[var(--ocean-1)] rounded-[6px] border border-[var(--ocean-1)] text-xs font-mono text-[var(--text-light-subtle)]">
-            <strong className="text-white">Exclusion Result:</strong> 6 candidate vessels in the surveillance perimeter were evaluated. {caseData.vessels.length - 1} secondary vessels ranked lower across DCPA, TCPA, Fréchet distance, and AIS continuity criteria.
+            <strong className="text-white">Exclusion Result:</strong> {caseData.vessels.length} candidate vessels in the surveillance perimeter were evaluated. {caseData.vessels.length - 1} secondary vessel ranked lower across DCPA, TCPA, Fréchet distance, and AIS continuity criteria.
           </div>
         </div>
 

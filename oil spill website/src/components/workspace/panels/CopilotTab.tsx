@@ -22,9 +22,9 @@ export const CopilotTab: React.FC = () => {
     setMessages(prev => [...prev, { sender: 'analyst', text: userMsg }]);
 
     setTimeout(() => {
-      let reply = `Based on the Lagrangian hindcast between 16:40:00Z and 01:50:00Z, the observed slick traces directly to the target vessel's track. Candidate 1 had an unannounced transponder dropout.`;
+      let reply = `Based on the Lagrangian hindcast and vessel_tracks.json kinematics (241 points per vessel), PACIFIC GLORY (MMSI 354128000) achieves DCPA = 0.0 km and TCPA = 0.0 min with a Borda score of 6 pts (Rank #1, 55.2% MEDIUM confidence). MAERSK NEVADA has a DCPA offset of 19.47 km (Rank #2).`;
       if (userMsg.toLowerCase().includes('court') || userMsg.toLowerCase().includes('legal')) {
-        reply = `For evidentiary disclosure, the 95% confidence ellipse is constrained to 3.1 km semi-major axis. All negative control tests and parameter sensitivities are logged with cryptographic audit records.`;
+        reply = `For evidentiary disclosure, PACIFIC GLORY's Fréchet distance is 18.80 km vs MAERSK NEVADA's 29.45 km. Kinematic coincidence metrics are mathematically derived from the 241 broadcast points in vessel_tracks.json.`;
       }
       setMessages(prev => [...prev, { sender: 'system', text: reply }]);
     }, 400);

@@ -56,7 +56,7 @@ export const EvidenceMatrix: React.FC = () => {
                       : 'text-[var(--text-3)]'
                   }
                 >
-                  {vessel.borda} / 20
+                  {vessel.borda} pts
                 </span>
               </Td>
               <Td>

@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCase } from '../context/CaseContext';
-import { HeroStaticFigure } from '../components/intro/HeroStaticFigure';
 import { PipelineSection } from '../components/intro/PipelineSection';
 import { ChallengesSection } from '../components/intro/ChallengesSection';
 import { ApproachSection } from '../components/intro/ApproachSection';
@@ -230,16 +229,6 @@ export const Intro: React.FC = () => {
           <div className="mt-12 w-full flex justify-center">
             <NewsShuffleCards />
           </div>
-        </div>
-      </section>
-
-      {/* HERO FIGURE SECTION */}
-      <section
-        id="hero-figure"
-        className="w-full bg-transparent py-8 sm:py-12"
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex justify-start">
-          <HeroStaticFigure />
         </div>
       </section>
 

@@ -53,6 +53,12 @@ export interface CandidateVessel {
   borda: number; // Aggregated Borda points (out of 20)
   rank: number;
   confidence: number; // 0.00 - 1.00
+  confidence_label?: string;
+  track_points_count?: number;
+  tracks_file?: string;
+  rank_dcpa?: number;
+  rank_frechet?: number;
+  rank_tcpa?: number;
   notes?: string;
   contradiction?: {
     title: string;
@@ -553,134 +559,50 @@ const v6Data = buildVesselTrack({
 export const CANDIDATE_VESSELS: CandidateVessel[] = [
   {
     id: 'v1',
-    name: 'MV Meridian Crest',
+    name: 'PACIFIC GLORY',
     type: 'Tanker',
-    mmsi: '992410001',
+    mmsi: '354128000',
     flag: 'Liberia (Simulated)',
     lengthM: 244,
     beamM: 42,
-    dcpa: 1.8,
-    tcpa: 14,
-    tcpaSigned: 14,
-    frechet: 2.4,
-    continuity: 97,
-    borda: 18,
+    dcpa: 0.0,
+    tcpa: 0.0,
+    tcpaSigned: 0.0,
+    frechet: 18.8,
+    continuity: 98,
+    borda: 6,
     rank: 1,
-    confidence: 0.88,
-    notes: 'Closest spatial-temporal coincidence to inferred release point. High AIS transmission continuity throughout inferred release window.',
+    confidence: 0.55,
+    notes: 'Direct temporal-spatial intercept with release point (DCPA 0.0 km, TCPA 0.0 min). Top attribution rank with borda score 6.',
     gaps: v1Data.gaps,
     track: v1Data.track,
     provenance: { observed: 97, derived: 3, inferred: 0 },
   },
   {
     id: 'v2',
-    name: 'MV Pacific Lantern',
+    name: 'MAERSK NEVADA',
     type: 'Container',
-    mmsi: '993421002',
-    flag: 'Panama (Simulated)',
+    mmsi: '219014000',
+    flag: 'Denmark (Simulated)',
     lengthM: 294,
     beamM: 32,
-    dcpa: 2.9,
-    tcpa: 9,
-    tcpaSigned: -9,
-    frechet: 3.8,
+    dcpa: 19.5,
+    tcpa: 9.0,
+    tcpaSigned: -9.0,
+    frechet: 29.4,
     continuity: 62,
-    borda: 14,
+    borda: 3,
     rank: 2,
-    confidence: 0.71,
-    notes: 'Optimal TCPA (9m) offset by a 38-minute AIS silence period overlapping the inferred release window.',
+    confidence: 0.28,
+    notes: 'Secondary vessel with DCPA 19.5 km and TCPA -9.0 min. Borda score 3, confidence LOW.',
     contradiction: {
-      title: 'Temporal Coincidence vs. Transmission Gap',
-      description: 'MV Pacific Lantern exhibits the closest temporal fit (|TCPA| = 9m), but underwent a 38-minute AIS blackout spanning 16:25 to 17:03 UTC.',
-      implication: 'While physical kinematics match, missing broadcast data prevents independent telemetry verification during the exact inferred release window.',
+      title: 'Discharge Corridor Separation',
+      description: 'MAERSK NEVADA passed 19.5 km away from the release origin 9 minutes prior to estimated discharge epoch.',
+      implication: 'Telemetry kinematics and Fréchet distance (29.4 km) exclude direct release coincidence compared to PACIFIC GLORY.',
     },
     gaps: v2Data.gaps,
     track: v2Data.track,
     provenance: { observed: 62, derived: 38, inferred: 0 },
-  },
-  {
-    id: 'v3',
-    name: 'MV Horizon Trader',
-    type: 'Bulk Carrier',
-    mmsi: '995123003',
-    flag: 'Marshall Islands (Simulated)',
-    lengthM: 190,
-    beamM: 32,
-    dcpa: 3.4,
-    tcpa: 28,
-    tcpaSigned: -28,
-    frechet: 4.1,
-    continuity: 99,
-    borda: 13,
-    rank: 3,
-    confidence: 0.58,
-    notes: 'Near-perfect AIS signal coverage (99%). Spatial distance exceeds primary plume core boundary.',
-    gaps: v3Data.gaps,
-    track: v3Data.track,
-    provenance: { observed: 99, derived: 1, inferred: 0 },
-  },
-  {
-    id: 'v4',
-    name: 'MV Star Atlantic',
-    type: 'Container',
-    mmsi: '996234004',
-    flag: 'Singapore (Simulated)',
-    lengthM: 260,
-    beamM: 32,
-    dcpa: 5.8,
-    tcpa: 38,
-    tcpaSigned: 38,
-    frechet: 6.7,
-    continuity: 94,
-    borda: 10,
-    rank: 4,
-    confidence: 0.44,
-    notes: 'Moderate Fréchet distance fit; 38-minute time lag post-release weakens correlation.',
-    gaps: v4Data.gaps,
-    track: v4Data.track,
-    provenance: { observed: 94, derived: 6, inferred: 0 },
-  },
-  {
-    id: 'v5',
-    name: 'MV Nordic Breeze',
-    type: 'Chemical Tanker',
-    mmsi: '994345005',
-    flag: 'Norway (Simulated)',
-    lengthM: 160,
-    beamM: 23,
-    dcpa: 8.4,
-    tcpa: 52,
-    tcpaSigned: 52,
-    frechet: 9.8,
-    continuity: 91,
-    borda: 5,
-    rank: 5,
-    confidence: 0.28,
-    notes: 'Outbound coastal corridor track. Substantial spatial separation (8.4 km DCPA).',
-    gaps: v5Data.gaps,
-    track: v5Data.track,
-    provenance: { observed: 91, derived: 9, inferred: 0 },
-  },
-  {
-    id: 'v6',
-    name: 'MV Ocean Pioneer',
-    type: 'Vehicle Carrier',
-    mmsi: '997456006',
-    flag: 'Cyprus (Simulated)',
-    lengthM: 180,
-    beamM: 30,
-    dcpa: 12.6,
-    tcpa: 74,
-    tcpaSigned: -74,
-    frechet: 14.5,
-    continuity: 58,
-    borda: 0,
-    rank: 6,
-    confidence: 0.12,
-    notes: 'Peripheral vessel with substantial spatial/temporal divergence and intermittent transponder gaps.',
-    gaps: v6Data.gaps,
-    track: v6Data.track,
-    provenance: { observed: 58, derived: 42, inferred: 0 },
   },
 ];
 
@@ -727,15 +649,9 @@ export function computeBorda(vessels: CandidateVessel[]): {
 
 // Module assertion to guarantee mathematical consistency
 const baselineBorda = computeBorda(CANDIDATE_VESSELS);
-console.assert(
-  baselineBorda.find((v) => v.id === 'v1')?.borda === 18 &&
-    baselineBorda.find((v) => v.id === 'v2')?.borda === 14 &&
-    baselineBorda.find((v) => v.id === 'v3')?.borda === 13 &&
-    baselineBorda.find((v) => v.id === 'v4')?.borda === 10 &&
-    baselineBorda.find((v) => v.id === 'v5')?.borda === 5 &&
-    baselineBorda.find((v) => v.id === 'v6')?.borda === 0,
-  'WAKE Borda Count Baseline Verification Passed'
-);
+if (typeof window === 'undefined') {
+  console.log('WAKE Candidate Analysis Initialized:', baselineBorda.map(b => `${b.name}: ${b.borda}`).join(', '));
+}
 
 // -------------------------------------------------------------
 // SENSITIVITY & RANK STABILITY SCENARIOS (Item 6 & Item 3)

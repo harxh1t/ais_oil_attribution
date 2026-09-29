@@ -30,13 +30,13 @@ export const ContradictionCard: React.FC = () => {
 
           <div className="p-3 bg-[var(--surface-2)] rounded-[6px] border border-[var(--border-subtle)]">
             <div className="text-xs font-bold text-[var(--text-1)]">
-              Hypothesis B: Nearby Tanker (Candidate #2)
+              Hypothesis B: Nearby Commercial Traffic (MAERSK NEVADA, Rank #2)
             </div>
             <p className="text-xs text-[var(--text-2)] mt-1 leading-relaxed">
-              Tanker was within 6.1km at 02:40Z. However, continuous AIS reception confirms transit speed of 14.2 kt along the commercial fairway with zero deviation; release point was 5.8km upwind of its track.
+              MAERSK NEVADA (MMSI 219014000) was evaluated across 241 track points. Its Distance to Closest Point of Approach (DCPA) is 19.47 km with a Fréchet trajectory distance of 29.45 km. Hydrodynamic back-projection places the release point directly on PACIFIC GLORY's track (DCPA 0.0 km, TCPA 0.0 min).
             </p>
             <div className="mt-2 text-[11px] font-mono text-[var(--observed)] font-semibold">
-              Status: Excluded by Vector Distance
+              Status: Excluded (DCPA: 19.47 km, Borda: 3 pts)
             </div>
           </div>
         </div>

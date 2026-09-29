@@ -50,7 +50,7 @@ export const WorkspaceTimeline: React.FC = () => {
           size="sm"
           variant="ghost"
           onClick={handleRewind}
-          title="Rewind to trajectory origin"
+          title="Rewind to trajectory origin (T-4.6h)"
           aria-label="Rewind to trajectory origin"
         >
           <RotateCcw className="w-3.5 h-3.5" />
@@ -62,6 +62,9 @@ export const WorkspaceTimeline: React.FC = () => {
         <div className="flex justify-between text-[11px] font-mono text-[var(--text-3)] mb-1">
           <span className="font-semibold text-[var(--text-1)]">
             T + {(timeCursor * 9.2).toFixed(1)}h
+          </span>
+          <span className="text-[var(--text-1)] hover:text-[var(--ocean-1)] font-semibold cursor-pointer hover:underline" onClick={() => setTimeCursor(0.5)}>
+            16:30:00Z (Discharge Intercept)
           </span>
           <span className="font-semibold text-[var(--observed)]">
             01:50:00Z (SAR Detection)
@@ -75,7 +78,7 @@ export const WorkspaceTimeline: React.FC = () => {
           step="0.01"
           value={timeCursor}
           onChange={(e) => setTimeCursor(Number(e.target.value))}
-          className="w-full accent-[var(--primary-600)] cursor-pointer"
+          className="w-full accent-[var(--ocean-1)] cursor-pointer"
         />
       </div>
 
