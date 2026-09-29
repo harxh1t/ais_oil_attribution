@@ -246,7 +246,7 @@ export const Investigate: React.FC = () => {
                 <span>
                   {runStatus === 'running'
                     ? 'Simulating Physics...'
-                    : `Run Attribution Pipeline (#${selectedImage.id})`}
+                    : `Run Attribution Pipeline (${selectedImage.name})`}
                 </span>
                 <ChevronDown
                   className={`w-3.5 h-3.5 transition-transform duration-200 ${

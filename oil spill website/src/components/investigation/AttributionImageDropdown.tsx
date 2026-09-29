@@ -84,7 +84,7 @@ export const AttributionImageDropdown: React.FC<AttributionImageDropdownProps> =
           <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--text-3)]" />
           <input
             type="text"
-            placeholder="Search 22 frames (e.g. Sentinel-1, Drift, C-Band)..."
+            placeholder="Search .tif images (e.g. 00060.tif, 00120.tif)..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-8 pr-3 py-1.5 bg-[var(--surface-2)] border border-[var(--border-subtle)] focus:border-[var(--ocean-2)] focus:ring-1 focus:ring-[var(--ocean-2)] rounded-[6px] text-xs text-[var(--text-1)] placeholder-[var(--text-3)] font-mono outline-none"
@@ -111,33 +111,20 @@ export const AttributionImageDropdown: React.FC<AttributionImageDropdownProps> =
                 }`}
               >
                 {/* Frame Index / Number badge */}
-                <div className="shrink-0 w-6 text-center font-mono text-[10px] font-bold text-[var(--text-3)]">
+                <div className="shrink-0 w-8 h-8 rounded-[6px] bg-[var(--surface-2)] border border-[var(--border-subtle)] flex items-center justify-center font-mono text-[11px] font-bold text-[var(--ocean-1)] group-hover:border-[var(--ocean-2)] transition-colors">
                   #{img.id}
                 </div>
 
-                {/* Thumbnail Preview */}
-                <div className="relative w-12 h-12 rounded-[6px] overflow-hidden bg-slate-900 border border-[var(--border-subtle)] shrink-0 shadow-inner flex items-center justify-center">
-                  <img
-                    src={img.url}
-                    alt={img.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    loading="lazy"
-                  />
-                  <span className="absolute bottom-0 inset-x-0 bg-slate-900/75 text-[8px] font-mono text-white text-center py-0.2">
-                    {img.type}
-                  </span>
-                </div>
-
-                {/* Details */}
+                {/* Details (No Image) */}
                 <div className="flex-1 min-w-0">
-                  <div className="mb-0.5">
+                  <div className="flex items-center gap-2 mb-0.5">
                     <span className="text-xs font-bold text-[var(--text-1)] truncate block group-hover:text-[var(--ocean-1)] transition-colors">
                       {img.name}
                     </span>
                   </div>
 
-                  <div className="text-[9px] text-[var(--text-3)] font-mono mt-0.5 truncate">
-                    {img.timestamp}
+                  <div className="flex items-center gap-2 text-[10px] text-[var(--text-3)] font-mono truncate">
+                    <span>{img.timestamp}</span>
                   </div>
                 </div>
               </div>

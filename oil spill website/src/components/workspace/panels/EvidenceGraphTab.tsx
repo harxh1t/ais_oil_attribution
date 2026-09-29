@@ -26,8 +26,8 @@ export const EvidenceGraphTab: React.FC = () => {
             </span>
           </div>
           <div className="mt-2 text-xs font-mono text-[var(--text-2)] space-y-0.5">
-            <div>Sensor: Sentinel-1 SAR C-Band</div>
-            <div>Time: 01:50:00Z</div>
+            <div>Sensor: {caseData.sarSensor}</div>
+            <div>Time: {caseData.sarPassTime}</div>
             <div>Footprint: {caseData.slick.areaKm2} km² ({caseData.slick.lengthKm} km length)</div>
           </div>
         </div>
@@ -45,9 +45,9 @@ export const EvidenceGraphTab: React.FC = () => {
             </span>
           </div>
           <div className="mt-2 text-xs font-mono text-[var(--text-2)] space-y-0.5">
-            <div>Current Model: HYCOM / CMEMS 1/12°</div>
-            <div>Hindcast: -9.2 hours</div>
-            <div>Release Window: 16:40:00Z</div>
+            <div>Current Model: {caseData.environmental.currentSource}</div>
+            <div>Hindcast: -{caseData.slickAgeHours} hours</div>
+            <div>Release Window: {caseData.inferredReleaseEpoch}</div>
           </div>
         </div>
 
@@ -64,9 +64,10 @@ export const EvidenceGraphTab: React.FC = () => {
             </span>
           </div>
           <div className="mt-2 text-xs font-mono text-[var(--text-2)] space-y-0.5">
-            <div>Vessel: {topVessel.name}</div>
-            <div>DCPA: {topVessel.dcpa} km | TCPA: {topVessel.tcpa} min</div>
-            <div>AIS Continuity: {topVessel.continuity}%</div>
+            <div>Vessel: {topVessel.name} (MMSI: {topVessel.mmsi})</div>
+            <div>DCPA: {topVessel.dcpa.toFixed(2)} km (Rank #{topVessel.rank_dcpa || 1})</div>
+            <div>TCPA: {topVessel.tcpa.toFixed(1)} min | Fréchet: {topVessel.frechet.toFixed(2)} km</div>
+            <div>Coverage: {topVessel.continuity.toFixed(2)}% ({topVessel.track_points_count || topVessel.track.length} points)</div>
           </div>
         </div>
 
@@ -82,11 +83,11 @@ export const EvidenceGraphTab: React.FC = () => {
               Attribution Determination
             </span>
             <span className="text-xs font-mono font-bold text-[var(--primary-600)]">
-              Borda #{topVessel.rank} ({topVessel.borda}/20)
+              Borda #{topVessel.rank} ({topVessel.borda} pts)
             </span>
           </div>
           <div className="mt-1 text-xs text-[var(--primary-700)]">
-            Correlated spatiotemporally with no viable counter-hypotheses.
+            Correlated spatiotemporally from {topVessel.tracks_file || 'vessel_tracks.json'} with DCPA of {topVessel.dcpa.toFixed(1)} km and confidence {Math.round(topVessel.confidence * 100)}% ({topVessel.confidence_label || 'MEDIUM'}).
           </div>
         </div>
       </div>

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCase } from '../context/CaseContext';
-import { VerdictCard } from '../components/report/VerdictCard';
 import { EvidenceMatrix } from '../components/report/EvidenceMatrix';
 import { AisContinuityGantt } from '../components/report/AisContinuityGantt';
 import { EvidenceProvenanceBars } from '../components/report/EvidenceProvenanceBars';
@@ -281,11 +280,6 @@ export const Report: React.FC = () => {
 
         {/* Dossier Body Stack */}
         <div className="mt-8 space-y-10">
-          {/* Section 1: Verdict & Top Candidate Summary */}
-          <div>
-            <VerdictCard />
-          </div>
-
           {/* Section 2: Evidentiary Classification & Continuity Breakdown */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             <div className="lg:col-span-6">

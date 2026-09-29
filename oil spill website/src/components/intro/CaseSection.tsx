@@ -242,10 +242,10 @@ export const CaseSection: React.FC<CaseSectionProps> = ({ bgOpacity = 1 }) => {
 
                     <div className="text-right">
                       <div className="text-sm font-mono font-bold text-white">
-                        {vessel.borda}/20
+                        {vessel.borda} pts
                       </div>
                       <span className="text-[10px] text-[var(--text-light-subtle)]/80 uppercase font-mono">
-                        Borda Pts
+                        Borda Score
                       </span>
                     </div>
                   </div>

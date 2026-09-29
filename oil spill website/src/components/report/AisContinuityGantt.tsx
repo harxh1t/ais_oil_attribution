@@ -56,11 +56,11 @@ export const AisContinuityGantt: React.FC = () => {
                     </div>
                   )}
 
-                  {/* Discharge window marker (16:40:00Z) */}
+                  {/* Discharge window marker (11:00:00Z at DCPA 0.0 km) */}
                   <div
                     className="absolute top-0 bottom-0 w-[2px] bg-[var(--inferred)]"
                     style={{ left: '50%' }}
-                    title="Estimated Discharge Window (16:40:00Z)"
+                    title={`Estimated Discharge Window (${new Date(caseData.inferredReleaseEpoch).toISOString().slice(11, 19)}Z)`}
                   />
                 </div>
               </div>

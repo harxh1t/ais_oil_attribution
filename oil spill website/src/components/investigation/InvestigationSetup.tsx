@@ -1,7 +1,6 @@
 import React from 'react';
 import { useCase } from '../../context/CaseContext';
 import { Card } from '../ui';
-import sarImage from '../../assets/images/sar_satalite_retrieved.jpeg';
 import { AttributionImage } from '../../data/attributionImages';
 
 interface InvestigationSetupProps {
@@ -9,7 +8,11 @@ interface InvestigationSetupProps {
 }
 
 export const InvestigationSetup: React.FC<InvestigationSetupProps> = ({ selectedImage }) => {
-  const { parameters } = useCase();
+  const { caseData, parameters } = useCase();
+
+  // Use release origin point where PACIFIC GLORY was at CPA (0.0 km) from the user's JSON
+  const lat = caseData.inferredReleasePoint?.lat ?? parameters.lat;
+  const lon = caseData.inferredReleasePoint?.lon ?? parameters.lon;
 
   return (
     <Card className="p-5 sm:p-6 h-full flex flex-col justify-between">
@@ -18,7 +21,7 @@ export const InvestigationSetup: React.FC<InvestigationSetupProps> = ({ selected
           <div className="flex items-center gap-2">
             <h2 className="text-base font-bold text-[var(--text-1)]">Run Parameters</h2>
           </div>
-          <span className="text-xs font-mono text-[var(--text-3)]">OpenDrift v1.11</span>
+          <span className="text-xs font-mono text-[var(--ocean-1)] font-semibold">vessel_tracks.json</span>
         </div>
 
         <div className="mt-4 space-y-4">
@@ -31,13 +34,13 @@ export const InvestigationSetup: React.FC<InvestigationSetupProps> = ({ selected
               <div>
                 <span className="text-xs text-[var(--text-2)] mb-1 block">Latitude</span>
                 <div className="p-2.5 bg-[var(--surface-2)] border border-[var(--border-subtle)] rounded-[6px] text-xs font-mono text-[var(--text-1)]">
-                  {parameters.lat.toFixed(4)}° N
+                  {lat.toFixed(4)}° N
                 </div>
               </div>
               <div>
                 <span className="text-xs text-[var(--text-2)] mb-1 block">Longitude</span>
                 <div className="p-2.5 bg-[var(--surface-2)] border border-[var(--border-subtle)] rounded-[6px] text-xs font-mono text-[var(--text-1)]">
-                  {Math.abs(parameters.lon).toFixed(4)}° W
+                  {Math.abs(lon).toFixed(4)}° W
                 </div>
               </div>
             </div>
@@ -46,34 +49,30 @@ export const InvestigationSetup: React.FC<InvestigationSetupProps> = ({ selected
           {/* Timestamps */}
           <div className="space-y-2">
             <label className="text-xs font-bold uppercase tracking-wider text-[var(--text-3)] font-mono block">
-              Temporal Hindcast Window
+              Temporal AIS Window
             </label>
             <div>
-              <span className="text-xs text-[var(--text-2)] mb-1 block">Satellite Acquisition Time</span>
+              <span className="text-xs text-[var(--text-2)] mb-1 block">Observation &amp; Voyage Window</span>
               <div className="p-2.5 bg-[var(--surface-2)] border border-[var(--border-subtle)] rounded-[6px] text-xs font-mono text-[var(--text-1)] flex items-center justify-between">
-                <span>{selectedImage?.timestamp.split(' ')[1] || '01:50:00Z'}</span>
+                <span>09:00:00Z – 13:00:00Z (2024-05-15)</span>
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Extended section matching the height of the forensic map beside it with sar_satalite_retrieved image */}
-      <div className="mt-5 pt-4 border-t border-[var(--border-subtle)] flex-1 flex flex-col justify-end min-h-[220px]">
-        <div className="flex items-center justify-between mb-2">
-          <label className="text-xs font-bold uppercase tracking-wider text-[var(--text-3)] font-mono block truncate pr-2">
-            {selectedImage ? selectedImage.name : 'SAR Satellite Retrieved Image'}
-          </label>
-          <span className="text-[10px] font-mono text-[var(--text-3)] shrink-0">
-            {selectedImage ? selectedImage.sensor : 'C-Band Sentinel-1'}
-          </span>
-        </div>
-        <div className="w-full flex-1 rounded-[8px] overflow-hidden border border-[var(--border-subtle)] bg-slate-900/5 shadow-inner relative flex items-center justify-center min-h-[190px]">
-          <img
-            src={selectedImage?.url || sarImage}
-            alt={selectedImage?.name || 'SAR Satellite Retrieved Image'}
-            className="w-full h-full object-cover rounded-[7px] block"
-          />
+          {/* Active Vessels Feed from JSON */}
+          <div className="space-y-2">
+            <label className="text-xs font-bold uppercase tracking-wider text-[var(--text-3)] font-mono block">
+              Active Candidate Feed (from JSON)
+            </label>
+            <div className="p-2.5 bg-[var(--surface-2)] border border-[var(--border-subtle)] rounded-[6px] text-xs font-mono text-[var(--text-1)] space-y-1">
+              {caseData.vessels.map((v) => (
+                <div key={v.id} className="flex justify-between items-center text-[11px]">
+                  <span className="font-semibold">#{v.rank} {v.name}</span>
+                  <span className="text-[var(--text-3)]">{v.track_points_count ?? v.track.length} pts ({v.mmsi})</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </Card>
