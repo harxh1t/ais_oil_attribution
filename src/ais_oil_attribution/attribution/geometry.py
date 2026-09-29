@@ -123,7 +123,7 @@ def frechet_km(track_latlon: np.ndarray, slick_centerline_latlon: np.ndarray) ->
     """
     Computes the discrete Fréchet distance in kilometers between an AIS track and slick centerline.
 
-    Formalizes the Cerulean "parity" concept (order-sensitive curve shape matching)
+    Formalizes the parity concept (order-sensitive curve shape matching)
     per Toohey & Duckham (2021) and Eiter & Mannila (1994).
     """
     if len(track_latlon) == 0 or len(slick_centerline_latlon) == 0:

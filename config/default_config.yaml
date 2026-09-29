@@ -9,8 +9,8 @@ ais_backend:
 search:
   spatial_radius_km: 50             # ENGINEERING ASSUMPTION: generous outer bound before
                                      # Hausdorff/Fréchet filtering narrows it; not a research value
-  temporal_window_before_hours: 8   # matches Cerulean's documented AIS query window
-  temporal_window_after_hours: 6    # matches Cerulean's documented AIS query window
+  temporal_window_before_hours: 8
+  temporal_window_after_hours: 6
 
 interpolation:
   linear_max_gap_minutes: 5         # ENGINEERING ASSUMPTION, informed by literature consensus
@@ -51,9 +51,9 @@ drift_backtracking:
   seed_number: 2000
   seed_radius_m: 1000
 
-cerulean_api:
-  base_url: "https://api.cerulean.skytruth.org"
-  coverage_start_date: "2023-01-01"  # documented fact: Cerulean detections begin Jan 2023;
+satellite_api:
+  base_url: "https://api.satellite.marine.org"
+  coverage_start_date: "2023-01-01"  # detections begin Jan 2023;
                                        # earlier events require a manual polygon/time fallback
 
 reporting:

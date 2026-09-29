@@ -216,6 +216,8 @@ async def run_simulation(payload: Optional[Dict[str, Any]] = None):
         "sarPreprocessed": f"/pipeline_runs/{run_name}/sar_processed/sar_preprocessed.png?t={ts}",
         "segmentationOverlay": f"/pipeline_runs/{run_name}/sar_processed/segmentation_overlay.png?t={ts}",
         "detectionSummary": f"/pipeline_runs/{run_name}/sar_processed/detection_summary.png?t={ts}",
+        "vesselTracks": f"/pipeline_runs/{run_name}/vessel_tracks.json?t={ts}" if (latest_run_dir and (latest_run_dir / "vessel_tracks.json").exists()) else None,
+        "dossierJson": f"/pipeline_runs/{run_name}/attribution_dossier.json?t={ts}" if (latest_run_dir and (latest_run_dir / "attribution_dossier.json").exists()) else None,
     }
 
     logs = [
@@ -299,6 +301,7 @@ def list_runs():
             "has_forward_spread_chart": (d / "forward_spread_chart.png").exists(),
             "has_backward_spread_chart": (d / "backtrack_spread_chart.png").exists(),
             "has_summary": summary_file.exists(),
+            "has_vessel_tracks": (d / "vessel_tracks.json").exists(),
             "base_url": f"/artifacts/{d.name}",
         })
 
@@ -336,6 +339,7 @@ def get_run_details(run_id: str):
         "forward_spread_chart": f"/artifacts/{run_id}/forward_spread_chart.png" if (case_dir / "forward_spread_chart.png").exists() else None,
         "summary_txt": f"/artifacts/{run_id}/backtrack_summary.txt" if summary_file.exists() else None,
         "dossier_json": f"/artifacts/{run_id}/attribution_dossier.json" if dossier_file.exists() else None,
+        "vessel_tracks_json": f"/artifacts/{run_id}/vessel_tracks.json" if (case_dir / "vessel_tracks.json").exists() else None,
     }
 
     # Include DeepLab deliverables if present
@@ -732,6 +736,7 @@ def index_dashboard():
                             ${r.has_forward_spread_chart ? `<a class="media-link" href="${r.base_url}/forward_spread_chart.png" target="_blank">Forward Spread Chart</a>` : ''}
                             ${r.has_summary ? `<a class="media-link" href="${r.base_url}/backtrack_summary.txt" target="_blank">Summary Text</a>` : ''}
                             <a class="media-link" href="${r.base_url}/attribution_dossier.json" target="_blank">Dossier JSON</a>
+                            ${r.has_vessel_tracks ? `<a class="media-link" href="${r.base_url}/vessel_tracks.json" target="_blank">Ship Tracks (Lat/Lon)</a>` : ''}
                         </div>
                     </div>
                 `).join('');

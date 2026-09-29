@@ -121,11 +121,8 @@ All data is simulated; all vessels fictional.
         mmsi: v.mmsi,
         type: v.type,
         flag: v.flag,
-        track: (v.track || []).map((pt) => ({
-          lat: pt.lat,
-          lon: pt.lon,
-          timestamp: pt.t || (pt.timestampMs ? new Date(pt.timestampMs).toISOString() : ''),
-        })),
+        tracksFile: `${MALIBU_CASE.id}_vessel_tracks.json`,
+        trackPointsCount: (v.track || []).length,
         metrics: {
           dcpaKm: v.dcpa,
           tcpaMinutes: v.tcpa,
@@ -149,6 +146,37 @@ All data is simulated; all vessels fictional.
     const downloadAnchor = document.createElement('a');
     downloadAnchor.setAttribute('href', dataStr);
     downloadAnchor.setAttribute('download', `${MALIBU_CASE.id}_forensic_dossier.json`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+  };
+
+  const handleExportTracksJSON = () => {
+    const tracksBundle = {
+      $schema: 'https://wake-marine.internal/schemas/v1/vessel-tracks.json',
+      caseId: MALIBU_CASE.id,
+      exportedAtUtc: new Date().toISOString(),
+      disclaimer: 'Kinematic AIS trajectory coordinates (lat/long) for candidate vessels separated from attribution dossier.',
+      vessels: caseData.vessels.map((v) => ({
+        rank: v.rank,
+        name: v.name,
+        mmsi: v.mmsi,
+        type: v.type,
+        pointsCount: (v.track || []).length,
+        track: (v.track || []).map((pt) => ({
+          lat: pt.lat,
+          lon: pt.lon,
+          timestamp: pt.t || (pt.timestampMs ? new Date(pt.timestampMs).toISOString() : ''),
+          sog: pt.sog,
+          cog: pt.cog,
+        })),
+      })),
+    };
+
+    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(tracksBundle, null, 2));
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute('href', dataStr);
+    downloadAnchor.setAttribute('download', `${MALIBU_CASE.id}_vessel_tracks.json`);
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
@@ -184,7 +212,7 @@ All data is simulated; all vessels fictional.
             </p>
           </div>
 
-          {/* Action Buttons: COPY BRIEF, EXPORT JSON, PRINT DOSSIER */}
+          {/* Action Buttons: COPY BRIEF, EXPORT JSON, EXPORT TRACKS, PRINT DOSSIER */}
           <div className="flex items-center gap-2 flex-wrap shrink-0">
             <Button
               variant="secondary"
@@ -202,8 +230,20 @@ All data is simulated; all vessels fictional.
               onClick={handleExportJSON}
               icon={<Download className="w-3.5 h-3.5" />}
               className="text-xs"
+              title="Export complete case dossier as JSON"
             >
-              EXPORT JSON
+              EXPORT DOSSIER (JSON)
+            </Button>
+
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={handleExportTracksJSON}
+              icon={<Download className="w-3.5 h-3.5" />}
+              className="text-xs"
+              title="Export vessel lat/long coordinates track data as separate JSON file"
+            >
+              EXPORT TRACKS (LAT/LON)
             </Button>
 
             <Button

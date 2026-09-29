@@ -1043,7 +1043,7 @@ def generate_workstation_dashboard(
     <!-- Top Utility & Provenance Bar -->
     <div class="utility-header">
         <div class="provenance-chips">
-            <span class="prov-chip"><i class="fa-solid fa-satellite"></i> SAR: <strong>Sentinel-1 / Cerulean</strong></span>
+            <span class="prov-chip"><i class="fa-solid fa-satellite"></i> SAR: <strong>Sentinel-1 SAR</strong></span>
             <span class="prov-chip"><i class="fa-solid fa-tower-broadcast"></i> AIS: <strong>NOAA MarineCadastre</strong></span>
             <span class="prov-chip"><i class="fa-solid fa-water"></i> Drift: <strong>OpenDrift Backtrack</strong></span>
         </div>
@@ -3099,7 +3099,7 @@ def generate_workstation_dashboard(
     <!-- Top Utility & Provenance Bar -->
     <div class="utility-header">
         <div class="provenance-chips">
-            <span class="prov-chip"><i class="fa-solid fa-satellite"></i> SAR: <strong>Sentinel-1 / Cerulean</strong></span>
+            <span class="prov-chip"><i class="fa-solid fa-satellite"></i> SAR: <strong>Sentinel-1 SAR</strong></span>
             <span class="prov-chip"><i class="fa-solid fa-tower-broadcast"></i> AIS: <strong>NOAA MarineCadastre</strong></span>
             <span class="prov-chip"><i class="fa-solid fa-water"></i> Drift: <strong>OpenDrift Backtrack</strong></span>
         </div>
