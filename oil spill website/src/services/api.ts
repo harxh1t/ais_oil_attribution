@@ -29,6 +29,23 @@ export interface SimulationRunResponse {
   }>;
   candidateVessels?: any[];
   summary?: string;
+  cliCommand?: string;
+  terminalOutput?: string;
+}
+
+/**
+ * Fetch the latest forensic run from backend.
+ */
+export async function fetchLatestRun(): Promise<SimulationRunResponse | null> {
+  try {
+    const res = await fetch('/api/latest-run', { method: 'GET', signal: AbortSignal.timeout(3000) });
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch {
+    // Offline or not available
+  }
+  return null;
 }
 
 /**
