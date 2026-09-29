@@ -19,12 +19,11 @@ import segmentationOverlayImg from '../assets/images/segmentation_overlay.png';
 import sarPreprocessedImg from '../assets/images/sar_preprocessed.png';
 
 export const Investigate: React.FC = () => {
-  const { runStatus, startForensicRun, artifacts } = useCase();
+  const { runStatus, startForensicRun, artifacts, selectedImage, setSelectedImage } = useCase();
   const [showCli, setShowCli] = useState<boolean>(true);
   const [driftMode, setDriftMode] = useState<'forward' | 'backward'>('backward');
   const [isCdsModalOpen, setIsCdsModalOpen] = useState<boolean>(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
-  const [selectedImage, setSelectedImage] = useState<AttributionImage>(ATTRIBUTION_IMAGES[0]);
   const [windCurrentSource, setWindCurrentSource] = useState<string | null>(null);
   const [isWindDropdownOpen, setIsWindDropdownOpen] = useState<boolean>(false);
   const windDropdownRef = useRef<HTMLDivElement>(null);
@@ -261,7 +260,11 @@ export const Investigate: React.FC = () => {
                 onSelectAndRun={(img) => {
                   setSelectedImage(img);
                   setIsDropdownOpen(false);
-                  startForensicRun();
+                  startForensicRun({
+                    image: img.name,
+                    image_path: img.name,
+                    ...(windCurrentSource ? { forcing_source: windCurrentSource } : {}),
+                  });
                 }}
                 selectedImageId={selectedImage.id}
                 isRunning={runStatus === 'running'}
