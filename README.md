@@ -228,7 +228,7 @@ python -m ais_oil_attribution.cli `
 
 WAKE's Stage 0 computer-vision core is not a generic segmentation model bolted onto the pipeline — it is purpose-built for spaceborne SAR oil-slick discrimination, and it earns its place at the front of the forensic chain:
 
-* **Atrous Spatial Pyramid Pooling (ASPP):** Parallel dilated convolutions capture slick context at multiple receptive-field scales simultaneously, so a 300 m sheen and an 11+ km elongated plume are segmented with the same architecture and no re-tuning.
+* **Atrous Spatial Pyramid Pooling:** Parallel dilated convolutions capture slick context at multiple receptive-field scales simultaneously, so a 300 m sheen and an 11+ km elongated plume are segmented with the same architecture and no re-tuning.
 * **MobileNetV2 Inverted-Residual Backbone:** A depthwise-separable, ~3.5M-parameter encoder keeps inference lightweight enough to run entirely on CPU — no GPU, no cloud dependency — so field investigators and coast-guard stations can run Mode 2 perception on ordinary hardware.
 * **Trained Natively on SAR Radiometry, Not ImageNet Color Statistics:** The encoder is trained from scratch (`encoder_weights=None`) directly on Sentinel-1 backscatter, avoiding the RGB-photograph bias that transfer-learned encoders inherit and that hurts performance on speckle-dominated radar imagery.
 * **Dual-Polarization VV + VH Pseudo-RGB Fusion:** Stacking the VV band, VH band, and their pixel-wise average into a synthetic 3-channel input lets the network exploit cross-polarization damping — a signature that hydrocarbon films produce but look-alikes typically do not — for sharper oil/sea-surface boundaries than single-band approaches achieve.
