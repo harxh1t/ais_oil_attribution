@@ -162,6 +162,14 @@ python -m ais_oil_attribution.cli \
   --output-dir results/san_francisco_case
 ```
 
+<p align="center">
+  <img src="docs/assets/sf_geospatial_evidence_map.png" alt="San Francisco Geospatial Evidence Map & Telemetry" width="100%" />
+</p>
+
+<p align="center">
+  <img src="docs/assets/sf_candidate_attribution_matrix.png" alt="San Francisco Candidate Vessels & Telemetry Evidence Matrix" width="100%" />
+</p>
+
 ---
 
 ### Example 2: Contemporaneous Channel Case (Galveston Channel, Texas)
