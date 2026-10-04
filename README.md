@@ -282,6 +282,14 @@ WAKE includes four pre-configured reference cases spanning high-density coastal 
 * **Perception Engine:** Pre-trained **DeepLabv3+ (MobileNetV2 backbone)** calibrated for low-backscatter capillary wave dampening.
 * **Detection Outcome:** 5 distinct discharge slicks segmented and georeferenced; principal slick centroid localized to `20.1323°N, 38.2116°E` with $3.79\text{ km}$ spread, automatically vectorizing polygons into `Sample1_detection.geojson` without manual coordinate entry.
 
+<p align="center">
+  <img src="docs/assets/red_sea_geospatial_evidence_map.png" alt="Red Sea Geospatial Evidence Map & Telemetry" width="100%" />
+</p>
+
+<p align="center">
+  <img src="docs/assets/red_sea_candidate_attribution_matrix.png" alt="Red Sea Lagrangian Drift & Attribution Matrix" width="100%" />
+</p>
+
 ---
 
 ## Scientific & Mathematical Foundations
