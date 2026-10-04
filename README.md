@@ -162,14 +162,6 @@ python -m ais_oil_attribution.cli \
   --output-dir results/san_francisco_case
 ```
 
-<p align="center">
-  <img src="docs/assets/sf_geospatial_evidence_map.png" alt="San Francisco Geospatial Evidence Map & Telemetry" width="100%" />
-</p>
-
-<p align="center">
-  <img src="docs/assets/sf_candidate_attribution_matrix.png" alt="San Francisco Candidate Vessels & Telemetry Evidence Matrix" width="100%" />
-</p>
-
 ---
 
 ### Example 2: Contemporaneous Channel Case (Galveston Channel, Texas)
@@ -186,14 +178,6 @@ python -m ais_oil_attribution.cli `
   --non-interactive `
   --output-dir results/galveston_case
 ```
-
-<p align="center">
-  <img src="docs/assets/galveston_geospatial_evidence_map.png" alt="Galveston Geospatial Evidence Map & Telemetry" width="100%" />
-</p>
-
-<p align="center">
-  <img src="docs/assets/galveston_candidate_attribution_matrix.png" alt="Galveston Candidate Vessels & Telemetry Evidence Matrix" width="100%" />
-</p>
 
 ---
 
@@ -267,12 +251,28 @@ WAKE includes four pre-configured reference cases spanning high-density coastal 
 * **Environmental Forcing:** Coastal California upwelling current ($0.45\text{ m/s}$) + prevailing NW offshore winds ($14\text{ kts}$).
 * **Methodology:** Automated regime classification identifies **Delayed Drift Regime** ($>1\text{ h}$ dispersion). Initiates OpenDrift particle reversal, queries NOAA MarineCadastre GeoParquet archives, and generates 3D WebGL space-time tubes.
 
+<p align="center">
+  <img src="docs/assets/sf_geospatial_evidence_map.png" alt="San Francisco Geospatial Evidence Map & Telemetry" width="100%" />
+</p>
+
+<p align="center">
+  <img src="docs/assets/sf_candidate_attribution_matrix.png" alt="San Francisco Candidate Vessels & Telemetry Evidence Matrix" width="100%" />
+</p>
+
 ---
 
 ### Case 02: Galveston Bay / Gulf of Mexico Deepwater Corridor
 * **Incident Profile:** Offshore petrochemical shipping corridor with extreme decoy vessel density and oil rig proximity.
 * **Observation Centroid:** `28.9500°N, 94.7500°W` (Spread: $6.5\text{ km}$).
 * **Safety & Integrity Checks:** Automatically triggers the **Deepwater Horizon & Natural Seep Proximity Filter**, distinguishing active ship engine discharges from known subsea hydrocarbon seeps and stationary platform infrastructure.
+
+<p align="center">
+  <img src="docs/assets/galveston_geospatial_evidence_map.png" alt="Galveston Geospatial Evidence Map & Telemetry" width="100%" />
+</p>
+
+<p align="center">
+  <img src="docs/assets/galveston_candidate_attribution_matrix.png" alt="Galveston Candidate Vessels & Telemetry Evidence Matrix" width="100%" />
+</p>
 
 ---
 
