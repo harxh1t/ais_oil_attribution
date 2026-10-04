@@ -187,6 +187,14 @@ python -m ais_oil_attribution.cli `
   --output-dir results/galveston_case
 ```
 
+<p align="center">
+  <img src="docs/assets/galveston_geospatial_evidence_map.png" alt="Galveston Geospatial Evidence Map & Telemetry" width="100%" />
+</p>
+
+<p align="center">
+  <img src="docs/assets/galveston_candidate_attribution_matrix.png" alt="Galveston Candidate Vessels & Telemetry Evidence Matrix" width="100%" />
+</p>
+
 ---
 
 ### Example 3: Satellite Computer Vision on Raw GeoTIFF (Mode 2)
